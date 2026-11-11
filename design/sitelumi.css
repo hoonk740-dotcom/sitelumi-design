@@ -2371,4 +2371,20 @@ ins.adsbygoogle {
 /* 카드 사이 16 / 12 (항목 배치를 따로 고르지 않은 기본 배치) */
 .sl-page .sl-sec:not([class*="sl-ly-"]):not([class*="sl-fx-"]) :is(.sl-trust, .sl-points, .sl-menu-list, .sl-steps, .sl-reviews, .sl-team, .sl-cases, .sl-creds, .sl-pagelinks) { gap: var(--card-gap); }
 
+/* [24] 예약 섹션 v4.0 — 날짜 칩 가로 스크롤 · 시간 칩 격자 */
+.sl-book select { width: 100%; padding: 13px 14px; border: 1px solid var(--sl-line); border-radius: var(--sl-r); background: var(--sl-bg); color: var(--sl-ink); font: inherit; font-size: 16px; }
+.sl-book .sl-bk-step { border: 0; margin: 0; padding: 0; min-width: 0; }
+.sl-book .sl-bk-step legend { padding: 0; margin-bottom: 8px; font-size: 14px; font-weight: 600; }
+.sl-book .sl-bk-days { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
+.sl-book .sl-bk-day { flex: none; width: 64px; display: grid; justify-items: center; gap: 2px; padding: 10px 0; border: 1px solid var(--sl-line); border-radius: var(--sl-r); background: var(--sl-bg); color: var(--sl-ink); font: inherit; cursor: pointer; }
+.sl-book .sl-bk-day b { font-size: 15px; } .sl-book .sl-bk-day span { font-size: 12.5px; color: var(--sl-sub); }
+.sl-book .sl-bk-day[disabled] { opacity: .35; cursor: default; }
+.sl-book .sl-bk-times { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+.sl-book .sl-bk-time { padding: 11px 0; border: 1px solid var(--sl-line); border-radius: var(--sl-r); background: var(--sl-bg); color: var(--sl-ink); font: inherit; font-size: 15px; cursor: pointer; }
+.sl-book .sl-bk-day[aria-checked="true"], .sl-book .sl-bk-time[aria-checked="true"] { background: var(--sl-key); border-color: var(--sl-key); color: #fff; }
+.sl-book .sl-bk-day[aria-checked="true"] span { color: rgba(255,255,255,.85); }
+.sl-book .sl-bk-day:focus-visible, .sl-book .sl-bk-time:focus-visible { outline: 2px solid var(--sl-key); outline-offset: 2px; }
+.sl-book .sl-bk-wait { margin: 0; color: var(--sl-sub); font-size: 14.5px; }
+.sl-book .sl-bk-note { margin: 0; color: var(--sl-sub); font-size: 14px; }
+
   

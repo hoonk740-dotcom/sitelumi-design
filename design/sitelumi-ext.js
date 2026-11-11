@@ -274,6 +274,80 @@
         .then(function () { if (btn) { btn.disabled = false; btn.textContent = '보내기'; } });
     }, true);
 
+    /* ── [S13] 예약: 빈 시간은 예약 섹션이 화면에 보일 때만 물어봄 (방문자 대부분은 GAS 를 부르지 않음) ── */
+    HP.booking = function (scope) {
+      var W = ['일', '월', '화', '수', '목', '금', '토'];
+      var label = function (t) { var h = Number(t.slice(0, 2)); return h >= 24 ? '다음날 ' + ('0' + (h - 24)).slice(-2) + t.slice(2) : t; };
+      (scope || document).querySelectorAll('form[data-sl-form="booking"]').forEach(function (f) {
+        if (f.__bk) return; f.__bk = 1;
+        var u = f.getAttribute('data-gas'), daysEl = f.querySelector('.sl-bk-days'), timesEl = f.querySelector('.sl-bk-times');
+        var dIn = f.elements.namedItem('date'), tIn = f.elements.namedItem('time'), data = null;
+        if (!u) { daysEl.innerHTML = '<p class="sl-bk-wait">미리보기에서는 예약 시간을 불러오지 않아요.</p>'; return; }
+        var pick = function (box, el, sel) { box.querySelectorAll(sel).forEach(function (b) { b.setAttribute('aria-checked', b === el ? 'true' : 'false'); }); };
+        var drawTimes = function (day) {
+          tIn.value = '';
+          timesEl.innerHTML = day && day.t.length ? day.t.map(function (t) { return '<button type="button" class="sl-bk-time" role="radio" aria-checked="false" data-t="' + t + '">' + label(t) + '</button>'; }).join('')
+            : '<p class="sl-bk-wait">이 날은 예약 가능한 시간이 없어요.</p>';
+        };
+        var drawDays = function () {
+          var any = false;
+          daysEl.innerHTML = data.days.map(function (d) {
+            var n = d.t.length; if (n) any = true;
+            return '<button type="button" class="sl-bk-day" role="radio" aria-checked="false" data-d="' + d.d + '"' + (n ? '' : ' disabled') + '>' +
+              '<b>' + Number(d.d.slice(5, 7)) + '/' + Number(d.d.slice(8, 10)) + '</b><span>' + W[d.w] + '</span></button>';
+          }).join('');
+          if (!any) daysEl.innerHTML = '<p class="sl-bk-wait">지금은 예약 가능한 날짜가 없어요. 전화로 문의해 주세요.</p>';
+          dIn.value = ''; tIn.value = ''; timesEl.innerHTML = '<p class="sl-bk-wait">날짜를 먼저 골라 주세요.</p>';
+        };
+        var load = function () {
+          fetch(u, { method: 'POST', body: JSON.stringify({ a: 'bookSlots' }) }).then(function (r) { return r.json(); }).then(function (d) {
+            if (!d || !d.ok) { daysEl.innerHTML = '<p class="sl-bk-wait">' + ((d && d.error) || '예약 시간을 불러오지 못했어요.') + '</p>'; return; }
+            data = d; drawDays();
+          }).catch(function () { daysEl.innerHTML = '<p class="sl-bk-wait">예약 시간을 불러오지 못했어요. 잠시 후 다시 열어 주세요.</p>'; });
+        };
+        f.__bkLoad = load;
+        daysEl.addEventListener('click', function (e) {
+          var b = e.target.closest('.sl-bk-day'); if (!b || b.disabled || !data) return;
+          pick(daysEl, b, '.sl-bk-day'); dIn.value = b.getAttribute('data-d');
+          drawTimes(data.days.filter(function (x) { return x.d === dIn.value; })[0]);
+        });
+        timesEl.addEventListener('click', function (e) {
+          var b = e.target.closest('.sl-bk-time'); if (!b) return;
+          pick(timesEl, b, '.sl-bk-time'); tIn.value = b.getAttribute('data-t');
+        });
+        if ('IntersectionObserver' in window) {
+          var io = new IntersectionObserver(function (es) { if (es.some(function (x) { return x.isIntersecting; })) { io.disconnect(); load(); } }, { rootMargin: '400px' });
+          io.observe(f);
+        } else load();
+      });
+    };
+    HP.booking(document);
+    /* 예약 보내기 */
+    document.addEventListener('submit', function (e) {
+      var f = e.target;
+      if (!f.matches || !f.matches('form[data-sl-form="booking"]')) return;
+      e.preventDefault();
+      var el = function (n) { return f.elements.namedItem(n); };
+      var out = f.querySelector('.sl-form-msg'), btn = f.querySelector('button[type="submit"]');
+      var say = function (msg, ok) { if (out) { out.textContent = msg; out.className = 'sl-form-msg ' + (ok ? 'is-ok' : 'is-err'); } };
+      var u = f.getAttribute('data-gas');
+      if (!u) { say('미리보기에서는 보내지 않아요.', false); return; }
+      if (!el('date').value || !el('time').value) { say('예약 날짜와 시간을 골라 주세요.', false); return; }
+      var body = { a: 'book', date: el('date').value, time: el('time').value, service: el('service') ? el('service').value : '',
+                   name: el('name').value, phone: el('phone').value, msg: el('msg') ? el('msg').value : '',
+                   agree: !!(el('agree') && el('agree').checked), website: el('website') ? el('website').value : '' };
+      if (btn) { btn.disabled = true; btn.textContent = '예약하는 중…'; }
+      fetch(u, { method: 'POST', body: JSON.stringify(body) })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (d && d.ok) { f.reset(); say('예약됐어요 — ' + (d.when || '') + '. 확인 연락을 드릴게요.', true); }
+          else say((d && d.error) || '예약하지 못했어요. 전화로 문의해 주세요.', false);
+          if (f.__bkLoad) f.__bkLoad();
+        })
+        .catch(function () { say('예약하지 못했어요. 잠시 후 다시 시도하거나 전화로 문의해 주세요.', false); })
+        .then(function () { if (btn) { btn.disabled = false; btn.textContent = '예약하기'; } });
+    }, true);
+
     /* ── [S12] 명조(마루부리) 글꼴: 화면에 명조를 쓰는 디자인이 있을 때만 내려받음 ── */
     HP.serif = function (scope) {
       if (HP._serif) return;
@@ -542,6 +616,7 @@
         HP.useFoot(root);
         if (HP.hours) HP.hours(root);
         if (HP.reveal) HP.reveal(root);
+        if (HP.booking) HP.booking(root);
         root.querySelectorAll('img').forEach(function (img) { img.classList.add('is-loaded'); });
       }
       function jsonp(url, cb) {
