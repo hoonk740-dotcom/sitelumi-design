@@ -2396,6 +2396,18 @@ ins.adsbygoogle {
 .sl-legal-loan .sl-h2 { font-size: clamp(22px, 4.2vw, 40px) !important; }
 .sl-legal-loan .sl-cta-phone { font-size: clamp(22px, 5vw, 44px) !important; }
 
+/* [27] 검색 최적화 v4.0 (유료) — 하위 페이지 경로·한 줄 요약, 홈 「한눈에 보기」 */
+.sl-pagesum { padding: 18px 0 0; }
+.sl-pagesum p { margin: 6px 0 0; color: var(--sl-sub); font-size: 15px; line-height: 1.6; }
+.sl-crumb { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13.5px; color: var(--sl-sub); }
+.sl-crumb a { color: inherit; text-decoration: none; }
+.sl-crumb a:hover { color: var(--sl-key); text-decoration: underline; }
+.sl-crumb [aria-current] { color: var(--sl-ink); font-weight: 600; }
+.sl-facts dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0 32px; margin: 0; }
+.sl-facts dl > div { display: grid; grid-template-columns: 96px 1fr; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--sl-line); }
+.sl-facts dt { color: var(--sl-sub); font-size: 14px; }
+.sl-facts dd { margin: 0; font-size: 15px; line-height: 1.55; word-break: keep-all; }
+
 /* [26] 새 디자인 스타일 12 v4.0 — 색은 대표색에서 자동 계산, 스타일은 글꼴·모서리·여백·장식만 */
 .sl-skin-lawfirm { --sl-key: #1E2A44; --sl-head-w: 600; --sl-r: 0px; --sl-btn-r: 0px; --sl-card-r: 0px; }
 .sl-skin-lawfirm .sl-h2::after { content: ''; display: block; width: 40px; height: 2px; margin-top: 14px; background: var(--sl-key); }
