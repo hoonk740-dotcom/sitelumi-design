@@ -575,6 +575,26 @@
       btn.addEventListener('click', open);
     })();
 
+    /* ── [S17] 효과 라이브러리 불러오기: 효과를 쓰는 페이지(data-fx)에서만 sitelumi-fx 파일을 받아 실행 ──
+         움직임 줄이기 설정이면 받지 않음. 홈은 홈 로더가 화면을 그린 뒤 다시 부름 */
+    (function fxBoot() {
+      var FX_SRC = 'https://cdn.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@live-4/design/sitelumi-fx.min.js';
+      var FX_SRC2 = 'https://fastly.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@live-4/design/sitelumi-fx.min.js';
+      var loading = null;
+      HP.fx = function (scope) {
+        scope = scope || document;
+        if (!scope.querySelector || !scope.querySelector('.sl-page[data-fx]')) return;
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        if (window.SLFX) { window.SLFX.init(scope); return; }
+        if (loading) { loading.push(scope); return; }
+        loading = [scope];
+        var run = function () { var q = loading; loading = null; q.forEach(function (x) { try { window.SLFX.init(x); } catch (e) {} }); };
+        var add = function (src, next) { var s = document.createElement('script'); s.src = src; s.async = true; s.onload = run; s.onerror = next; document.head.appendChild(s); };
+        add(FX_SRC, function () { add(FX_SRC2, function () { loading = null; }); });
+      };
+      if (document.body.getAttribute('data-page-type') !== 'homepage') HP.fx(document);
+    })();
+
     /* ── [S7] 홈 로더: GAS 가 만든 홈(sl-home 페이지)을 읽어 #hp-root 에 넣음 ──
          글·목록 화면은 같은 홈에서 바닥글·하단 버튼만 가져옴 (30분 보관) */
     (function loadHome() {
@@ -620,6 +640,7 @@
         if (HP.booking) HP.booking(root);
         root.querySelectorAll('img').forEach(function (img) { img.classList.add('is-loaded'); });
         splashSave();
+        if (HP.fx) HP.fx(root);
         try { document.dispatchEvent(new Event('sl:home')); } catch (err) {}
       }
       /* 로딩 화면 정보 기억 (다음 방문 첫 화면용): 설정(data-splash) + 첫 화면 사진 · 로고 */
