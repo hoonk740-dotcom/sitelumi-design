@@ -59,6 +59,10 @@ img { max-width: 100%; height: auto; display: block; }
   overflow-x: hidden;
   float: none;
 }
+/* 붙어 있는 효과(가로 흐름 갤러리·이어지는 장면·바닥글 드러내기)가 동작하도록: hidden 대신 clip (가로 넘침은 똑같이 숨김, 지원 브라우저만) */
+@supports (overflow: clip) {
+  html body .blog-posts, html body #main-wrapper, html body #content-wrapper, html body #left-section, html body #right-section, html body .post-outer, html body .post-body { overflow-x: clip !important; }
+}
 
 .post-outer,
 .widget,

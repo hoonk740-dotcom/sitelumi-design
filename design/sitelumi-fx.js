@@ -358,6 +358,8 @@
     if (reduce) return;                                  // 움직임 줄이기: 효과 없이 내용 그대로
     css();
     pages.forEach(function (page) {
+      if (page.getAttribute('data-fx-on')) return;          // 한 페이지에 두 번 걸지 않음 (자동 실행 + 테마 로더가 겹칠 때)
+      page.setAttribute('data-fx-on', '1');
       var d = page.dataset || {};
       var o = { speed: d.fxSpeed === 'slow' ? 1.35 : d.fxSpeed === 'fast' ? 0.75 : 1, str: d.fxStrength === 'low' ? 0.55 : d.fxStrength === 'high' ? 1.4 : 1,
                 name: d.fxName || '', family: d.fxFamily || '', seed: Number(d.fxSeed || 1), season: d.fxSeason || '', from: d.fxFrom || '', to: d.fxTo || '' };

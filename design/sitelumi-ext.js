@@ -581,6 +581,7 @@
     (function fxBoot() {
       var CDN = 'https://cdn.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/design/';
       var CDN2 = 'https://fastly.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/design/';
+      var CDN3 = 'https://hoonk740-dotcom.github.io/sitelumi-design/design/';   // 예비: jsDelivr 가 멈추면 GitHub Pages (줄이지 않은 원본)
       var LIBS = {
         fx: { file: 'sitelumi-fx.min.js', sel: '.sl-page[data-fx]', g: 'SLFX', q: null },
         scene: { file: 'sitelumi-scenes.min.js', sel: '.sl-page[data-fx-scene]', g: 'SLSCENE', q: null }
@@ -592,7 +593,7 @@
         L.q = [scope];
         var run = function () { var q = L.q; L.q = null; q.forEach(function (x) { try { window[L.g].init(x); } catch (e) {} }); };
         var add = function (src, next) { var s = document.createElement('script'); s.src = src; s.async = true; s.onload = run; s.onerror = next; document.head.appendChild(s); };
-        add(CDN + L.file, function () { add(CDN2 + L.file, function () { L.q = null; }); });
+        add(CDN + L.file, function () { add(CDN2 + L.file, function () { add(CDN3 + L.file.replace('.min.', '.'), function () { L.q = null; }); }); });
       };
       HP.fx = function (scope) {
         scope = scope || document;
