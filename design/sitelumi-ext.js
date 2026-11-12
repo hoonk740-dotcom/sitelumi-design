@@ -599,7 +599,7 @@
         return new TextDecoder('utf-8').decode(bytes);
       }
       /* 불러오기 실패·지연 → 가젯 기본 히어로를 다시 보여 줌 */
-      function showFallback() { document.documentElement.classList.remove('hp-home-loading'); }
+      function showFallback() { document.documentElement.classList.remove('hp-home-loading'); try { document.dispatchEvent(new Event('sl:home')); } catch (err) {} }
       var CACHE_KEY = 'slHome:' + location.host, shown = '';
       function inject(html) {
         if (!html) { if (!shown) showFallback(); return; }
@@ -619,6 +619,20 @@
         if (HP.reveal) HP.reveal(root);
         if (HP.booking) HP.booking(root);
         root.querySelectorAll('img').forEach(function (img) { img.classList.add('is-loaded'); });
+        splashSave();
+        try { document.dispatchEvent(new Event('sl:home')); } catch (err) {}
+      }
+      /* 로딩 화면 정보 기억 (다음 방문 첫 화면용): 설정(data-splash) + 첫 화면 사진 · 로고 */
+      function splashSave() {
+        try {
+          var pg = root.querySelector('.sl-page[data-splash]'); if (!pg) return;
+          var c = JSON.parse(pg.getAttribute('data-splash') || '{}');
+          var ok = function (u) { return /^https?:\/\//.test(u) || (/^data:image\//.test(u) && u.length < 300000) ? u : ''; };
+          var hi = root.querySelector('.sl-hero-photo img'), lo = root.querySelector('.sl-sitefoot img, .sl-logo img');
+          if (hi && !hi.getAttribute('data-slimg')) c.bg = ok(hi.getAttribute('src') || '');
+          if (lo && !lo.getAttribute('data-slimg')) c.logo = ok(lo.getAttribute('src') || '');
+          localStorage.setItem('slSplash:' + location.host, JSON.stringify(c));
+        } catch (err) {}
       }
       function jsonp(url, cb) {
         var name = '__slHome' + Date.now() + '_' + (HP._jp = (HP._jp || 0) + 1);
