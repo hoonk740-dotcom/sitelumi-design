@@ -576,24 +576,57 @@
     })();
 
     /* ── [S17] 효과 라이브러리 불러오기: 효과를 쓰는 페이지(data-fx)에서만 sitelumi-fx 파일을 받아 실행 ──
+         시그니처 씬(data-fx-scene)이 있으면 sitelumi-scenes 파일도 받음
          움직임 줄이기 설정이면 받지 않음. 홈은 홈 로더가 화면을 그린 뒤 다시 부름 */
     (function fxBoot() {
-      var FX_SRC = 'https://cdn.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@live-4/design/sitelumi-fx.min.js';
-      var FX_SRC2 = 'https://fastly.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@live-4/design/sitelumi-fx.min.js';
-      var loading = null;
+      var CDN = 'https://cdn.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/design/';
+      var CDN2 = 'https://fastly.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/design/';
+      var LIBS = {
+        fx: { file: 'sitelumi-fx.min.js', sel: '.sl-page[data-fx]', g: 'SLFX', q: null },
+        scene: { file: 'sitelumi-scenes.min.js', sel: '.sl-page[data-fx-scene]', g: 'SLSCENE', q: null }
+      };
+      var load = function (L, scope) {
+        if (!scope.querySelector(L.sel) && !(scope.matches && scope.matches(L.sel))) return;
+        if (window[L.g]) { try { window[L.g].init(scope); } catch (e) {} return; }
+        if (L.q) { L.q.push(scope); return; }
+        L.q = [scope];
+        var run = function () { var q = L.q; L.q = null; q.forEach(function (x) { try { window[L.g].init(x); } catch (e) {} }); };
+        var add = function (src, next) { var s = document.createElement('script'); s.src = src; s.async = true; s.onload = run; s.onerror = next; document.head.appendChild(s); };
+        add(CDN + L.file, function () { add(CDN2 + L.file, function () { L.q = null; }); });
+      };
       HP.fx = function (scope) {
         scope = scope || document;
-        if (!scope.querySelector || !scope.querySelector('.sl-page[data-fx]')) return;
+        if (!scope.querySelector) return;
         if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        if (window.SLFX) { window.SLFX.init(scope); return; }
-        if (loading) { loading.push(scope); return; }
-        loading = [scope];
-        var run = function () { var q = loading; loading = null; q.forEach(function (x) { try { window.SLFX.init(x); } catch (e) {} }); };
-        var add = function (src, next) { var s = document.createElement('script'); s.src = src; s.async = true; s.onload = run; s.onerror = next; document.head.appendChild(s); };
-        add(FX_SRC, function () { add(FX_SRC2, function () { loading = null; }); });
+        load(LIBS.fx, scope);
+        load(LIBS.scene, scope);
       };
       if (document.body.getAttribute('data-page-type') !== 'homepage') HP.fx(document);
     })();
+
+    /* ── [S18] 맞춤 코드 실행: 판매자 서명 맞춤 JS(.sl-custom-js)를 오류 상자 안에서 한 번만 실행 ──
+         오류가 나면 홈페이지는 그대로 두고 조용히 기록 · 편집기 미리보기에서는 빨간 상자로 알려 줌 */
+    HP.custom = function (scope) {
+      scope = scope || document;
+      if (!scope.querySelectorAll) return;
+      Array.prototype.forEach.call(scope.querySelectorAll('script.sl-custom-js'), function (el) {
+        if (el.getAttribute('data-ran')) return;
+        el.setAttribute('data-ran', '1');
+        var page = el.closest('.sl-page') || document.body;
+        try { (new Function('page', 'HP', el.textContent))(page, HP); }
+        catch (e) {
+          page.setAttribute('data-custom-error', String(e && e.message || e).slice(0, 200));
+          if (window.console) console.warn('[사이트루미 맞춤 코드]', e);
+          if (document.documentElement.classList.contains('hp-reveal-all')) {
+            var box = document.createElement('div');
+            box.style.cssText = 'position:fixed;left:12px;bottom:12px;z-index:99999;max-width:360px;padding:10px 14px;border-radius:10px;background:#b42318;color:#fff;font:14px/1.5 sans-serif';
+            box.textContent = '맞춤 코드 오류: ' + (e && e.message || e);
+            document.body.appendChild(box);
+          }
+        }
+      });
+    };
+    if (document.body.getAttribute('data-page-type') !== 'homepage') HP.custom(document);
 
     /* ── [S7] 홈 로더: GAS 가 만든 홈(sl-home 페이지)을 읽어 #hp-root 에 넣음 ──
          글·목록 화면은 같은 홈에서 바닥글·하단 버튼만 가져옴 (30분 보관) */
@@ -641,6 +674,7 @@
         root.querySelectorAll('img').forEach(function (img) { img.classList.add('is-loaded'); });
         splashSave();
         if (HP.fx) HP.fx(root);
+        if (HP.custom) HP.custom(root);
         try { document.dispatchEvent(new Event('sl:home')); } catch (err) {}
       }
       /* 로딩 화면 정보 기억 (다음 방문 첫 화면용): 설정(data-splash) + 첫 화면 사진 · 로고 */

@@ -333,6 +333,24 @@
   function autoSeason() { var m = new Date().getMonth() + 1; return m === 12 || m <= 2 ? 'snow' : m <= 4 ? 'blossom' : m >= 10 ? 'leaves' : ''; }
 
   /* ───── 시작 ───── */
+  /* 무거운 효과(무게 4)는 따로 불러옴: sitelumi-fx-heavy.js (같은 주소 폴더) */
+  var HEAVY_SRC = (function () { var c = D.currentScript && D.currentScript.src || ''; return c ? c.replace(/sitelumi-fx(\.min)?\.js.*$/, 'sitelumi-fx-heavy' + (/\.min\.js/.test(c) ? '.min' : '') + '.js') : 'https://cdn.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/design/sitelumi-fx-heavy.min.js'; })();
+  var heavyQ = null;
+  function heavy(id) {
+    return function (el, o) {
+      var run = function () { if (W.SLFXH && W.SLFXH[id] && !el.getAttribute('data-fxh-' + id)) { el.setAttribute('data-fxh-' + id, '1'); try { W.SLFXH[id](el, o); } catch (e) {} } };
+      if (W.SLFXH) return run();
+      if (heavyQ) { heavyQ.push(run); return; }
+      heavyQ = [run];
+      var s = D.createElement('script'); s.src = HEAVY_SRC; s.async = true;
+      s.onload = function () { var q = heavyQ; heavyQ = null; q.forEach(function (f) { f(); }); };
+      s.onerror = function () { heavyQ = null; };
+      D.head.appendChild(s);
+    };
+  }
+  ['particles', 'liquid', 'glaurora', 'depth'].forEach(function (k) { HERO[k] = heavy(k); });
+  SCROLL.sequence = heavy('sequence');
+
   function init(scope) {
     scope = scope || D;
     var pages = scope.classList && scope.classList.contains('sl-page') ? [scope] : [].slice.call(scope.querySelectorAll('.sl-page'));
