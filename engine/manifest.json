@@ -1,0 +1,16 @@
+{
+  "app": "sitelumi",
+  "stable": "4.1.0",
+  "rollout": null,
+  "pins": {},
+  "blocked": [],
+  "notes": {},
+  "bundles": {
+    "4.1.0": {
+      "url": "https://cdn.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/engine/bundle-4.1.0.json",
+      "sha256": "b703730346c594addef270bc563c21f51080ee68b63fcd866f18626b2247faf2",
+      "size": 594303
+    }
+  },
+  "updated": "2026-11-12T09:09:43.237Z"
+}
