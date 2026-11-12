@@ -607,6 +607,7 @@
         shown = html;
         try { localStorage.setItem(CACHE_KEY, html); } catch (err) {}
         document.documentElement.classList.remove('hp-home-loading');
+        var cta = document.getElementById('sl-install-cta'); if (cta) cta.parentNode.removeChild(cta);
         var hero = document.querySelector('#Homepage-Content-Section .hp-hero');
         if (hero) hero.parentNode.removeChild(hero);       // 가젯의 기본 히어로 → 실제 홈으로 교체
         root.innerHTML = html;
@@ -643,6 +644,7 @@
         if (known) return cb(known);
         (function next(start) {      /* 사진 보관 페이지가 많아도 100개씩 넘겨 가며 (최대 1,000개) */
           jsonp(base + '/feeds/pages/summary?max-results=100&start-index=' + start, function (d) {
+            var bid = String(d && d.feed && d.feed.id && d.feed.id.$t || '').match(/blog-(\d+)/); if (bid) HP.blogId = bid[1];
             var list = (d && d.feed && d.feed.entry) || [];
             for (var i = 0; i < list.length; i++) {
               var m = list[i].title && list[i].title.$t === 'sl-home' && String(list[i].id && list[i].id.$t).match(/page-(\d+)/);
@@ -654,6 +656,21 @@
         })(1);
       }
       function content(d) { return decode(d && d.entry && d.entry.content && d.entry.content.$t); }
+      /* 아직 사이트루미 홈이 없는 새 블로그: 「설치 시작」 카드 (설치 안내 화면으로 블로그 주소·ID를 넘김) */
+      function installCta() {
+        if (document.getElementById('sl-install-cta')) return;
+        var GUIDE = 'https://sitelumi.blogspot.com/p/install.html';
+        var href = GUIDE + '?blog=' + encodeURIComponent(base + '/') + (HP.blogId ? '&id=' + HP.blogId : '');
+        var box = document.createElement('section');
+        box.id = 'sl-install-cta';
+        box.setAttribute('style', 'max-width:560px;margin:32px auto;padding:28px 22px;border-radius:20px;background:#fff;color:#111418;box-shadow:0 10px 40px rgba(16,24,40,.12);text-align:center;font:16px/1.6 Pretendard,-apple-system,sans-serif');
+        box.innerHTML = '<p style="margin:0 0 6px;font-size:13px;font-weight:800;letter-spacing:.08em;color:#6b7280">사이트루미</p>' +
+          '<h2 style="margin:0 0 10px;font-size:22px;font-weight:800">사이트를 준비하고 있어요</h2>' +
+          '<p style="margin:0 0 18px;color:#4b5563">이 블로그의 주인이시면 아래 버튼으로 설치를 이어 가세요. 안내대로 따라 하면 10분쯤 걸립니다.</p>' +
+          '<a href="' + href + '" target="_blank" rel="noopener" style="display:inline-block;padding:14px 26px;border-radius:999px;background:#111418;color:#fff;font-weight:800;text-decoration:none">설치 시작</a>';
+        var host = document.getElementById('Homepage-Content-Section') || root.parentNode || document.body;
+        host.insertBefore(box, host.firstChild);
+      }
       if (!isHome) {
         /* 글 화면: 같은 홈에서 바닥글·하단 버튼만 가져옴 */
         findHome(function (id) { if (id) jsonp(base + '/feeds/pages/default/' + encodeURIComponent(id), function (e) { footOnly(content(e)); }); });
@@ -664,7 +681,7 @@
       setTimeout(function () { if (!shown) showFallback(); }, 6000);
       function viaFeed() {
         findHome(function (id) {
-          if (!id) { if (!shown) showFallback(); return; }
+          if (!id) { if (!shown) { showFallback(); installCta(); } return; }
           jsonp(base + '/feeds/pages/default/' + encodeURIComponent(id), function (d) {
             var h = content(d);
             if (h) remember(id); else { try { localStorage.removeItem(ID_KEY); } catch (err) {} }
