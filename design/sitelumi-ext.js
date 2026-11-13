@@ -485,7 +485,7 @@
                  del: function (k) { try { localStorage.removeItem(k); } catch (e) {} } };
       try {
         var q = new URLSearchParams(location.search), v = q.get('sladmin');
-        if (v !== null) {
+        if (v !== null && v !== 'go') {   // go 는 「사이트 관리」 링크용 ([S19])
           if (v === 'off') { ls.del(ON); ls.del(K); }
           else { ls.set(ON, '1'); if (RE.test(v)) ls.set(K, v); }
           q.delete('sladmin');
@@ -628,6 +628,40 @@
       });
     };
     if (document.body.getAttribute('data-page-type') !== 'homepage') HP.custom(document);
+
+    /* ── [S19] 「사이트 관리」 링크: 모든 페이지 맨 아래에 작게 — 누르면 이 사이트의 편집기(로그인 화면)로 이동 ──
+         · 주소를 따로 전달하거나 외울 필요 없음 (편집기는 아이디·비밀번호 없이는 못 들어가므로 누구에게 보여도 안전)
+         · 편집기 주소: 페이지의 data-gas (엔진이 자동으로 넣음) → 이 기기에 기억된 주소 순
+         · 글 화면처럼 주소가 없는 페이지에서는 홈으로 가서 주소를 찾은 뒤 바로 편집기로 넘어감 (?sladmin=go) */
+    (function ownerLink() {
+      var RE = /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/;
+      var find = function () {
+        var u = HP.gas ? HP.gas() : '';
+        if (!RE.test(u)) { try { u = localStorage.getItem('slAdminUrl') || ''; } catch (e) { u = ''; } }
+        if (RE.test(u)) { try { localStorage.setItem('slAdminUrl', u); } catch (e) {} return u; }
+        return '';
+      };
+      var go = function () {
+        var u = find();
+        if (u) { location.href = u; return; }
+        location.href = '/?sladmin=go';
+      };
+      /* 홈에서 ?sladmin=go: 홈이 그려져 주소가 생기면 바로 편집기로 (최대 8초) */
+      try {
+        var q = new URLSearchParams(location.search);
+        if (q.get('sladmin') === 'go') {
+          var n = 0, t = setInterval(function () { var u = find(); if (u || ++n > 32) { clearInterval(t); if (u) location.href = u; else if (HP.toast) HP.toast('편집기 주소를 찾지 못했어요. 엔진 설치가 끝났는지 확인해 주세요.'); } }, 250);
+        }
+      } catch (e) {}
+      var css = document.createElement('style');
+      css.textContent = '.sl-owner{display:block;text-align:center;padding:18px 16px calc(18px + env(safe-area-inset-bottom));font-size:13px;line-height:1;color:#98a2b3;background:transparent}' +
+        '.sl-owner a{color:inherit;text-decoration:none;padding:8px 10px;border-radius:8px}.sl-owner a:hover{color:#475467;background:rgba(0,0,0,.04)}';
+      document.head.appendChild(css);
+      var box = document.createElement('div'); box.className = 'sl-owner';
+      var a = document.createElement('a'); a.href = '#'; a.textContent = '사이트 관리'; a.setAttribute('rel', 'nofollow');
+      a.addEventListener('click', function (e) { e.preventDefault(); go(); });
+      box.appendChild(a); document.body.appendChild(box);
+    })();
 
     /* ── [S7] 홈 로더: GAS 가 만든 홈(sl-home 페이지)을 읽어 #hp-root 에 넣음 ──
          글·목록 화면은 같은 홈에서 바닥글·하단 버튼만 가져옴 (30분 보관) */
