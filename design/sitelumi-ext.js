@@ -630,6 +630,37 @@
     };
     if (document.body.getAttribute('data-page-type') !== 'homepage') HP.custom(document);
 
+    /* ── [S20] 검색·공유 정보 적용: 편집기 › 기본 정보 › 검색·공유에서 넣은 값(.sl-seo)을 머리(head)에 붙임 ──
+         제목 · 설명 · 공유 이미지(og) · 아이콘(로고) · 사이트 확인 태그 — 테마는 고치지 않음 */
+    HP.seo = function (scope) {
+      var el = (scope || document).querySelector ? (scope || document).querySelector('script.sl-seo') : null;
+      if (!el) return;
+      var d; try { d = JSON.parse(el.textContent || '{}'); } catch (e) { return; }
+      var head = document.head;
+      var meta = function (attr, key, val) {
+        if (!val) return;
+        var m = head.querySelector('meta[' + attr + '="' + key + '"]');
+        if (!m) { m = document.createElement('meta'); m.setAttribute(attr, key); head.appendChild(m); }
+        m.setAttribute('content', val);
+      };
+      var link = function (rel, href) {
+        if (!href) return;
+        var l = head.querySelector('link[rel="' + rel + '"]');
+        if (!l) { l = document.createElement('link'); l.setAttribute('rel', rel); head.appendChild(l); }
+        l.setAttribute('href', href);
+      };
+      if (d.title) document.title = d.title;
+      meta('name', 'description', d.desc);
+      meta('property', 'og:title', d.title); meta('property', 'og:description', d.desc);
+      meta('property', 'og:site_name', d.siteName); meta('property', 'og:image', d.image || d.logo);
+      meta('property', 'og:url', location.href.split('#')[0].split('?')[0]);
+      meta('name', 'twitter:card', d.image ? 'summary_large_image' : 'summary');
+      link('icon', d.logo); link('apple-touch-icon', d.logo);
+      var v = d.verify || {};
+      meta('name', 'google-site-verification', v.google); meta('name', 'naver-site-verification', v.naver); meta('name', 'msvalidate.01', v.bing);
+    };
+    if (document.body.getAttribute('data-page-type') !== 'homepage') { try { HP.seo(document); } catch (e) {} }
+
     /* ── [S19] 「사이트 관리」 링크: 모든 페이지 맨 아래에 작게 — 누르면 이 사이트의 편집기(로그인 화면)로 이동 ──
          · 주소를 따로 전달하거나 외울 필요 없음 (편집기는 아이디·비밀번호 없이는 못 들어가므로 누구에게 보여도 안전)
          · 편집기 주소: 페이지의 data-gas (엔진이 자동으로 넣음) → 이 기기에 기억된 주소 순
@@ -737,6 +768,7 @@
         splashSave();
         if (HP.fx) HP.fx(root);
         if (HP.custom) HP.custom(root);
+        if (HP.seo && !window.SL_PREVIEW) { try { HP.seo(root); } catch (e) {} }
         try { document.dispatchEvent(new Event('sl:home')); } catch (err) {}
       }
       /* 로딩 화면 정보 기억 (다음 방문 첫 화면용): 설정(data-splash) + 첫 화면 사진 · 로고 */

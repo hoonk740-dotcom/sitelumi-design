@@ -1,0 +1,1390 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html b:css='false' b:js='false' b:defaultwidgetversion='2' b:layoutsVersion='3' b:responsive='true' expr:dir='data:blog.languageDirection' expr:lang='data:blog.locale' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+
+<head>
+<meta charset='utf-8'/>
+
+<!-- =================================================
+     사이트루미 테마 v2.2 (Hybrid Split V5.0 기반)
+     sitelumi.blogspot.com · 판매/유지보수: 디씨젼
+================================================= -->
+
+<!-- =================================================
+     기본 설정 (수정 X)
+================================================= -->
+<meta content='width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes' name='viewport'/>
+<meta content='ie=edge' http-equiv='x-ua-compatible'/>
+<meta content='#ffffff' name='theme-color'/>
+<meta content='telephone=no' name='format-detection'/>
+
+<!-- =================================================
+     [필수] 네이버 사이트 인증
+     &#9654; 네이버 서치어드바이저에서 발급한 값으로 교체
+================================================= -->
+<meta content='{{네이버 사이트 등록 키 값}}' name='naver-site-verification'/>
+
+<!-- =================================================
+     [사이트 기본값] 구매자마다 여기 3줄만 바꾸면 됨
+     &#9654; 사이트 이름 = Blogger 설정 &gt; 기본 &gt; 제목 (사이트루미)
+     &#9654; siteTagline : 홈 제목 뒤에 붙는 짧은 설명 (10~20자)
+     &#9654; siteDesc    : 홈 검색 설명 (80~120자, 지역·업종 키워드 2~3개)
+                           Blogger 설정 &gt; 검색 설명을 켜고 입력하면 그 값이 우선
+     &#9654; siteLogo    : 대표 이미지(로고) URL, 1200x630 또는 정사각 512px 이상 PNG
+================================================= -->
+<b:with value='&quot;https://sitelumi.blogspot.com/favicon.ico&quot;' var='siteLogo'>
+<b:with value='&quot;업종별 홈페이지 빌더&quot;' var='siteTagline'>
+<b:with value='&quot;동네 가게와 1인 사업자를 위한 업종별 홈페이지. 사장님이 직접 고치고, 글을 쓰면 검색 최적화와 AI 인용 구조가 자동으로 적용됩니다.&quot;' var='siteDesc'>
+<b:with value='data:view.featuredImage ? resizeImage(data:view.featuredImage, 1200, &quot;1200:630&quot;) : (data:blog.postImageThumbnailUrl ? resizeImage(data:blog.postImageThumbnailUrl, 1200, &quot;1200:630&quot;) : data:siteLogo)' var='ogImg'>
+
+<!-- 기본 링크 -->
+<link expr:href='data:blog.blogspotFaviconUrl' rel='icon'/>
+<link expr:href='data:view.url.canonical' rel='canonical'/>
+<link expr:href='data:view.url.canonical' hreflang='ko' rel='alternate'/>
+<link expr:href='data:blog.homepageUrl + &quot;feeds/posts/default&quot;' expr:title='data:blog.title + &quot; - Atom&quot;' rel='alternate' type='application/atom+xml'/>
+<link expr:href='data:blog.homepageUrl + &quot;feeds/posts/default?alt=rss&quot;' expr:title='data:blog.title + &quot; - RSS&quot;' rel='alternate' type='application/rss+xml'/>
+
+<!-- =================================================
+     [SEO 핵심] 제목
+================================================= -->
+<title>
+<b:if cond='data:view.isHomepage'>
+<data:blog.title/> | <data:siteTagline/>
+<b:elseif cond='data:view.isSingleItem'/>
+<data:view.title.escaped/> | <data:blog.title/>
+<b:else/>
+<data:view.title.escaped/> - <data:blog.title/>
+</b:if>
+</title>
+
+<!-- =================================================
+     [SEO 핵심] 설명 — 검색 설명(직접 입력) &#8594; 요약 &#8594; 기본값 순서
+================================================= -->
+<b:if cond='data:view.isHomepage'>
+<b:with value='data:blog.metaDescription ? data:blog.metaDescription : data:siteDesc' var='homeDesc'>
+<meta expr:content='data:homeDesc' name='description'/>
+<meta expr:content='data:homeDesc' property='og:description'/>
+<meta expr:content='data:homeDesc' name='twitter:description'/>
+</b:with>
+<b:else/>
+<b:with value='data:view.description ? data:view.description : data:view.snippet' var='pageDesc'>
+<meta expr:content='data:pageDesc' name='description'/>
+<meta expr:content='data:pageDesc' property='og:description'/>
+<meta expr:content='data:pageDesc' name='twitter:description'/>
+</b:with>
+</b:if>
+
+<!-- =================================================
+     검색엔진 / AI 크롤러 설정 (수정 X) — 맞춤 로봇 태그 자동
+     &#9654; 날짜 보관함 · 검색 결과 · 라벨 목록: 얇은 중복 목록이라 색인 제외 (링크는 따라감)
+     &#9654; 저장용 페이지(sl-data · sl-home): 색인 제외 + 링크도 따라가지 않음
+     &#9654; 이용약관 · 개인정보처리방침 · 모바일 명함: 색인 제외 (링크는 따라감)
+     &#9654; 그 밖의 페이지·게시글: 검색 허용 (라벨 '검색제외'를 단 글은 본문에서 제외 처리)
+     &#9654; 블로그 설정의 '맞춤 로봇 헤더 태그 사용'은 꺼 두세요 (켜면 태그가 두 개가 됨)
+================================================= -->
+<b:if cond='data:view.isArchive or data:view.isSearch'>
+<meta content='noindex, follow' name='robots'/>
+<b:elseif cond='data:view.isPage and (data:view.title == &quot;sl-data&quot; or data:view.title == &quot;sl-home&quot; or data:view.title == &quot;sl-img&quot;)'/>
+<meta content='noindex, nofollow' name='robots'/>
+<b:elseif cond='data:view.isPage and (data:view.title == &quot;이용약관&quot; or data:view.title == &quot;개인정보처리방침&quot; or data:view.title == &quot;모바일 명함&quot; or data:blog.canonicalUrl == data:blog.homepageUrl + &quot;p/terms.html&quot; or data:blog.canonicalUrl == data:blog.homepageUrl + &quot;p/privacy.html&quot; or data:blog.canonicalUrl == data:blog.homepageUrl + &quot;p/card.html&quot;)'/>
+<meta content='noindex, follow' name='robots'/>
+<b:else/>
+<meta content='index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1' name='robots'/>
+</b:if>
+
+<!-- Open Graph / Twitter -->
+<meta content='ko_KR' property='og:locale'/>
+<meta expr:content='data:view.isPost ? &quot;article&quot; : &quot;website&quot;' property='og:type'/>
+<meta expr:content='data:view.url.canonical' property='og:url'/>
+<meta expr:content='data:blog.title' property='og:site_name'/>
+<meta expr:content='data:view.isSingleItem ? data:view.title : data:blog.title' property='og:title'/>
+<meta expr:content='data:ogImg' property='og:image'/>
+<meta expr:content='data:ogImg' property='og:image:secure_url'/>
+<meta content='1200' property='og:image:width'/>
+<meta content='630' property='og:image:height'/>
+<meta expr:content='data:view.isSingleItem ? data:view.title : data:blog.title' property='og:image:alt'/>
+<meta content='summary_large_image' name='twitter:card'/>
+<meta expr:content='data:view.isSingleItem ? data:view.title : data:blog.title' name='twitter:title'/>
+<meta expr:content='data:ogImg' name='twitter:image'/>
+<b:if cond='data:view.isPost'>
+<meta expr:content='data:view.date.iso8601' property='article:published_time'/>
+<meta expr:content='data:view.lastUpdated.iso8601' property='article:modified_time'/>
+</b:if>
+
+<!-- =================================================
+     [SEO · AEO · GEO] 구조화 데이터 — 하나의 @graph 로 연결
+     Organization &#8592; WebSite &#8592; WebPage &#8592; BlogPosting
+     (업체 정보 LocalBusiness 는 하단 '사업자 정보' 가젯에서 자동 생성)
+================================================= -->
+<script type='application/ld+json'>
+{
+ &quot;@context&quot;:&quot;https://schema.org&quot;,
+ &quot;@graph&quot;:[
+  {
+   &quot;@type&quot;:&quot;Organization&quot;,
+   &quot;@id&quot;:&quot;<data:blog.homepageUrl.jsonEscaped/>#organization&quot;,
+   &quot;name&quot;:&quot;<data:blog.title.jsonEscaped/>&quot;,
+   &quot;url&quot;:&quot;<data:blog.homepageUrl.jsonEscaped/>&quot;,
+   &quot;logo&quot;:{&quot;@type&quot;:&quot;ImageObject&quot;,&quot;url&quot;:&quot;<data:siteLogo/>&quot;}
+  },
+  {
+   &quot;@type&quot;:&quot;WebSite&quot;,
+   &quot;@id&quot;:&quot;<data:blog.homepageUrl.jsonEscaped/>#website&quot;,
+   &quot;name&quot;:&quot;<data:blog.title.jsonEscaped/>&quot;,
+   &quot;url&quot;:&quot;<data:blog.homepageUrl.jsonEscaped/>&quot;,
+   &quot;inLanguage&quot;:&quot;ko-KR&quot;,
+   &quot;publisher&quot;:{&quot;@id&quot;:&quot;<data:blog.homepageUrl.jsonEscaped/>#organization&quot;}<b:if cond='data:view.isHomepage'>,
+   &quot;potentialAction&quot;:{
+     &quot;@type&quot;:&quot;SearchAction&quot;,
+     &quot;target&quot;:&quot;<data:blog.homepageUrl.jsonEscaped/>search?q={search_term_string}&quot;,
+     &quot;query-input&quot;:&quot;required name=search_term_string&quot;
+   }</b:if>
+  },
+  {
+   &quot;@type&quot;:&quot;WebPage&quot;,
+   &quot;@id&quot;:&quot;<data:view.url.canonical.jsonEscaped/>#webpage&quot;,
+   &quot;url&quot;:&quot;<data:view.url.canonical.jsonEscaped/>&quot;,
+   &quot;name&quot;:&quot;<data:view.title.jsonEscaped/>&quot;,
+   &quot;inLanguage&quot;:&quot;ko-KR&quot;,
+   &quot;isPartOf&quot;:{&quot;@id&quot;:&quot;<data:blog.homepageUrl.jsonEscaped/>#website&quot;},
+   &quot;about&quot;:{&quot;@id&quot;:&quot;<data:blog.homepageUrl.jsonEscaped/>#organization&quot;},
+   &quot;primaryImageOfPage&quot;:{&quot;@type&quot;:&quot;ImageObject&quot;,&quot;url&quot;:&quot;<data:ogImg/>&quot;}<b:if cond='data:view.isSingleItem'>,
+   &quot;datePublished&quot;:&quot;<data:view.date.iso8601.jsonEscaped/>&quot;,
+   &quot;dateModified&quot;:&quot;<data:view.lastUpdated.iso8601.jsonEscaped/>&quot;,
+   &quot;speakable&quot;:{
+     &quot;@type&quot;:&quot;SpeakableSpecification&quot;,
+     &quot;cssSelector&quot;:[&quot;.post-title&quot;,&quot;.hp-summary&quot;,&quot;.post-body h2 + p&quot;]
+   }</b:if>
+  }<b:if cond='data:view.isPost'>,
+  {
+   &quot;@type&quot;:&quot;BlogPosting&quot;,
+   &quot;@id&quot;:&quot;<data:view.url.canonical.jsonEscaped/>#article&quot;,
+   &quot;headline&quot;:&quot;<data:view.title.jsonEscaped/>&quot;,
+   &quot;description&quot;:&quot;<data:view.snippet.jsonEscaped/>&quot;,
+   &quot;image&quot;:[&quot;<data:ogImg/>&quot;],
+   &quot;url&quot;:&quot;<data:view.url.canonical.jsonEscaped/>&quot;,
+   &quot;inLanguage&quot;:&quot;ko-KR&quot;,
+   &quot;datePublished&quot;:&quot;<data:view.date.iso8601.jsonEscaped/>&quot;,
+   &quot;dateModified&quot;:&quot;<data:view.lastUpdated.iso8601.jsonEscaped/>&quot;,
+   &quot;author&quot;:{&quot;@id&quot;:&quot;<data:blog.homepageUrl.jsonEscaped/>#organization&quot;},
+   &quot;publisher&quot;:{&quot;@id&quot;:&quot;<data:blog.homepageUrl.jsonEscaped/>#organization&quot;},
+   &quot;mainEntityOfPage&quot;:{&quot;@id&quot;:&quot;<data:view.url.canonical.jsonEscaped/>#webpage&quot;},
+   &quot;isPartOf&quot;:{&quot;@id&quot;:&quot;<data:blog.homepageUrl.jsonEscaped/>#website&quot;}
+  }</b:if>
+ ]
+}
+</script>
+
+</b:with>
+</b:with>
+</b:with>
+</b:with>
+
+<!-- =================================================
+     성능 최적화 (삭제 금지)
+================================================= -->
+<link href='https://www.googletagmanager.com' rel='preconnect'/>
+<link crossorigin='' href='https://cdn.jsdelivr.net' rel='preconnect'/>
+<link href='https://hangeul.pstatic.net' rel='preconnect'/>
+<!-- 글꼴: 본문 Pretendard(필요한 글자만 내려받음) — 화면 그리기를 막지 않게 늦게 적용
+     제목 마루부리(명조)는 명조를 쓰는 디자인 스타일일 때만 [S12] 스크립트가 불러옴 -->
+<link href='https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css' media='print' onload='this.media=&quot;all&quot;' rel='stylesheet'/>
+<noscript><link href='https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css' rel='stylesheet'/><link href='https://hangeul.pstatic.net/hangeul_static/css/maru-buri.css' rel='stylesheet'/></noscript>
+<link href='https://pagead2.googlesyndication.com' rel='preconnect'/>
+<link href='https://blogger.googleusercontent.com' rel='preconnect'/>
+
+<link href='https://www.googletagmanager.com' rel='dns-prefetch'/>
+<link href='https://www.gstatic.com' rel='dns-prefetch'/>
+<link href='https://script.google.com' rel='dns-prefetch'/>
+
+<meta content='upgrade-insecure-requests' http-equiv='Content-Security-Policy'/>
+
+<!-- JS 사용 가능 표시 (이미지 페이드 등 JS 의존 효과의 안전장치) -->
+<script>
+//<![CDATA[
+document.documentElement.className += ' js';
+//]]>
+</script>
+<!-- 홈 화면: 실제 홈(sl-home)을 불러오는 동안 가젯의 기본 히어로를 숨김 (깜빡임 방지) -->
+<b:if cond='data:view.isHomepage'>
+<script>
+//<![CDATA[
+document.documentElement.className += ' hp-home-loading';
+/* 홈 내용(sl-home)을 페이지를 읽는 동안 미리 받아 둠 — [S7] 홈 로더가 이어받음
+   두 번째 방문부터는 기억해 둔 페이지 번호로 바로 받음 (요청 1번) */
+(function () {
+  var E = window.__slEarly = { d: null, done: false, cbs: [] };
+  function finish(d) { E.d = d; E.done = true; var c = E.cbs; E.cbs = []; for (var i = 0; i < c.length; i++) c[i](d); }
+  function load(src) { var s = document.createElement('script'); s.src = src; s.async = true; s.onerror = function () { finish(null); }; document.head.appendChild(s); }
+  var key = 'slHomeId:' + location.host, id = '';
+  try { id = localStorage.getItem(key) || ''; } catch (e) {}
+  window.__slEarlyPage = function (d) { finish(d && d.entry ? d : null); };
+  /* 사진 보관 페이지(sl-img)가 많아도 찾도록 100개씩 넘겨 가며 찾음 (최대 1,000개) */
+  var start = 1;
+  function listUrl() { return '/feeds/pages/summary?max-results=100&start-index=' + start + '&alt=json-in-script&callback=__slEarlyList'; }
+  window.__slEarlyList = function (d) {
+    var list = (d && d.feed && d.feed.entry) || [];
+    for (var i = 0; i < list.length; i++) {
+      var m = list[i].title && list[i].title.$t === 'sl-home' && String(list[i].id && list[i].id.$t).match(/page-(\d+)/);
+      if (m) { try { localStorage.setItem(key, m[1]); } catch (e) {} load('/feeds/pages/default/' + m[1] + '?alt=json-in-script&callback=__slEarlyPage'); return; }
+    }
+    if (list.length === 100 && start < 901) { start += 100; load(listUrl()); return; }
+    finish(null);
+  };
+  load(id ? '/feeds/pages/default/' + id + '?alt=json-in-script&callback=__slEarlyPage' : listUrl());
+})();
+//]]>
+</script>
+</b:if>
+
+<!-- 로딩 화면 (홈 첫 접속, 탭당 한 번): 보일지 정하기 + 모양. 스크립트가 멈춰도 3초 뒤 CSS 만으로 걷힘 -->
+<b:if cond='data:view.isHomepage'>
+<style>
+#sl-splash{display:none}
+.sl-splash-on #sl-splash{display:flex;position:fixed;inset:0;z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center;color:#fff;background:#111418 center/cover no-repeat;font:700 16px/1.5 Pretendard,-apple-system,'Apple SD Gothic Neo',sans-serif;cursor:pointer;animation:slSplashAuto .45s ease 3s forwards;transition:opacity .45s ease,visibility .45s ease}
+#sl-splash::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.58))}
+#sl-splash .sp-in{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;animation:slSplashIn .6s ease both}
+#sl-splash .sp-logo{width:76px;height:76px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.9);background:#fff}
+#sl-splash .sp-name{margin:0;font-size:27px;font-weight:800;letter-spacing:-.01em;text-shadow:0 2px 14px rgba(0,0,0,.35)}
+#sl-splash .sp-line{margin:0;max-width:22em;font-size:15px;font-weight:500;opacity:.92}
+#sl-splash .sp-bar{width:46px;height:3px;margin-top:10px;border-radius:3px;background:rgba(255,255,255,.3);overflow:hidden}
+#sl-splash .sp-bar i{display:block;width:40%;height:100%;background:#fff;animation:slSplashBar 1s ease-in-out infinite}
+.sl-splash-out #sl-splash{opacity:0;visibility:hidden;pointer-events:none}
+@keyframes slSplashAuto{to{opacity:0;visibility:hidden}}
+@keyframes slSplashIn{from{opacity:0;transform:translateY(8px)}}
+@keyframes slSplashBar{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
+@media (prefers-reduced-motion:reduce){#sl-splash .sp-in,#sl-splash .sp-bar i{animation:none}#sl-splash .sp-bar i{width:100%}}
+</style>
+<script>
+//<![CDATA[
+(function () {
+  var c = null, show = true;
+  try {
+    if (sessionStorage.getItem('slSplashSeen')) show = false;
+    c = JSON.parse(localStorage.getItem('slSplash:' + location.host) || 'null');
+    if (c && c.on === 0) show = false;
+    if (show) sessionStorage.setItem('slSplashSeen', '1');
+  } catch (e) {}
+  if (/[?&]sladmin=/.test(location.search)) show = false;
+  if (!show) return;
+  document.documentElement.className += ' sl-splash-on';
+  window.__slSplash = { t0: Date.now(), c: c || {} };
+  if (c && c.bg) { var l = document.createElement('link'); l.rel = 'preload'; l.as = 'image'; l.href = c.bg; document.head.appendChild(l); }
+})();
+//]]>
+</script>
+</b:if>
+
+<!-- 페이지 이동을 빠르게: 링크에 손가락·마우스를 올리면 미리 받기, 지원 브라우저는 페이지 전환을 부드럽게 -->
+<script type='speculationrules'>
+{"prefetch":[{"where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":["/search*","/feeds/*","*sladmin*","*/b/*"]}}]},"eagerness":"moderate"}]}
+</script>
+<style>
+@view-transition{navigation:auto}
+@media (prefers-reduced-motion:reduce){@view-transition{navigation:none}}
+</style>
+
+<!-- [검색 등록 코드] 네이버 서치어드바이저·빙 웹마스터의 「HTML 태그」 소유 확인 코드를 이 줄 바로 아래에 붙여 넣으세요 (예: <meta name="naver-site-verification" content="…"/> — 끝을 /> 로) -->
+
+<!-- 구글 애널리틱스 -->
+<b:include data='blog' name='google-analytics'/>
+
+
+<b:template-skin><![CDATA[
+
+/* ══════════════════════════════════════════════════════
+   [A] body 기본
+   ══════════════════════════════════════════════════════ */
+body#layout {
+  overflow: visible !important;
+  background: #f1f5f9 !important;
+  min-height: 100vh !important;
+  font: normal normal 13px 'Noto Sans KR', sans-serif !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   [B] box-sizing 전체 적용
+   ══════════════════════════════════════════════════════ */
+body#layout *,
+body#layout *::before,
+body#layout *::after {
+  box-sizing: border-box !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   [C] overflow / float / clear 통합 리셋
+   ══════════════════════════════════════════════════════ */
+body#layout,
+body#layout #outer-wrapper,
+body#layout #main-wrapper,
+body#layout #content-wrapper,
+body#layout #left-section,
+body#layout #right-section,
+body#layout .blog-posts,
+body#layout .section,
+body#layout .widget-content,
+body#layout .blog-widget,
+body#layout .HTML,
+body#layout .LinkList,
+body#layout .PopularPosts,
+body#layout .RecentPosts,
+body#layout .Label,
+body#layout #sidebar-wrapper,
+body#layout #right-sidebar,
+body#layout .sidebar-container,
+body#layout .post-outer,
+body#layout .blog-pager,
+body#layout #comments,
+body#layout #post-top-ad-zone,
+body#layout #post-middle-ad-zone,
+body#layout #post-bottom-ad-zone,
+body#layout #below-nav-ad-zone,
+body#layout #ad-target-below-title,
+body#layout #ad-target-below-post,
+body#layout #ad-target-below-nextprev,
+body#layout #ad-middle-source,
+body#layout #Post-Middle-Ad-Zone,
+body#layout .inline-ad {
+  overflow: visible !important;
+  float: none !important;
+  clear: none !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   [C-1] 레이아웃 편집기 전용 — 화면용 요소 숨김
+         (본문 바로가기 / 슬라이드 메뉴 / 저작권 줄)
+   ══════════════════════════════════════════════════════ */
+body#layout .skip-link,
+body#layout #slide-menu,
+body#layout #slide-menu-overlay,
+body#layout .footer-copy,
+body#layout .header-title,
+body#layout #slide-menu-trigger { display: none !important; }
+
+/* ══════════════════════════════════════════════════════
+   [D] 캔버스 1열 정렬 — 모든 영역을 같은 너비(600px)로 중앙 정렬
+       바깥 래퍼는 투명 처리하고, 섹션 상자만 보이게 함
+   ══════════════════════════════════════════════════════ */
+body#layout #global-header,
+body#layout .header-inner,
+body#layout .header-menu-pc,
+body#layout #outer-wrapper,
+body#layout #left-section,
+body#layout #right-section,
+body#layout .ad-warehouse,
+body#layout .ad-warehouse-nav,
+body#layout #site-footer,
+body#layout .footer-inner,
+body#layout .hp-config {
+  display: block !important;
+  position: static !important;
+  float: none !important;
+  width: 100% !important;
+  max-width: 600px !important;
+  min-width: 0 !important;
+  height: auto !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+body#layout #global-header { margin-top: 20px !important; }
+body#layout #site-footer { margin-top: 0 !important; }
+
+/* ══════════════════════════════════════════════════════
+   [E] 섹션 상자 — 너비 동일 / 상자 사이 16px 간격
+   ══════════════════════════════════════════════════════ */
+body#layout .section,
+body#layout #Post-Middle-Ad-Zone,
+body#layout section#Post-Middle-Ad-Zone,
+body#layout div#Post-Middle-Ad-Zone {
+  display: block !important;
+  width: 100% !important;
+  max-width: 600px !important;
+  min-width: 0 !important;
+  min-height: 50px !important;
+  height: auto !important;
+  margin: 0 auto 16px auto !important;
+  padding: 14px 16px 10px !important;
+  border: 1px dashed #cbd5e1 !important;
+  background-color: #f8fafc !important;
+  border-radius: 8px !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+}
+
+/* 섹션 이름(h4) 아래 여백 */
+body#layout .section > h4,
+body#layout .section h4 {
+  margin: 0 0 12px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   [F] 가젯 추가 버튼 — 가젯 상자와 10px 띄움
+   ══════════════════════════════════════════════════════ */
+body#layout .add_widget,
+body#layout .add-widget,
+body#layout a.add-widget,
+body#layout .add-gadget,
+body#layout a.add-gadget {
+  display: block !important;
+  position: relative !important;
+  float: none !important;
+  left: auto !important;
+  right: auto !important;
+  /* width:auto — 섹션 안쪽 폭에 자동으로 맞춤 (Blogger 기본 폭·여백이 섹션 밖으로 밀어내는 문제 차단) */
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  margin: 0 0 12px 0 !important;
+  box-sizing: border-box !important;
+  border-radius: 6px !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   [G] 가젯(위젯) 상자 — 섹션 안에서 꽉 차게 / 상자 사이 10px
+   ══════════════════════════════════════════════════════ */
+body#layout div.widget,
+body#layout div.widget[id] {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 6px !important;
+  padding: 0 !important;
+  margin: 0 0 10px 0 !important;
+  opacity: 1 !important;
+  overflow: visible !important;
+  position: relative !important;
+  float: none !important;
+}
+body#layout .draggable-widget,
+body#layout .locked-widget .widget-content {
+  border-radius: 6px !important;
+  overflow: hidden !important;
+}
+
+/* 위젯 내부 콘텐츠 */
+body#layout .widget-content {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   [H] 컨테이너 리셋
+   ══════════════════════════════════════════════════════ */
+body#layout #post-top-ad-zone,
+body#layout #post-middle-ad-zone,
+body#layout #post-bottom-ad-zone,
+body#layout #below-nav-ad-zone,
+body#layout #ad-target-below-title,
+body#layout #ad-target-below-post,
+body#layout #ad-target-below-nextprev,
+body#layout #ad-middle-source,
+body#layout .inline-ad,
+body#layout .post-outer,
+body#layout .blog-pager,
+body#layout #comments {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  padding: 8px !important;
+  margin: 4px 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+body#layout .post-body img,
+body#layout .post-body .separator a img {
+  width: auto !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  height: auto !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   [I] 표시 스위치(눈 아이콘) 색상
+       ON(표시) → 파랑 #2563eb / OFF(숨김) → 빨강 #dc2626
+       ※ 연필(수정) 아이콘은 색 변경 대상에서 제외
+   ══════════════════════════════════════════════════════ */
+body#layout div.widget [class*="visib"],
+body#layout div.widget [class*="visib"] *,
+body#layout div.widget [aria-label*="숨기"],
+body#layout div.widget [aria-label*="숨기"] *,
+body#layout div.widget [title*="숨기"],
+body#layout div.widget [title*="숨기"] *,
+body#layout div.widget [aria-label*="Hide"],
+body#layout div.widget [aria-label*="Hide"] *,
+body#layout div.widget [data-tooltip*="숨기"],
+body#layout div.widget [data-tooltip*="숨기"] * {
+  color: #2563eb !important;
+  fill: #2563eb !important;
+  opacity: 1 !important;
+}
+
+body#layout div.widget.invisible [class*="visib"],
+body#layout div.widget.invisible [class*="visib"] *,
+body#layout div.widget [class*="visibility-off"],
+body#layout div.widget [class*="visibility-off"] *,
+body#layout div.widget [class*="visib"][aria-pressed="false"],
+body#layout div.widget [class*="visib"][aria-pressed="false"] *,
+body#layout div.widget [aria-label*="표시"],
+body#layout div.widget [aria-label*="표시"] *,
+body#layout div.widget [title*="표시"],
+body#layout div.widget [title*="표시"] *,
+body#layout div.widget [aria-label*="Show"],
+body#layout div.widget [aria-label*="Show"] *,
+body#layout div.widget [data-tooltip*="표시"],
+body#layout div.widget [data-tooltip*="표시"] * {
+  color: #dc2626 !important;
+  fill: #dc2626 !important;
+  opacity: 1 !important;
+}
+
+/* 숨김 가젯 이름 — 빨강 취소선 */
+body#layout div.widget.invisible .layout-title,
+body#layout div.widget.invisible .layout-widget-description {
+  color: #991b1b !important;
+  text-decoration: line-through !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   [J] ul/li 리셋
+   ══════════════════════════════════════════════════════ */
+body#layout .widget-content ul,
+body#layout .widget-content ol {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+body#layout .widget-content li {
+  padding: 4px 0 !important;
+  border-bottom: none !important;
+  font-size: 12px !important;
+  color: #555 !important;
+  line-height: 1.4 !important;
+  white-space: normal !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   [K] 안내(가이드) 섹션 — 색상 구분, 너비는 다른 섹션과 동일
+   ══════════════════════════════════════════════════════ */
+body#layout #Homepage-WebApp-Section {
+  border: 2px dashed #3b82f6 !important;
+  background: #eff6ff !important;
+  padding: 16px !important;
+}
+body#layout #Homepage-WebApp-Section::before {
+  content: "헤더 메뉴 영역 (헤더 활성화 위젯으로 페이지별 표시)";
+  display: block;
+  font-weight: bold;
+  color: #2563eb;
+  margin-bottom: 12px;
+  font-size: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #bfdbfe;
+}
+
+body#layout #Homepage-Content-Section {
+  border: 2px dashed #10b981 !important;
+  background: #ecfdf5 !important;
+  padding: 16px !important;
+}
+body#layout #Homepage-Content-Section::before {
+  content: "메인화면 콘텐츠 영역 (홈에서만 표시)";
+  display: block;
+  font-weight: bold;
+  color: #059669;
+  margin-bottom: 12px;
+  font-size: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #6ee7b7;
+}
+
+body#layout #Global-Config-Section,
+body#layout #Home-Config-Section {
+  border: 2px dashed #a855f7 !important;
+  background: #faf5ff !important;
+  padding: 16px !important;
+}
+body#layout #Global-Config-Section::before,
+body#layout #Home-Config-Section::before {
+  display: block;
+  font-weight: bold;
+  color: #7e22ce;
+  margin-bottom: 12px;
+  font-size: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e9d5ff;
+}
+body#layout #Global-Config-Section::before { content: "설정 가젯 — 전체 페이지 공통 (화면에 안 보임)"; }
+body#layout #Home-Config-Section::before { content: "설정 가젯 — GAS 연동 · AI (홈에서만, 화면에 안 보임)"; }
+
+
+]]></b:template-skin>
+
+
+<!-- ============================================================
+     실방문자용 스킨
+     ============================================================ -->
+<b:skin><![CDATA[
+/* 사이트루미 — 디자인은 jsDelivr 의 sitelumi.css 에서 불러옵니다 (hoonk740-dotcom/sitelumi-design@main) */
+<Variable name="keycolor"    description="메인 포인트 컬러"  type="color" default="#3b82f6" value="#3b82f6"/>
+<Variable name="bodyfont"    description="기본 폰트 설정"    type="font"  default="normal normal 17px 'Pretendard Variable', Pretendard, 'Noto Sans KR', 'Malgun Gothic', sans-serif" value="normal normal 17px &#39;Pretendard Variable&#39;, Pretendard, &#39;Noto Sans KR&#39;, &#39;Malgun Gothic&#39;, sans-serif"/>
+<Variable name="bgcolor"     description="전체 배경색"       type="color" default="#ffffff" value="#ffffff"/>
+<Variable name="borderColor" description="구분선 색상"       type="color" default="#e5e7eb" value="#e5e7eb"/>
+<Variable name="textColor"   description="기본 텍스트 색상"  type="color" default="#1f2937" value="#1f2937"/>
+:root { --slv-keycolor: $(keycolor); --slv-bodyfont: $(bodyfont); --slv-bgcolor: $(bgcolor); --slv-borderColor: $(borderColor); --slv-textColor: $(textColor); }
+]]></b:skin>
+  <script>//<![CDATA[
+window.SLV=(function(d){return d.toISOString().slice(0,10).replace(/-/g,'')+(d.getUTCHours()<12?'a':'b')})(new Date());window.SLCSS=function(el){var n=+(el.getAttribute('data-fb')||0),L=['https://fastly.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/design/sitelumi.min.css','https://hoonk740-dotcom.github.io/sitelumi-design/design/sitelumi.css'];if(n<L.length){el.setAttribute('data-fb',n+1);el.href=L[n]+'?v='+SLV}};document.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/design/sitelumi.min.css?v='+SLV+'" onerror="SLCSS(this)">');
+//]]></script>
+  <noscript><link href='https://cdn.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/design/sitelumi.min.css' rel='stylesheet'/></noscript>
+  <script>//<![CDATA[
+window.SLFB=function(el,f){var L=['https://fastly.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/design/'+f+'.min.js?v='+(window.SLV||''),'https://hoonk740-dotcom.github.io/sitelumi-design/design/'+f+'.js?v='+(window.SLV||'')];var q=window.SLFBQ=window.SLFBQ||[];q.push({f:f,L:L,i:0});if(q.length===1)SLFBrun();};window.SLFBrun=function(){var q=window.SLFBQ,j=q[0];if(!j)return;if(j.i>=j.L.length){q.shift();return SLFBrun();}var d=document,o=d.addEventListener,late=d.readyState!=='loading';if(late)d.addEventListener=function(t,fn,c){if(t==='DOMContentLoaded'){try{fn.call(d,new Event(t))}catch(e){console.error(e)}return}return o.call(d,t,fn,c)};var s=d.createElement('script');s.src=j.L[j.i++];s.async=false;var done=function(ok){if(late)d.addEventListener=o;if(ok){q.shift()}SLFBrun()};s.onload=function(){done(1)};s.onerror=function(){done(0)};d.head.appendChild(s)};
+//]]></script>
+
+  <!-- page 전용: 하단 광고 영역 숨김 -->
+  <b:if cond='data:view.isPage'>
+    <style>
+      #ad-target-below-nextprev, #Post-Bottom-Ad-Zone, #post-bottom-target {
+        display: none !important; height: 0 !important; padding: 0 !important; margin: 0 !important;
+      }
+    </style>
+  </b:if>
+
+  <!-- 글쓰기 템플릿: 사진을 넣지 않은 사진 자리는 공개 글에서 숨김
+       (:has 선택자는 스킨 파서 호환을 위해 스킨 밖에 둠) -->
+  
+
+  <!-- 디자인 v3 · 움직임 — 최신 CSS(color-mix · :is · clamp)를 쓰므로 스킨 파서 밖에 둠 -->
+  
+
+  <!-- ?m=1 모바일 파라미터 제거 -->
+  <script type='text/javascript'>
+//<![CDATA[
+  var uri = window.location.toString();
+  if (uri.indexOf("?m=1") > 0 || uri.indexOf("&m=1") > 0) {
+    window.history.replaceState({}, document.title, uri.replace(/[?&]m=1/g, ""));
+  }
+//]]>
+  </script>
+
+  <!-- ============================================================
+       가젯 제목 출력 차단
+       레이아웃에서 가젯에 제목을 넣어도 실제 화면 HTML 에는 출력하지 않음
+       (레이아웃 편집 화면에서는 그대로 보임 · 검색엔진 제목 구조 H2/H3 오염 방지)
+       ============================================================ -->
+  <b:defaultmarkups>
+    <b:defaultmarkup type='Common'>
+      <b:includable id='widget-title'/>
+    </b:defaultmarkup>
+  </b:defaultmarkups>
+</head>
+
+
+<body expr:class='&quot;loading&quot; + data:blog.mobileClass' expr:data-page-type='data:view.isHomepage ? &quot;homepage&quot; : (data:view.isPage ? &quot;page&quot; : (data:view.isSingleItem ? &quot;post&quot; : &quot;other&quot;))'>
+
+<b:if cond='data:view.isHomepage'>
+<div aria-hidden='true' data-nosnippet='' id='sl-splash'><div class='sp-in'><img alt='' class='sp-logo' hidden='hidden'/><p class='sp-name'><data:blog.title/></p><p class='sp-line'/><span class='sp-bar'><i/></span></div></div>
+<script>
+//<![CDATA[
+/* 로딩 화면: 지난 방문에 기억해 둔 대표 사진·로고·상호·문구로 채우고, 홈이 그려지면 걷음 (최소 1.2초 · 최대 3초 · 누르면 바로) */
+(function () {
+  var S = window.__slSplash, el = document.getElementById('sl-splash');
+  if (!S || !el) return;
+  var c = S.c || {}, q = function (k) { return el.querySelector(k); };
+  if (c.name) q('.sp-name').textContent = c.name;
+  if (c.line) q('.sp-line').textContent = c.line;
+  if (c.logo) { var lg = q('.sp-logo'); lg.src = c.logo; lg.hidden = false; }
+  if (c.bg) el.style.backgroundImage = 'url("' + String(c.bg).replace(/"/g, '') + '")';
+  else if (/^#[0-9a-f]{3,6}$/i.test(c.color || '')) el.style.background = 'linear-gradient(140deg,' + c.color + ',#111418)';
+  var gone = false;
+  function close(now) {
+    if (gone) return;
+    var wait = now ? 0 : Math.max(0, 1200 - (Date.now() - S.t0));
+    gone = true;
+    setTimeout(function () {
+      document.documentElement.classList.add('sl-splash-out');
+      setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); document.documentElement.classList.remove('sl-splash-on', 'sl-splash-out'); }, 500);
+    }, wait);
+  }
+  el.addEventListener('click', function () { gone = false; close(true); });
+  document.addEventListener('sl:home', function () { close(false); });
+  setTimeout(function () { gone = false; close(true); }, 3000);
+})();
+//]]>
+</script>
+</b:if>
+<a class='skip-link' href='#left-section'>본문 바로가기</a>
+
+<!-- ============================================================
+     글로벌 헤더
+     기본: display:none (숨김 상태)
+     활성화: Layout 편집기 > Homepage-WebApp-Section 내
+             "헤더 활성화" 위젯을 visible=true 로 토글
+     ============================================================ -->
+<header id='global-header'>
+  <div class='header-inner'>
+
+    <div class='header-title'>
+      <a expr:href='data:blog.homepageUrl'><data:blog.title/></a>
+    </div>
+
+    <button aria-label='메뉴 열기' id='slide-menu-trigger'>
+      <svg fill='none' height='28' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='28'>
+        <line x1='3' x2='21' y1='6' y2='6'/>
+        <line x1='3' x2='21' y1='12' y2='12'/>
+        <line x1='3' x2='21' y1='18' y2='18'/>
+      </svg>
+    </button>
+
+    <div class='header-menu-pc'>
+      <b:section id='Homepage-WebApp-Section' showaddelement='yes'>
+        <b:widget id='PageList1' locked='false' title='페이지 메뉴' type='PageList' version='2' visible='true'>
+          <b:widget-settings>
+            <b:widget-setting name='pageListJson'><![CDATA[{}]]></b:widget-setting>
+            <b:widget-setting name='homeTitle'>홈</b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <b:include name='widget-title'/>
+  <b:include name='content'/>
+</b:includable>
+          <b:includable id='content'>
+  <div class='widget-content'>
+    <b:include name='pageList'/>
+  </div>
+</b:includable>
+          <b:includable id='overflowButton'>
+  <b:include name='verticalMoreIcon'/>
+</b:includable>
+          <b:includable id='overflowablePageList'>
+  <div class='overflowable-container'>
+    <div class='overflowable-contents'>
+      <div class='container'>
+        <b:with value='true' var='overflow'>
+        <b:with value='&quot;tabs&quot;' var='pageListClass'>
+          <b:include name='pageList'/>
+        </b:with>
+        </b:with>
+      </div>
+    </div>
+    <div class='overflow-button hidden'>
+      <b:include name='overflowButton'/>
+    </div>
+  </div>
+</b:includable>
+          <b:includable id='pageLink'>
+  <li>
+    <b:class cond='data:overflow' name='overflowable-item'/>
+    <b:class cond='data:link.isCurrentPage' name='selected'/>
+    <a expr:href='data:link.href'><data:link.title/></a>
+  </li>
+</b:includable>
+          <b:includable id='pageList'>
+  <ul>
+    <b:class cond='data:pageListClass' expr:name='data:pageListClass'/>
+    <b:loop values='data:links' var='link'>
+      <b:include name='pageLink'/>
+    </b:loop>
+  </ul>
+</b:includable>
+        </b:widget>
+        <b:widget id='HTML3' locked='false' title='헤더 활성화 — 메인화면' type='HTML' version='2' visible='true'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<style>
+  [data-page-type="homepage"] #global-header { display: block !important; }
+</style>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <b:include name='widget-title'/>
+  <div class='widget-content'><data:content/></div>
+</b:includable>
+        </b:widget>
+        <b:widget id='HTML4' locked='false' title='헤더 활성화 — 게시글' type='HTML' version='2' visible='true'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<style>
+  [data-page-type="post"] #global-header { display: block !important; }
+</style>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <b:include name='widget-title'/>
+  <div class='widget-content'><data:content/></div>
+</b:includable>
+        </b:widget>
+        <b:widget id='HTML5' locked='false' title='헤더 활성화 — 정적 페이지' type='HTML' version='2' visible='true'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<style>
+  [data-page-type="page"] #global-header { display: block !important; }
+</style>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <b:include name='widget-title'/>
+  <div class='widget-content'><data:content/></div>
+</b:includable>
+        </b:widget>
+      </b:section>
+    </div>
+
+  </div>
+</header>
+<!-- /global-header -->
+
+
+<!-- 슬라이드 메뉴 오버레이 및 패널 -->
+<div id='slide-menu-overlay'/>
+<div id='slide-menu'>
+  <button aria-label='메뉴 닫기' id='slide-menu-close' style='background:transparent;border:none;padding:15px;cursor:pointer;float:right;'>
+    <svg fill='none' height='28' stroke='#1f2937' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='28'>
+      <line x1='18' x2='6' y1='6' y2='18'/>
+      <line x1='6' x2='18' y1='6' y2='18'/>
+    </svg>
+  </button>
+  <div style='clear:both;'/>
+  <div id='mobile-menu-content' style='padding:0 20px;'/>
+</div>
+
+
+<!-- 메인 콘텐츠 영역 -->
+<div id='outer-wrapper'>
+<main id='left-section'>
+
+  <!-- ============================================================
+       메인화면(홈) 전용 콘텐츠 섹션
+       isHomepage 일 때만 렌더링됨
+       &#9654; '홈 화면' 가젯의 HTML 은 자바스크립트 없이도 읽히는
+         검색·AI 노출용 본문입니다. 홈의 H1 은 이 가젯이 하나만 가집니다.
+       &#9654; 편집 모드 / 레이아웃 로더는 #hp-root 에 붙습니다 (1단계)
+       ============================================================ -->
+  <b:section cond='data:view.isHomepage' id='Homepage-Content-Section' showaddelement='yes' title='메인화면 콘텐츠 영역'>
+    <b:widget id='HTML20' locked='false' title='홈 화면 (검색 노출 HTML)' type='HTML' version='2' visible='true'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<section class="hp-hero" aria-labelledby="hp-hero-title">
+  <div class="hp-wrap">
+    <p class="hp-eyebrow">업종별 홈페이지 빌더</p>
+    <h1 id="hp-hero-title">사이트루미</h1>
+    <p class="hp-lead">사장님이 직접 고치고, 직접 글 쓰는 우리 가게 홈페이지</p>
+  </div>
+</section>
+<div id="hp-root"></div>]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+  <b:include name='widget-title'/>
+  <div class='widget-content'><data:content/></div>
+</b:includable>
+    </b:widget>
+  </b:section>
+  <b:section class='main' id='main-content-area' showaddelement='no'>
+    <b:widget id='Blog1' locked='false' title='블로그 게시물' type='Blog' version='2' visible='true'>
+      <b:widget-settings>
+        <b:widget-setting name='showDateHeader'>false</b:widget-setting>
+        <b:widget-setting name='commentLabel'>$type={blogger}</b:widget-setting>
+        <b:widget-setting name='showShareButtons'>true</b:widget-setting>
+        <b:widget-setting name='authorLabel'>by</b:widget-setting>
+        <b:widget-setting name='showCommentLink'>false</b:widget-setting>
+        <b:widget-setting name='showAuthor'>true</b:widget-setting>
+        <b:widget-setting name='style.unittype'>TextAndImage</b:widget-setting>
+        <b:widget-setting name='timestampLabel'/>
+        <b:widget-setting name='reactionsLabel'/>
+        <b:widget-setting name='showAuthorProfile'>false</b:widget-setting>
+        <b:widget-setting name='style.layout'>1x1</b:widget-setting>
+        <b:widget-setting name='showLabels'>true</b:widget-setting>
+        <b:widget-setting name='showLocation'>false</b:widget-setting>
+        <b:widget-setting name='postLabelsLabel'/>
+        <b:widget-setting name='showTimestamp'>true</b:widget-setting>
+        <b:widget-setting name='postsPerAd'>1</b:widget-setting>
+        <b:widget-setting name='showBacklinks'>false</b:widget-setting>
+        <b:widget-setting name='showInlineAds'>false</b:widget-setting>
+        <b:widget-setting name='showReactions'>false</b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <b:if cond='!data:view.isHomepage'>
+
+          <!-- ============================================================
+               목록 페이지 — 라벨(해시태그) / 검색 결과 / 보관함 / 최신 글
+               ※ 라벨 페이지도 isSearch=true 이므로 라벨을 먼저 판별
+               ============================================================ -->
+          <b:if cond='!data:view.isSingleItem'>
+            <section class='list-wrap'>
+              <header class='list-head'>
+                <b:if cond='data:view.isLabelSearch'>
+                  <p class='list-kicker'>라벨</p>
+                  <h1><span aria-hidden='true' class='list-hash'>#</span><data:view.search.label/></h1>
+                  <p class='list-desc'><data:blog.title/>의 &#39;<data:view.search.label/>&#39; 글 모음</p>
+                <b:elseif cond='data:view.isSearch'/>
+                  <p class='list-kicker'>검색</p>
+                  <h1>&#39;<data:view.search.query/>&#39; 검색 결과</h1>
+                <b:elseif cond='data:view.isArchive'/>
+                  <p class='list-kicker'>보관함</p>
+                  <h1><data:view.archive.rangeMessage/></h1>
+                <b:else/>
+                  <p class='list-kicker'>전체 글</p>
+                  <h1><data:blog.title/> 최신 글</h1>
+                </b:if>
+
+                <form class='list-search' expr:action='data:blog.homepageUrl + &quot;search&quot;' method='get' role='search'>
+                  <svg aria-hidden='true' viewBox='0 0 24 24'><circle cx='11' cy='11' r='8'/><line x1='21' x2='16.65' y1='21' y2='16.65'/></svg>
+                  <b:if cond='data:view.isSearch and !data:view.isLabelSearch'>
+                    <input aria-label='사이트 검색' expr:value='data:view.search.query' name='q' placeholder='검색어를 입력하세요' type='search'/>
+                  <b:else/>
+                    <input aria-label='사이트 검색' name='q' placeholder='검색어를 입력하세요' type='search'/>
+                  </b:if>
+                  <button type='submit'>검색</button>
+                </form>
+              </header>
+
+              <div class='list-items'>
+                <b:loop values='data:posts' var='post'>
+                  <b:include data='post' name='post'/>
+                </b:loop>
+              </div>
+
+              <b:if cond='data:posts.empty'>
+                <div class='list-empty'>
+                  <strong>찾는 글이 없습니다</strong>
+                  다른 검색어나 라벨로 찾아보세요.
+                </div>
+              </b:if>
+
+              <b:include name='nextPrev'/>
+              <div id='ad-target-below-nextprev'/>
+            </section>
+          </b:if>
+
+          <!-- 단일 포스트 / 페이지 -->
+          <b:if cond='data:view.isSingleItem'>
+            <b:loop values='data:posts' var='post'>
+              <b:include data='post' name='post'/>
+            </b:loop>
+            <div id='ad-target-below-nextprev'/>
+          </b:if>
+
+        </b:if>
+      </b:includable>
+      <b:includable id='aboutPostAuthor'/>
+      <b:includable id='addComments'/>
+      <b:includable id='blogThisShare'/>
+      <b:includable id='bylineByName' var='byline'/>
+      <b:includable id='bylineRegion' var='regionItems'/>
+      <b:includable id='commentAuthorAvatar'/>
+      <b:includable id='commentDeleteIcon' var='comment'/>
+      <b:includable id='commentForm' var='post'/>
+      <b:includable id='commentFormIframeSrc' var='post'/>
+      <b:includable id='commentItem' var='comment'/>
+      <b:includable id='commentList' var='comments'/>
+      <b:includable id='commentPicker' var='post'/>
+      <b:includable id='comments' var='post'/>
+      <b:includable id='commentsLink'/>
+      <b:includable id='commentsLinkIframe'/>
+      <b:includable id='commentsTitle'/>
+      <b:includable id='defaultAdUnit'/>
+      <b:includable id='emailPostIcon'/>
+      <b:includable id='facebookShare'/>
+      <b:includable id='feedLinks'/>
+      <b:includable id='feedLinksBody' var='links'/>
+      <b:includable id='footerBylines'/>
+      <b:includable id='googlePlusShare'/>
+      <b:includable id='headerByline'/>
+      <b:includable id='homePageLink'/>
+      <b:includable id='iframeComments' var='post'/>
+      <b:includable id='inlineAd' var='post'/>
+      <b:includable id='linkShare'/>
+      <b:includable id='nextPageLink'/>
+      <b:includable id='nextPrev'>
+        <div class='blog-pager' id='blog-pager'>
+          <b:if cond='data:newerPageUrl'>
+            <a class='blog-pager-newer-link' expr:href='data:newerPageUrl' title='이전 글'>
+              <svg viewBox='0 0 24 24'><polyline points='15 18 9 12 15 6'/></svg>
+              <span>이전 글</span>
+            </a>
+          </b:if>
+          <a class='blog-pager-home-link' expr:href='data:blog.homepageUrl' title='홈으로'>
+            <svg viewBox='0 0 24 24'>
+              <path d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/>
+              <polyline points='9 22 9 12 15 12 15 22'/>
+            </svg>
+            <span>홈</span>
+          </a>
+          <b:if cond='data:olderPageUrl'>
+            <a class='blog-pager-older-link' expr:href='data:olderPageUrl' title='다음 글'>
+              <span>다음 글</span>
+              <svg viewBox='0 0 24 24'><polyline points='9 18 15 12 9 6'/></svg>
+            </a>
+          </b:if>
+        </div>
+      </b:includable>
+      <b:includable id='otherSharingButton'/>
+      <b:includable id='platformShare'/>
+      <b:includable id='post' var='post'>
+        <article expr:class='data:view.isSingleItem ? &quot;post-outer&quot; : &quot;list-item&quot;'>
+
+          <!-- 단일 포스트 / 페이지 -->
+          <b:if cond='data:view.isSingleItem'>
+
+            <!-- 브레드크럼 -->
+            <nav aria-label='breadcrumb' class='post-breadcrumb'>
+              <a expr:href='data:blog.homepageUrl'>홈</a>
+              <b:if cond='!data:view.isPage'>
+                <b:if cond='data:post.labels'>
+                  <b:loop values='data:post.labels' var='label'>
+                    <span class='breadcrumb-sep'>&#8250;</span>
+                    <a expr:href='data:label.url'><data:label.name/></a>
+                  </b:loop>
+                </b:if>
+              </b:if>
+              <span class='breadcrumb-sep'>&#8250;</span>
+              <span class='breadcrumb-current'><data:post.title/></span>
+            </nav>
+
+            <!-- 브레드크럼 구조화 데이터 (글: 홈 &#8250; 첫 라벨 &#8250; 글 / 페이지: 홈 &#8250; 페이지) -->
+            <script type='application/ld+json'>
+{&quot;@context&quot;:&quot;https://schema.org&quot;,&quot;@type&quot;:&quot;BreadcrumbList&quot;,&quot;itemListElement&quot;:[
+ {&quot;@type&quot;:&quot;ListItem&quot;,&quot;position&quot;:1,&quot;name&quot;:&quot;홈&quot;,&quot;item&quot;:&quot;<data:blog.homepageUrl.jsonEscaped/>&quot;},<b:if cond='!data:view.isPage and data:post.labels'><b:loop index='i' values='data:post.labels' var='label'><b:if cond='data:i == 0'>
+ {&quot;@type&quot;:&quot;ListItem&quot;,&quot;position&quot;:2,&quot;name&quot;:&quot;<data:label.name.jsonEscaped/>&quot;,&quot;item&quot;:&quot;<data:label.url.jsonEscaped/>&quot;},
+ {&quot;@type&quot;:&quot;ListItem&quot;,&quot;position&quot;:3,&quot;name&quot;:&quot;<data:post.title.jsonEscaped/>&quot;,&quot;item&quot;:&quot;<data:post.url.canonical.jsonEscaped/>&quot;}</b:if></b:loop><b:else/>
+ {&quot;@type&quot;:&quot;ListItem&quot;,&quot;position&quot;:2,&quot;name&quot;:&quot;<data:post.title.jsonEscaped/>&quot;,&quot;item&quot;:&quot;<data:post.url.canonical.jsonEscaped/>&quot;}</b:if>
+]}
+            </script>
+
+            <header class='post-header'>
+              <h1 class='post-title entry-title'><data:post.title/></h1>
+              <!-- 날짜 / 작성자 메타 &#8212; 구분선은 이 아래에 위치 -->
+              <div class='post-meta'>
+                <time class='meta-item published' expr:datetime='data:post.date.iso8601'>
+                  <svg aria-hidden='true' viewBox='0 0 24 24'>
+                    <rect height='18' rx='2' ry='2' width='18' x='3' y='4'/>
+                    <line x1='16' x2='16' y1='2' y2='6'/>
+                    <line x1='8' x2='8' y1='2' y2='6'/>
+                    <line x1='3' x2='21' y1='10' y2='10'/>
+                  </svg>
+                  <data:post.date/>
+                </time>
+                <b:if cond='data:post.author'>
+                  <span class='meta-item author'>
+                    <svg aria-hidden='true' viewBox='0 0 24 24'>
+                      <path d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/>
+                      <circle cx='12' cy='7' r='4'/>
+                    </svg>
+                    <data:post.author/>
+                  </span>
+                </b:if>
+              </div>
+            </header>
+
+            <div id='ad-target-below-title'/>
+
+            <b:if cond='data:post.labels any (l =&gt; l.name == &quot;검색제외&quot;)'>
+              <script>
+//<![CDATA[
+(function () {
+  /* 라벨 '검색제외' 를 단 글 — 검색엔진이 색인하지 않도록 로봇 태그를 바꿈 */
+  var m = document.querySelector('meta[name="robots"]');
+  if (!m) { m = document.createElement('meta'); m.name = 'robots'; document.head.appendChild(m); }
+  m.content = 'noindex, follow';
+})();
+//]]>
+              </script>
+            </b:if>
+            <div class='post-body entry-content' id='post-body'>
+              <data:post.body/>
+              <div id='post-bottom-target'/>&#160;
+            </div>
+
+            <!-- 라벨 -->
+            <b:if cond='data:post.labels'>
+              <div class='post-labels-wrap'>
+                <b:loop values='data:post.labels where (l =&gt; l.name != &quot;검색제외&quot;)' var='label'>
+                  <a expr:href='data:label.url' rel='tag'>
+                    <svg fill='none' height='14' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='14'>
+                      <line x1='4' x2='20' y1='9' y2='9'/><line x1='4' x2='20' y1='15' y2='15'/>
+                      <line x1='10' x2='8' y1='3' y2='21'/><line x1='16' x2='14' y1='3' y2='21'/>
+                    </svg>
+                    <data:label.name/>
+                  </a>
+                </b:loop>
+              </div>
+            </b:if>
+
+            <!-- 위치 정보 -->
+            <b:if cond='data:post.location'>
+              <div class='post-location-container'>
+                <b:include cond='data:post.location' name='postLocation'/>
+              </div>
+            </b:if>
+
+            <div id='ad-target-below-post'/>
+
+          <!-- 목록 항목 (플랫 리스트) -->
+          <b:else/>
+            <a class='list-link' expr:href='data:post.url'>
+              <div class='list-text'>
+                <b:if cond='data:post.labels'>
+                  <b:loop index='i' values='data:post.labels' var='label'>
+                    <b:if cond='data:i == 0'><span class='list-label'><data:label.name/></span></b:if>
+                  </b:loop>
+                </b:if>
+                <h2 class='list-title'><data:post.title/></h2>
+                <p class='list-snippet'><data:post.snippet/></p>
+                <time class='list-date' expr:datetime='data:post.date.iso8601'><data:post.date/></time>
+              </div>
+              <b:if cond='data:post.featuredImage'>
+                <div class='list-thumb'>
+                  <img decoding='async' expr:alt='data:post.title' expr:src='resizeImage(data:post.featuredImage, 240, &quot;1:1&quot;)' height='112' loading='lazy' width='112'/>
+                </div>
+              </b:if>
+            </a>
+          </b:if>
+
+        </article>
+      </b:includable>
+      <b:includable id='postAuthor'/>
+      <b:includable id='postBody' var='post'/>
+      <b:includable id='postBodySnippet' var='post'/>
+      <b:includable id='postCommentsAndAd' var='post'/>
+      <b:includable id='postCommentsLink'/>
+      <b:includable id='postFooter' var='post'/>
+      <b:includable id='postFooterAuthorProfile' var='post'/>
+      <b:includable id='postHeader' var='post'/>
+      <b:includable id='postJumpLink' var='post'/>
+      <b:includable id='postLabels'/>
+      <b:includable id='postLocation'/>
+      <b:includable id='postMeta' var='post'/>
+      <b:includable id='postMetadataJSONImage'/>
+      <b:includable id='postMetadataJSONPublisher'/>
+      <b:includable id='postPagination'/>
+      <b:includable id='postQuickEdit' var='post'/>
+      <b:includable id='postReactions'/>
+      <b:includable id='postShareButtons'/>
+      <b:includable id='postTimestamp'/>
+      <b:includable id='postTitle' var='post'/>
+      <b:includable id='previousPageLink'/>
+      <b:includable id='shareButtons' var='post'/>
+      <b:includable id='sharingButton'/>
+      <b:includable id='sharingButtonContent'/>
+      <b:includable id='sharingButtons'/>
+      <b:includable id='sharingButtonsMenu'/>
+      <b:includable id='sharingPlatformIcon'/>
+      <b:includable id='status-message'/>
+      <b:includable id='threadedCommentForm' var='post'/>
+      <b:includable id='threadedCommentJs' var='post'/>
+      <b:includable id='threadedComments' var='post'/>
+      <b:includable id='tooltipCss'/>
+    </b:widget>
+  </b:section>
+
+</main>
+</div>
+<!-- /outer-wrapper -->
+
+
+<!-- 하단 가젯 자동이동 컨테이너 (항상 숨김) -->
+<div id='move-target-container' style='display:none;'>
+  <b:section class='bottom-gadgets' id='always-bottom-gadgets' showaddelement='yes' title='[자동이동] 하단 가젯 영역'/>
+</div>
+
+
+<!-- 광고 웨어하우스 &#8212; JS가 각 위치로 이동 -->
+<div class='ad-warehouse'>
+  <b:section cond='data:view.isPost' id='Post-Top-Ad-Zone' showaddelement='yes'/>
+  <b:section cond='data:view.isPost' id='Post-Middle-Ad-Zone' showaddelement='yes'/>
+  <b:section cond='data:view.isPost' id='Post-Bottom-Ad-Zone' showaddelement='yes'/>
+</div>
+
+<div class='ad-warehouse-nav'>
+  <b:section cond='data:view.isPost' id='Below-Nav-Ad-Zone' showaddelement='yes'/>
+</div>
+<!-- /ad-warehouse-nav -->
+
+<!-- ============================================================
+     사이트 푸터 — 사업자 정보 (NAP: 상호·주소·전화)
+     &#9654; 레이아웃 &gt; '사업자 정보' 가젯에서 {{ }} 부분만 바꾸면
+       화면 표시 + LocalBusiness 구조화 데이터가 함께 반영됨
+     &#9654; {{ }} 가 남아 있는 줄은 자동으로 숨김
+     ============================================================ -->
+<footer id='site-footer'>
+  <div class='footer-inner'>
+    <b:section id='Footer-Section' showaddelement='yes' title='푸터 — 사업자 정보'>
+      <b:widget id='HTML21' locked='false' title='사업자 정보' type='HTML' version='2' visible='true'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<!-- data-type: LocalBusiness 하위 유형 (예: HairSalon, Restaurant, Dentist, BeautySalon, AutoRepair, LocalBusiness) -->
+<address class="hp-biz" id="hp-business" data-type="LocalBusiness" style="font-style:normal">
+  <p class="hp-biz-name" data-k="name">{{상호명}}</p>
+  <p>주소 <span data-k="address">{{도로명 주소}}</span></p>
+  <p>전화 <a data-k="telephone" href="tel:{{010-0000-0000}}">{{010-0000-0000}}</a></p>
+  <p>영업시간 <span data-k="openingHours">{{예: 평일 10:00-20:00, 일요일 휴무}}</span></p>
+  <p>대표 <span data-k="founder">{{대표자}}</span></p>
+  <p>사업자등록번호 <span data-k="taxID">{{000-00-00000}}</span></p>
+  <p>이메일 <a data-k="email" href="mailto:{{이메일}}">{{이메일}}</a></p>
+  <p class="hp-biz-links">
+    <a data-k="sameAs" href="{{네이버 플레이스 URL}}" rel="noopener" target="_blank">네이버 플레이스</a>
+    <a data-k="sameAs" href="{{인스타그램 URL}}" rel="noopener" target="_blank">인스타그램</a>
+  </p>
+</address>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+  <b:include name='widget-title'/>
+  <div class='widget-content'><data:content/></div>
+</b:includable>
+      </b:widget>
+    </b:section>
+    <p class='footer-copy'>&#169; <span id='hp-year'>2026</span> <a expr:href='data:blog.homepageUrl'><data:blog.title/></a>. All rights reserved.</p>
+  </div>
+</footer>
+<!-- /site-footer -->
+
+
+<!-- ============================================================
+     [설정 가젯 보관함 ①] 전체 페이지 공통 — 화면에 안 보임
+     &#9654; 기능 스위치 / 분석 코드 / 추가 CSS·애드센스
+     &#9654; 판매 후 유지보수는 이 가젯들의 내용만 바꾸면 됨 (테마 수정 X)
+     ============================================================ -->
+<div class='hp-config' id='hp-config-global'>
+  <b:section id='Global-Config-Section' showaddelement='yes' title='[설정] 전체 페이지 공통 (화면에 안 보임)'>
+    <b:widget id='HTML22' locked='false' title='기능 스위치' type='HTML' version='2' visible='true'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<!-- true = 켜기 / false = 끄기 -->
+<script type="application/json" id="hp-features">
+{
+  "reveal": true,
+  "imageFade": true,
+  "externalLinkNewTab": true,
+  "ctaAutoButton": true,
+  "callButton": true,
+  "smsButton": true,
+  "leadForm": true
+}
+</script>]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+  <b:include name='widget-title'/>
+  <div class='widget-content'><data:content/></div>
+</b:includable>
+    </b:widget>
+    <b:widget id='HTML23' locked='false' title='분석 코드 (GA4 · 네이버 애널리틱스 등)' type='HTML' version='2' visible='true'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<!-- 여기에 GA4 / 네이버 애널리틱스 / 메타 픽셀 코드를 그대로 붙여넣기 -->]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+  <b:include name='widget-title'/>
+  <div class='widget-content'><data:content/></div>
+</b:includable>
+    </b:widget>
+    <b:widget id='HTML24' locked='false' title='추가 CSS · 애드센스' type='HTML' version='2' visible='true'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<!-- 업종별 색상·디자인 덮어쓰기와 애드센스 자동광고 코드를 여기에 -->
+<style>
+/* 예: :root { --hp-key: #3b82f6; } */
+</style>]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+  <b:include name='widget-title'/>
+  <div class='widget-content'><data:content/></div>
+</b:includable>
+    </b:widget>
+  </b:section>
+</div>
+
+
+<!-- ============================================================
+     [설정 가젯 보관함 ②] 홈에서만 출력 — GAS 가 홈 HTML 에서 읽어감
+     &#9654; 사이트 설정 / AI 설정 / AI 지시문 / 라벨 사전
+     &#9654; API 키 · 비밀번호는 절대 여기에 넣지 않음 (GAS 스크립트 속성에만 저장)
+     ============================================================ -->
+<div class='hp-config' id='hp-config-home'>
+  <b:section cond='data:view.isHomepage' id='Home-Config-Section' showaddelement='yes' title='[설정] GAS 연동 · AI (홈에서만, 화면에 안 보임)'>
+    <b:widget id='HTML25' locked='false' title='사이트 설정' type='HTML' version='2' visible='true'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<script type="application/json" id="hp-site-config">
+{
+  "site": "sitelumi",
+  "industry": "",
+  "gasUrl": "",
+  "homePage": "",
+  "dataPage": "",
+  "smsText": "안녕하세요, 홈페이지 보고 연락드려요. 상담 문의합니다."
+}
+</script>]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+  <b:include name='widget-title'/>
+  <div class='widget-content'><data:content/></div>
+</b:includable>
+    </b:widget>
+    <b:widget id='HTML26' locked='false' title='AI 설정 (키는 GAS 에만)' type='HTML' version='2' visible='true'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<!-- provider: anthropic / openai / gemini · model: 모델 이름 · 키 값은 넣지 마세요 -->
+<script type="application/json" id="hp-ai-config">
+{
+  "provider": "anthropic",
+  "model": "",
+  "length": "1500자",
+  "mode": "manual",
+  "schedule": "",
+  "postsPerWeek": 0
+}
+</script>]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+  <b:include name='widget-title'/>
+  <div class='widget-content'><data:content/></div>
+</b:includable>
+    </b:widget>
+    <b:widget id='HTML27' locked='false' title='AI 지시문' type='HTML' version='2' visible='true'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<script type="text/plain" id="hp-ai-prompt">
+너는 이 가게의 블로그 글을 쓰는 작가다.
+말투: 친근한 존댓말, 과장·허위 표현 금지.
+글 첫머리에 질문에 바로 답하는 2~3문장 요약을 쓴다.
+글마다 마지막에 상담·예약 안내 문구를 넣는다.
+</script>]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+  <b:include name='widget-title'/>
+  <div class='widget-content'><data:content/></div>
+</b:includable>
+    </b:widget>
+    <b:widget id='HTML28' locked='false' title='라벨 사전' type='HTML' version='2' visible='true'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<!-- 글 발행 시 추천 라벨 후보 (업종별로 바꿔 넣기) -->
+<script type="application/json" id="hp-labels">
+{
+  "labels": ["공지", "이벤트", "가격 안내", "이용 후기", "자주 묻는 질문"]
+}
+</script>]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+  <b:include name='widget-title'/>
+  <div class='widget-content'><data:content/></div>
+</b:includable>
+    </b:widget>
+  </b:section>
+</div>
+
+<!-- ============================================================
+     DOMContentLoaded 메인 스크립트
+     ============================================================ -->
+<script>//<![CDATA[
+document.write('<script defer src="https://cdn.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/design/sitelumi-main.min.js?v='+(window.SLV||'')+'" onerror="SLFB(this,&#39;sitelumi-main&#39;)"><\/script>');
+//]]></script>
+
+<!-- ============================================================
+     사이트루미 확장 스크립트 (위 메인 스크립트와 분리 — 한쪽 오류가 다른 쪽을 막지 않음)
+     [S1] 기능 스위치  [S2] 이미지 로딩 효과  [S3] 섹션 등장 효과
+     [S4] 사업자 정보 &#8594; LocalBusiness 구조화 데이터  [S5] 저작권 연도
+     ============================================================ -->
+<script>//<![CDATA[
+document.write('<script defer src="https://cdn.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/design/sitelumi-ext.min.js?v='+(window.SLV||'')+'" onerror="SLFB(this,&#39;sitelumi-ext&#39;)"><\/script>');
+//]]></script>
+
+</body>
+</html>
