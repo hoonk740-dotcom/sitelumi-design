@@ -1,6 +1,6 @@
 {
   "app": "sitelumi",
-  "stable": "4.1.4",
+  "stable": "4.1.5",
   "rollout": null,
   "pins": {},
   "blocked": [],
@@ -30,9 +30,14 @@
       "url": "https://cdn.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/engine/bundle-4.1.4.json",
       "sha256": "e5cf76d1729a1738dccd84ec43436eb7466a1375a3cfd12f43593b26c9900b57",
       "size": 597552
+    },
+    "4.1.5": {
+      "url": "https://cdn.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/engine/bundle-4.1.5.json",
+      "sha256": "410582be94c56e1e3f62856d2f86da8c9c65930bd2a1dc8678ee8a6a28a48b92",
+      "size": 611334
     }
   },
-  "updated": "2026-11-13T02:20:51.483Z",
+  "updated": "2026-11-13T03:06:54.926Z",
   "report": "https://script.google.com/macros/s/AKfycbzcRM7Tpexe8vIsD-BTCnt72o-e69Cq4voBpXonPnlOytdi_noXjs1RqwghNKMhJSV8xA/exec",
   "order": "https://script.google.com/macros/s/AKfycbzcRM7Tpexe8vIsD-BTCnt72o-e69Cq4voBpXonPnlOytdi_noXjs1RqwghNKMhJSV8xA/exec"
 }

@@ -479,6 +479,7 @@
          · 메뉴: 대시보드·통계 / 홈페이지 편집 / 명함 편집 / 손님에게 보내기(홈페이지로 · 모바일 명함으로) / 끄기
          · 편집기로 가는 링크일 뿐이라 다른 사람이 봐도 로그인 없이는 들어갈 수 없음 */
     (function adminMenu() {
+      if (window.SL_PREVIEW) return;
       var K = 'slAdminUrl', ON = 'slAdmin', RE = /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/;
       var ls = { get: function (k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } },
                  set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
@@ -588,11 +589,11 @@
       };
       var load = function (L, scope) {
         if (!scope.querySelector(L.sel) && !(scope.matches && scope.matches(L.sel))) return;
-        if (window[L.g]) { try { window[L.g].init(scope); } catch (e) {} return; }
+        if (window[L.g]) { try { window[L.g].init(scope, window.SL_PREVIEW_AGAIN ? { again: true } : undefined); } catch (e) {} return; }
         if (L.q) { L.q.push(scope); return; }
         L.q = [scope];
         var run = function () { var q = L.q; L.q = null; q.forEach(function (x) { try { window[L.g].init(x); } catch (e) {} }); };
-        var add = function (src, next) { var s = document.createElement('script'); s.src = src; s.async = true; s.onload = run; s.onerror = next; document.head.appendChild(s); };
+        var add = function (src, next) { var s = document.createElement('script'); s.src = src + (window.SLV ? '?v=' + window.SLV : ''); s.async = true; s.onload = run; s.onerror = next; document.head.appendChild(s); };
         add(CDN + L.file, function () { add(CDN2 + L.file, function () { add(CDN3 + L.file.replace('.min.', '.'), function () { L.q = null; }); }); });
       };
       HP.fx = function (scope) {
@@ -634,6 +635,7 @@
          · 편집기 주소: 페이지의 data-gas (엔진이 자동으로 넣음) → 이 기기에 기억된 주소 순
          · 글 화면처럼 주소가 없는 페이지에서는 홈으로 가서 주소를 찾은 뒤 바로 편집기로 넘어감 (?sladmin=go) */
     (function ownerLink() {
+      if (window.SL_PREVIEW) return;                      // 편집기 미리보기에서는 숨김
       var RE = /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/;
       var find = function () {
         var u = HP.gas ? HP.gas() : '';
@@ -668,6 +670,31 @@
     (function loadHome() {
       var root = document.getElementById('hp-root');
       var isHome = !!root && document.body.getAttribute('data-page-type') === 'homepage';
+      /* 편집기 미리보기 (window.SL_PREVIEW): 블로그에서 받지 않고 편집기가 넣어 준 내용(#sl-preview-src)을 실제 홈과 같은 순서로 그림
+         홈은 #hp-root, 하위 페이지는 .post-body · 편집기는 고칠 때마다 HP.previewSet(html) 로 바꿔 넣음 */
+      if (window.SL_PREVIEW) {
+        HP.previewSet = function (html) {
+          var home = document.body.getAttribute('data-page-type') === 'homepage';
+          var box = home ? root : (document.querySelector('.post-body') || root);
+          if (!box) return;
+          document.documentElement.classList.remove('hp-home-loading');
+          var cta0 = document.getElementById('sl-install-cta'); if (cta0) cta0.parentNode.removeChild(cta0);
+          var hero0 = home && document.querySelector('#Homepage-Content-Section .hp-hero'); if (hero0) hero0.parentNode.removeChild(hero0);
+          box.innerHTML = html || '';
+          try { HP.serif(box); HP.view(); HP.useNav(); HP.useFoot(box); } catch (err) {}
+          if (HP.hours) HP.hours(box);
+          if (HP.reveal) HP.reveal(box);
+          if (HP.booking) HP.booking(box);
+          box.querySelectorAll('img').forEach(function (img) { img.classList.add('is-loaded'); });
+          if (HP.fx) HP.fx(box);
+          if (HP.custom) HP.custom(box);
+          window.SL_PREVIEW_AGAIN = true;                    // 다음부터는 씬의 첫 화면 열기 연출을 다시 틀지 않음
+          try { document.dispatchEvent(new Event('sl:home')); } catch (err) {}
+        };
+        var srcEl = document.getElementById('sl-preview-src');
+        HP.previewSet(srcEl ? srcEl.innerHTML : '');
+        return;
+      }
       if (!isHome) {
         if (HP.useFoot(document)) return;
         try {
