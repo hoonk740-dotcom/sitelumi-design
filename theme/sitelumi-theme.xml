@@ -647,12 +647,9 @@ body#layout #Home-Config-Section::before { content: "설정 가젯 — GAS 연�
 :root { --slv-keycolor: $(keycolor); --slv-bodyfont: $(bodyfont); --slv-bgcolor: $(bgcolor); --slv-borderColor: $(borderColor); --slv-textColor: $(textColor); }
 ]]></b:skin>
   <script>//<![CDATA[
-window.SLV=(function(d){return d.toISOString().slice(0,10).replace(/-/g,'')+(d.getUTCHours()<12?'a':'b')})(new Date());window.SLCSS=function(el){var n=+(el.getAttribute('data-fb')||0),L=['https://fastly.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/design/sitelumi.min.css','https://hoonk740-dotcom.github.io/sitelumi-design/design/sitelumi.css'];if(n<L.length){el.setAttribute('data-fb',n+1);el.href=L[n]+'?v='+SLV}};document.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/design/sitelumi.min.css?v='+SLV+'" onerror="SLCSS(this)">');
+(function(){var R='hoonk740-dotcom/sitelumi-design',d=document,h=d.documentElement,sha='';try{var c=JSON.parse(localStorage.getItem('slVer')||'null');if(c&&/^[0-9a-f]{7,40}$/.test(c.s)&&3600000>=Date.now()-c.t)sha=c.s}catch(e){}var ref='@'+(sha||'main');window.SLBASE=['https://cdn.jsdelivr.net/gh/'+R+ref+'/design/','https://fastly.jsdelivr.net/gh/'+R+ref+'/design/','https://hoonk740-dotcom.github.io/sitelumi-design/design/'];var name=function(f,i){return i===2?f+(/css$/.test(f)?'':'.js'):f.replace(/(\.css)?$/,function(m){return m?'.min.css':'.min.js'})};h.className+=' sl-css-wait';var st=d.createElement('style');st.textContent='.sl-css-wait body{opacity:0}';d.head.appendChild(st);var shown=0,show=function(){if(shown)return;shown=1;h.className=h.className.replace(' sl-css-wait','')};setTimeout(show,3000);var ci=0,css=function(){var l=d.createElement('link');l.rel='stylesheet';l.href=window.SLBASE[ci]+name('sitelumi.css',ci);l.onload=show;l.onerror=function(){l.parentNode.removeChild(l);ci++;if(window.SLBASE.length>ci)css();else show()};d.head.appendChild(l)};css();var q=[],busy=0,run=function(){if(busy||!q.length)return;var j=q[0];if(j.i>=window.SLBASE.length){q.shift();return run()}busy=1;var o=d.addEventListener;d.addEventListener=function(t,fn,c){if(t==='DOMContentLoaded'&&d.readyState!=='loading'){try{fn.call(d,new Event(t))}catch(e){console.error(e)}return}return o.call(d,t,fn,c)};var s=d.createElement('script');s.src=window.SLBASE[j.i]+name(j.f,j.i);j.i++;s.async=false;var fin=function(ok){d.addEventListener=o;busy=0;if(ok)q.shift();run()};s.onload=function(){fin(1)};s.onerror=function(){s.parentNode.removeChild(s);fin(0)};d.head.appendChild(s)};window.SLLOAD=function(f){q.push({f:f,i:0});run()};setTimeout(function(){try{fetch('https://raw.githubusercontent.com/'+R+'/main/design/version.json',{cache:'no-store'}).then(function(r){return r.json()}).then(function(v){if(v&&/^[0-9a-f]{7,40}$/.test(v.sha||''))localStorage.setItem('slVer',JSON.stringify({s:v.sha,t:Date.now()}))})['catch'](function(){})}catch(e){}},4000)})();
 //]]></script>
   <noscript><link href='https://cdn.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/design/sitelumi.min.css' rel='stylesheet'/></noscript>
-  <script>//<![CDATA[
-window.SLFB=function(el,f){var L=['https://fastly.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/design/'+f+'.min.js?v='+(window.SLV||''),'https://hoonk740-dotcom.github.io/sitelumi-design/design/'+f+'.js?v='+(window.SLV||'')];var q=window.SLFBQ=window.SLFBQ||[];q.push({f:f,L:L,i:0});if(q.length===1)SLFBrun();};window.SLFBrun=function(){var q=window.SLFBQ,j=q[0];if(!j)return;if(j.i>=j.L.length){q.shift();return SLFBrun();}var d=document,o=d.addEventListener,late=d.readyState!=='loading';if(late)d.addEventListener=function(t,fn,c){if(t==='DOMContentLoaded'){try{fn.call(d,new Event(t))}catch(e){console.error(e)}return}return o.call(d,t,fn,c)};var s=d.createElement('script');s.src=j.L[j.i++];s.async=false;var done=function(ok){if(late)d.addEventListener=o;if(ok){q.shift()}SLFBrun()};s.onload=function(){done(1)};s.onerror=function(){done(0)};d.head.appendChild(s)};
-//]]></script>
 
   <!-- page 전용: 하단 광고 영역 숨김 -->
   <b:if cond='data:view.isPage'>
@@ -1374,7 +1371,7 @@ window.SLFB=function(el,f){var L=['https://fastly.jsdelivr.net/gh/hoonk740-dotco
      DOMContentLoaded 메인 스크립트
      ============================================================ -->
 <script>//<![CDATA[
-document.write('<script defer src="https://cdn.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/design/sitelumi-main.min.js?v='+(window.SLV||'')+'" onerror="SLFB(this,&#39;sitelumi-main&#39;)"><\/script>');
+SLLOAD('sitelumi-main');
 //]]></script>
 
 <!-- ============================================================
@@ -1383,7 +1380,7 @@ document.write('<script defer src="https://cdn.jsdelivr.net/gh/hoonk740-dotcom/s
      [S4] 사업자 정보 &#8594; LocalBusiness 구조화 데이터  [S5] 저작권 연도
      ============================================================ -->
 <script>//<![CDATA[
-document.write('<script defer src="https://cdn.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/design/sitelumi-ext.min.js?v='+(window.SLV||'')+'" onerror="SLFB(this,&#39;sitelumi-ext&#39;)"><\/script>');
+SLLOAD('sitelumi-ext');
 //]]></script>
 
 </body>

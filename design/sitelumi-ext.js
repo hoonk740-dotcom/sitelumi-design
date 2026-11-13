@@ -580,9 +580,10 @@
          시그니처 씬(data-fx-scene)이 있으면 sitelumi-scenes 파일도 받음
          움직임 줄이기 설정이면 받지 않음. 홈은 홈 로더가 화면을 그린 뒤 다시 부름 */
     (function fxBoot() {
-      var CDN = 'https://cdn.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/design/';
-      var CDN2 = 'https://fastly.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/design/';
-      var CDN3 = 'https://hoonk740-dotcom.github.io/sitelumi-design/design/';   // 예비: jsDelivr 가 멈추면 GitHub Pages (줄이지 않은 원본)
+      var B = window.SLBASE || [];                         // 테마 머리의 불러오기 스크립트가 정한 주소 (@커밋 → 캐시가 꼬이지 않음)
+      var CDN = B[0] || 'https://cdn.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/design/';
+      var CDN2 = B[1] || 'https://fastly.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/design/';
+      var CDN3 = B[2] || 'https://hoonk740-dotcom.github.io/sitelumi-design/design/';   // 예비: jsDelivr 가 멈추면 GitHub Pages (줄이지 않은 원본)
       var LIBS = {
         fx: { file: 'sitelumi-fx.min.js', sel: '.sl-page[data-fx]', g: 'SLFX', q: null },
         scene: { file: 'sitelumi-scenes.min.js', sel: '.sl-page[data-fx-scene]', g: 'SLSCENE', q: null }
@@ -593,7 +594,7 @@
         if (L.q) { L.q.push(scope); return; }
         L.q = [scope];
         var run = function () { var q = L.q; L.q = null; q.forEach(function (x) { try { window[L.g].init(x); } catch (e) {} }); };
-        var add = function (src, next) { var s = document.createElement('script'); s.src = src + (window.SLV ? '?v=' + window.SLV : ''); s.async = true; s.onload = run; s.onerror = next; document.head.appendChild(s); };
+        var add = function (src, next) { var s = document.createElement('script'); s.src = src; s.async = true; s.onload = run; s.onerror = next; document.head.appendChild(s); };
         add(CDN + L.file, function () { add(CDN2 + L.file, function () { add(CDN3 + L.file.replace('.min.', '.'), function () { L.q = null; }); }); });
       };
       HP.fx = function (scope) {
