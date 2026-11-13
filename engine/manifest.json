@@ -1,6 +1,6 @@
 {
   "app": "sitelumi",
-  "stable": "4.1.1",
+  "stable": "4.1.2",
   "rollout": null,
   "pins": {},
   "blocked": [],
@@ -13,9 +13,14 @@
     },
     "4.1.1": {
       "url": "https://cdn.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/engine/bundle-4.1.1.json",
-      "sha256": "1808f9a3d1b2e2e7f63c47c99f44cfb9eaa2c60e694e5d8c862edbd17b61992c",
+      "sha256": "9f1bb72c4240519657007c83911aead2f9bd684e0da4a0b1e8ef00cd5f3093d3",
       "size": 596972
+    },
+    "4.1.2": {
+      "url": "https://cdn.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/engine/bundle-4.1.2.json",
+      "sha256": "004043e2800a9367cebfe2040b09e6aab8d159eb28aad31b4469fdfedf0b47e0",
+      "size": 597007
     }
   },
-  "updated": "2026-11-12T09:24:54.923Z"
+  "updated": "2026-11-13T01:50:04.640Z"
 }
