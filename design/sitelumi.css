@@ -1510,6 +1510,16 @@ ins.adsbygoogle {
 .sl-hero-cardwrap { display: grid !important; grid-template-columns: minmax(0, 1fr) 420px; gap: 64px; align-items: center; }
 .sl-hero-statement { margin: 0 0 32px !important; font-family: var(--sl-head-font); font-size: 32px; font-weight: var(--sl-head-w); line-height: 1.3; letter-spacing: -0.03em; word-break: keep-all; }
 .sl-hero-card .sl-hero-place { font-weight: 600; color: var(--sl-key); }
+.sl-hero-cardsolo { grid-template-columns: minmax(0, 440px) !important; justify-content: center; }
+.sl-hero-cardwrap > .sl-hero-text { min-width: 0; }
+/* PC: 공통 2열 규칙(#hp-root .sl-wrap, 4:8 · 위 정렬)이 히어로 전용 배치를 덮지 않게 */
+@media (min-width: 900px) {
+  #hp-root .sl-hero-menuwrap { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: 56px; align-items: end; }
+  #hp-root .sl-hero-profilewrap { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); column-gap: 56px; align-items: center; }
+  #hp-root .sl-hero-portwrap { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: 48px; align-items: end; }
+  #hp-root .sl-hero-cardwrap { grid-template-columns: minmax(0, 1fr) 420px; column-gap: 64px; align-items: center; }
+  #hp-root .sl-hero-cardsolo { grid-template-columns: minmax(0, 440px); justify-content: center; }
+}
 
 /* ── 모바일 명함 카드 (스타일 9종 · 사진 모양 · 버튼 모양 · 글꼴) ──
       색은 홈페이지 디자인 스타일의 변수(--sl-key 등)를 그대로 씀 */
