@@ -1,18 +1,18 @@
 {
   "app": "sitelumi",
-  "stable": "4.1.7",
+  "stable": "4.1.8",
   "rollout": null,
   "pins": {},
   "blocked": [],
   "notes": {},
   "bundles": {
-    "4.1.7": {
-      "url": "https://raw.githubusercontent.com/hoonk740-dotcom/sitelumi-design/main/engine/bundle-4.1.7.json",
-      "sha256": "5ef7d6cae5d26a22f7c86efaaf873869d7c2c07206740c30879e8c0265568bae",
-      "size": 616822
+    "4.1.8": {
+      "url": "https://raw.githubusercontent.com/hoonk740-dotcom/sitelumi-design/main/engine/bundle-4.1.8.json",
+      "sha256": "c0151b2d305d6e10055ddb5b3c0e953b8dbf503da7b41a74007d5c7daf11cb80",
+      "size": 621242
     }
   },
-  "updated": "2026-11-13T04:46:41.190Z",
+  "updated": "2026-11-14T14:41:46.263Z",
   "report": "https://script.google.com/macros/s/AKfycbzcRM7Tpexe8vIsD-BTCnt72o-e69Cq4voBpXonPnlOytdi_noXjs1RqwghNKMhJSV8xA/exec",
   "order": "https://script.google.com/macros/s/AKfycbzcRM7Tpexe8vIsD-BTCnt72o-e69Cq4voBpXonPnlOytdi_noXjs1RqwghNKMhJSV8xA/exec"
 }

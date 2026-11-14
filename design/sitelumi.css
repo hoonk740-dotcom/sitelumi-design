@@ -2335,6 +2335,24 @@ ins.adsbygoogle {
 /* 제목 묶음 */
 .sl-page .sl-head .sl-lead { margin-top: var(--t-lead) !important; }
 .sl-page .sl-head { margin-bottom: var(--head-body); }
+/* [28] PC 섹션 제목 배치 (디자인 › 섹션 배치 · 섹션 › 제목 위치): 왼쪽(기본 2열) · 위 · 가운데 · 오른쪽 — 휴대폰은 항상 위아래 */
+@media (min-width: 900px) {
+  #hp-root .sl-sec.sl-hd-top .sl-wrap, #hp-root .sl-sec.sl-hd-center .sl-wrap { display: block; }
+  #hp-root .sl-sec.sl-hd-top .sl-head { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); column-gap: 64px; align-items: end; margin-bottom: var(--head-body); }
+  #hp-root .sl-sec.sl-hd-top .sl-head > .sl-h2:only-child { grid-column: 1 / -1; }
+  #hp-root .sl-sec.sl-hd-top .sl-head .sl-lead { margin: 0 !important; justify-self: end; max-width: 560px; }
+  #hp-root .sl-sec.sl-hd-top.sl-media-side .sl-head { display: block; }
+  #hp-root .sl-sec.sl-hd-top .sl-head::after { content: ''; grid-column: 1 / -1; height: 1px; margin-top: 28px; background: var(--sl-line); }
+  #hp-root .sl-sec.sl-hd-center .sl-head { text-align: center; max-width: 760px; margin: 0 auto var(--head-body); }
+  #hp-root .sl-sec.sl-hd-center .sl-head .sl-lead { margin-left: auto !important; margin-right: auto !important; }
+  #hp-root .sl-sec.sl-hd-center .sl-body > .sl-text { text-align: center; }
+  #hp-root .sl-sec.sl-hd-center .sl-body > :is(.sl-text, .sl-lead, .sl-points, .sl-faq, .sl-contact-btns, .sl-hero-btns) { max-width: 760px; margin-left: auto !important; margin-right: auto !important; }
+  #hp-root .sl-sec.sl-hd-center .sl-contact-btns, #hp-root .sl-sec.sl-hd-center .sl-hero-btns { justify-content: center; }
+  #hp-root .sl-sec.sl-hd-right .sl-wrap { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); }
+  #hp-root .sl-sec.sl-hd-right .sl-head { grid-column: 2; grid-row: 1; text-align: right; }
+  #hp-root .sl-sec.sl-hd-right .sl-body { grid-column: 1; grid-row: 1; }
+  #hp-root .sl-sec.sl-hd-side .sl-head { position: sticky; top: 96px; }
+}
 .sl-page .sl-head > :last-child { margin-bottom: 0 !important; }
 
 /* 섹션 제목 크기 (h2): 화면 폭 390 → 1280 사이에서 부드럽게 커짐 */
