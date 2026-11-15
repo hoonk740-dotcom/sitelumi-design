@@ -1,5 +1,5 @@
 /*! 디씨젼 랜딩 통계 sl-track.js v1 — 방문 1회당 1번 전송 · 개인정보 수집 없음
- *  사용: <script>window.SLT={id:'LP261115-123456-789'}</script><script src="https://hoonk740-dotcom.github.io/sitelumi-design/track/sl-track.js" defer></script>
+ *  사용: <script>window.SLT={id:'LP261115-123456-789'}</script><script src="https://cdn.jsdelivr.net/gh/hoonk740-dotcom/sitelumi-design@main/track/sl-track.js" defer></script>
  *  자동 측정: 방문 · 새 방문자 · 50%/90% 스크롤 · 머문 시간 · 전화(tel:) · 카톡 링크 · 신청 버튼(data-slt="cta" 또는 class에 cta) · 폼 입력 시작 · 폼 제출(신청)
  *  수동: SLT.lead() (폼을 직접 처리할 때 신청 완료 시점에 호출) · SLT.track('cta')
  *  폼에 hidden 칸 name="utm_source|utm_medium|utm_campaign|utm_content|utm_term|slt_ref|slt_landing|slt_device" 가 있으면 유입 정보를 채워 줌
