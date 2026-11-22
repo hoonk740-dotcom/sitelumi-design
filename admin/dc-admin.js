@@ -20,13 +20,13 @@
     search: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>'
   };
   var CSS = [
-    '#dc-admin{position:fixed;inset:0;z-index:2147483000;overflow:auto;background:#f4f2ee;color:#121212;font:15px/1.65 Pretendard,"Pretendard Variable",-apple-system,"Apple SD Gothic Neo",sans-serif;word-break:keep-all;overflow-wrap:break-word;-webkit-text-size-adjust:100%}',
-    '#dc-admin{--key:#ff5a1f;--ink:#121212;--sub:#3a3936;--mute:#8a857c;--line:#d8d3c9;--bg:#ebe7e0;--card:#fff;--new:#ff5a1f;--doing:#2f5bea;--done:#12805c;--hold:#8a857c;--r:0px}',
+    '#dc-admin{position:fixed;inset:0;z-index:2147483000;overflow:auto;background:#f8fafc;color:#0f172a;font:15px/1.65 Pretendard,"Pretendard Variable",-apple-system,"Apple SD Gothic Neo",sans-serif;word-break:keep-all;overflow-wrap:break-word;-webkit-text-size-adjust:100%}',
+    '#dc-admin{--key:#6366f1;--ink:#0f172a;--sub:#475569;--mute:#94a3b8;--line:#e2e8f0;--bg:#f1f5f9;--card:#fff;--new:#e11d48;--doing:#2f5bea;--done:#12805c;--hold:#94a3b8;--r:0px}',
     '#dc-admin *{box-sizing:border-box}#dc-admin a{color:var(--ink);text-decoration:none}#dc-admin button,#dc-admin input,#dc-admin select{font:inherit;color:inherit}',
     '#dc-admin .wrap{max-width:1120px;margin:0 auto;padding:0 22px}',
-    '#dc-admin .ad-top{position:sticky;top:0;z-index:5;background:rgba(244,242,238,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--ink)}',
+    '#dc-admin .ad-top{position:sticky;top:0;z-index:5;background:rgba(248,250,252,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--ink)}',
     '#dc-admin .ad-bar{display:flex;align-items:center;gap:10px;min-height:64px;padding:12px 0 10px}',
-    '#dc-admin .ad-logo{display:flex;align-items:baseline;gap:10px;font-family:Montserrat,Pretendard,sans-serif;font-weight:800;font-size:18px;letter-spacing:-.02em;white-space:nowrap}',
+    '#dc-admin .ad-logo{display:flex;align-items:baseline;gap:10px;font-family:Pretendard,sans-serif;font-weight:800;font-size:18px;letter-spacing:-.02em;white-space:nowrap}',
     '#dc-admin .ad-logo small{font-family:Pretendard,sans-serif;font-size:12.5px;font-weight:700;color:var(--key)}',
     '#dc-admin .ad-search{flex:1;display:flex;max-width:420px;margin-left:auto}',
     '#dc-admin .ad-search input{flex:1;min-width:0;height:40px;padding:0 14px;border:1px solid var(--line);border-right:0;background:#fff;outline:none}',
@@ -70,7 +70,7 @@
     '#dc-admin .ad-labels{display:flex;flex-wrap:wrap;gap:6px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}',
     '#dc-admin .ad-labels a{padding:4px 10px;background:var(--bg);color:var(--sub);font-size:13px}',
     '#dc-admin .ad-nav{display:flex;justify-content:space-between;gap:8px;margin-top:16px}#dc-admin .ad-nav a{color:var(--sub);font-size:14px}',
-    '#dc-admin .ad-modal{position:fixed;inset:0;z-index:6;display:none;place-items:center;background:rgba(18,18,18,.5);padding:20px}#dc-admin .ad-modal.on{display:grid}',
+    '#dc-admin .ad-modal{position:fixed;inset:0;z-index:6;display:none;place-items:center;background:rgba(15,23,42,.5);padding:20px}#dc-admin .ad-modal.on{display:grid}',
     '#dc-admin .ad-modal>div{width:100%;max-width:440px;background:#fff;padding:24px}',
     '#dc-admin .ad-modal h3{margin:0 0 6px;font-size:19px;font-weight:900}#dc-admin .ad-modal p{margin:0 0 12px;color:var(--sub);font-size:14px}',
     '#dc-admin .ad-modal label{display:block;font-weight:800;font-size:14px;margin:10px 0 4px}#dc-admin .ad-modal input{width:100%;height:44px;padding:0 12px;border:1px solid var(--line)}',
@@ -111,7 +111,7 @@
       '<button class="ad-icon" id="ad-set" title="관리자 키" aria-label="관리자 키" type="button">' + ICON.key + '</button><button class="ad-icon" id="ad-close" title="사이트로 돌아가기" aria-label="닫기" type="button">' + ICON.x + '</button></div>' +
       '<nav aria-label="보기" class="ad-tabs" id="ad-tabs"></nav></div></header><main class="wrap" id="ad-main"></main>' +
       '<div class="ad-modal" id="ad-modal"><div><h3>관리자 키</h3><p>접수 GAS 의 관리자 키를 넣으면 이 브라우저에서만 기억해요. 공용 컴퓨터에서는 쓰지 마세요.</p><label for="ad-key">관리자 키</label><input autocomplete="off" id="ad-key" type="password"/>' +
-      '<div class="row"><button class="ad-btn" id="ad-forget" type="button">이 브라우저에서 지우기</button><button class="ad-btn" id="ad-cancel" type="button">닫기</button><button class="ad-btn" id="ad-save" style="background:#121212;color:#fff;border-color:#121212" type="button">저장</button></div></div></div>';
+      '<div class="row"><button class="ad-btn" id="ad-forget" type="button">이 브라우저에서 지우기</button><button class="ad-btn" id="ad-cancel" type="button">닫기</button><button class="ad-btn" id="ad-save" style="background:#0f172a;color:#fff;border-color:#0f172a" type="button">저장</button></div></div></div>';
     document.body.appendChild(root);
     mainBox = root.querySelector('#ad-main');
     root.querySelector('#ad-search').addEventListener('submit', function (e) { e.preventDefault(); var q = root.querySelector('#ad-q').value.trim(); location.hash = q ? '#dcadmin/q/' + encodeURIComponent(q) : '#dcadmin'; });
@@ -158,7 +158,7 @@
     root.querySelector('#ad-q').value = qWord;
     root.scrollTop = 0;
     if (!cfg().key) {
-      mainBox.innerHTML = '<div class="ad-gate"><h1>관리자 키가 필요해요</h1><p style="color:#3a3936;font-size:14px">접수 GAS 의 관리자 키를 넣으면 이 브라우저에서만 기억해요.</p><button class="ad-btn" id="ad-gate-key" style="background:#121212;color:#fff;border-color:#121212" type="button">관리자 키 넣기</button></div>';
+      mainBox.innerHTML = '<div class="ad-gate"><h1>관리자 키가 필요해요</h1><p style="color:#475569;font-size:14px">접수 GAS 의 관리자 키를 넣으면 이 브라우저에서만 기억해요.</p><button class="ad-btn" id="ad-gate-key" style="background:#0f172a;color:#fff;border-color:#0f172a" type="button">관리자 키 넣기</button></div>';
       mainBox.querySelector('#ad-gate-key').addEventListener('click', openSet); return;
     }
     if (kind === 'p') return viewPost(arg);
@@ -217,7 +217,7 @@
       mainBox.innerHTML = '<article class="ad-post" data-id="' + escH(x.id) + '"><h1>' + escH(x.title) + '</h1><div class="ad-meta"><span>' + escH(String(x.published || '').slice(0, 16).replace('T', ' ')) + '</span></div>' +
         '<div class="ad-actions" id="ad-actions"><b>상태</b>' + ['새 접수', '진행 중', '보류', '완료'].map(function (t) { return '<button class="ad-btn" data-to="' + t + '" type="button">' + t + '</button>'; }).join('') +
         '<button class="ad-btn ad-hidden" id="ad-confirm" type="button">입금 확인 · 상품 적용</button><button class="ad-btn ad-hidden" id="ad-csend" type="button">초안으로 보내기</button><button class="ad-btn ad-hidden" id="ad-cpub" type="button">바로 공개</button>' +
-        '<span style="flex:1"></span><button class="ad-btn ad-hidden" id="ad-brief" style="background:#ff5a1f;color:#fff;border-color:#ff5a1f" type="button">Claude 작업 지시서 복사</button><button class="ad-btn ad-hidden" id="ad-copy" type="button">편집기용 데이터 복사</button>' +
+        '<span style="flex:1"></span><button class="ad-btn ad-hidden" id="ad-brief" style="background:#6366f1;color:#fff;border-color:#6366f1" type="button">Claude 작업 지시서 복사</button><button class="ad-btn ad-hidden" id="ad-copy" type="button">편집기용 데이터 복사</button>' +
         '<a class="ad-btn" href="https://www.blogger.com/blog/post/edit/' + escH(r.blogId) + '/' + escH(x.id) + '" rel="noopener" target="_blank">원본 글 편집</a><span class="ad-msg" id="ad-msg" role="status"></span></div>' +
         '<div class="post-body">' + (x.content || '') + '</div><div class="ad-labels">' + (x.labels || []).map(function (l) { return '<a href="#dcadmin/t/' + encodeURIComponent(l) + '">' + escH(l) + '</a>'; }).join('') + '</div></article>' +
         '<div class="ad-nav"><a href="#dcadmin">← 전체 접수</a></div>';
