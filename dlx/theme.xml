@@ -171,35 +171,29 @@
 <b:include data='blog' name='google-analytics'/>
 
 <b:template-skin><![CDATA[
-/* 「레이아웃」 편집 화면 전용 — 모든 영역·가젯을 같은 너비로 가운데 정렬 (실제 사이트에는 영향 없음) */
-body#layout { overflow: visible !important; background: #f1f5f9 !important; min-height: 100vh !important; padding: 24px 0 60px !important; font: normal normal 13px Pretendard, 'Noto Sans KR', sans-serif !important; }
-body#layout *, body#layout *::before, body#layout *::after { box-sizing: border-box !important; }
+/* 「레이아웃」 편집 화면 전용 — 모든 영역·가젯을 같은 너비(640px)로 가운데 정렬 (실제 사이트에는 영향 없음) */
+body#layout { overflow: visible !important; background: #f1f5f9 !important; min-height: 100vh !important; padding: 24px 0 60px !important; margin: 0 !important; font: normal normal 13px Pretendard, 'Noto Sans KR', sans-serif !important; }
 body#layout .dl-skip, body#layout #dlMenu { display: none !important; }
 body#layout #outer-wrapper, body#layout #dl-main, body#layout .ad-warehouse, body#layout .ad-warehouse-nav {
-  display: block !important; position: static !important; float: none !important; width: 640px !important; max-width: calc(100% - 24px) !important; margin: 0 auto !important; padding: 0 !important; border: 0 !important; background: none !important; overflow: visible !important; height: auto !important; }
-body#layout .section {
-  display: block !important; position: relative !important; float: none !important; clear: both !important;
+  display: block !important; position: static !important; float: none !important; box-sizing: border-box !important;
+  width: 640px !important; max-width: calc(100% - 24px) !important; margin: 0 auto !important; padding: 0 !important; border: 0 !important; background: none !important; overflow: visible !important; height: auto !important; }
+body#layout #dl-main, body#layout #outer-wrapper #dl-main { width: 100% !important; max-width: 100% !important; }
+body#layout div.section, body#layout .section {
+  display: block !important; position: relative !important; float: none !important; clear: both !important; box-sizing: border-box !important;
   width: 640px !important; max-width: calc(100% - 24px) !important; min-width: 0 !important; height: auto !important; min-height: 60px !important;
-  margin: 0 auto 14px !important; padding: 34px 12px 12px !important;
+  margin: 0 auto 14px !important; padding: 12px !important;
   border: 1px dashed #cbd5e1 !important; border-radius: 10px !important; background: #f8fafc !important; overflow: visible !important; }
-body#layout #outer-wrapper .section, body#layout .ad-warehouse .section, body#layout .ad-warehouse-nav .section { width: 100% !important; max-width: 100% !important; }
-body#layout .section::before { position: absolute; top: 9px; left: 14px; font-size: 12.5px; font-weight: 700; color: #4f46e5; letter-spacing: -.01em; }
-body#layout #DL-Header::before { content: '① 머리말 — 모든 화면 위 (메뉴)'; }
-body#layout #Homepage-WebApp-Section::before { content: '② 첫 화면 섹션 — 홈에서만 · 위에서 아래로 보이는 순서 (끌어서 순서 바꾸기)'; }
-body#layout #main-content-area::before { content: '③ 글 · 페이지 · 목록 (건드리지 않아도 돼요)'; }
-body#layout #DL-Footer::before { content: '④ 꼬리말 — 모든 화면 아래 (사업자 정보 · 약관)'; }
-body#layout #Post-Top-Ad-Zone::before { content: '광고 · 글 제목 아래'; color: #64748b; }
-body#layout #Post-Middle-Ad-Zone::before { content: '광고 · 글 중간 (소제목 3번째 앞)'; color: #64748b; }
-body#layout #Post-Bottom-Ad-Zone::before { content: '광고 · 글 끝'; color: #64748b; }
-body#layout #Below-Nav-Ad-Zone::before { content: '광고 · 글 넘기기 아래'; color: #64748b; }
+body#layout #outer-wrapper div.section, body#layout .ad-warehouse div.section, body#layout .ad-warehouse-nav div.section { width: 100% !important; max-width: 100% !important; }
+body#layout div.section h4 { margin: 0 0 10px !important; padding: 0 2px !important; font-size: 13px !important; font-weight: 700 !important; color: #4f46e5 !important; }
+body#layout .ad-warehouse div.section h4, body#layout .ad-warehouse-nav div.section h4 { color: #64748b !important; }
 body#layout #Homepage-WebApp-Section { border-color: #a5b4fc !important; background: #eef2ff !important; }
-body#layout .section .widget, body#layout .section .add_widget, body#layout .section .dropregion {
-  display: block !important; float: none !important; width: 100% !important; max-width: 100% !important; min-width: 0 !important; height: auto !important; margin: 0 0 8px !important; position: relative !important; }
-body#layout .section .widget:last-child, body#layout .section .add_widget { margin-bottom: 0 !important; }
-body#layout .widget-content { display: block !important; width: 100% !important; overflow: hidden !important; }
-body#layout .widget .widget-content, body#layout .widget .layout-widget-description, body#layout .widget .layout-title { white-space: nowrap; text-overflow: ellipsis; }
-body#layout .add_widget { text-align: center !important; border-radius: 8px !important; }
-body#layout .add_widget a { display: block !important; width: 100% !important; }
+body#layout div.section .widget, body#layout div.section .add_widget, body#layout div.section .dropregion {
+  display: block !important; float: none !important; box-sizing: border-box !important; width: 100% !important; max-width: 100% !important; min-width: 0 !important; height: auto !important; margin: 0 0 8px !important; left: auto !important; right: auto !important; }
+body#layout div.section .widget-wrap1, body#layout div.section .widget-wrap2, body#layout div.section .widget-wrap3 { box-sizing: border-box !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; }
+body#layout div.section .widget:last-child { margin-bottom: 0 !important; }
+body#layout div.section .widget-content { box-sizing: border-box !important; width: 100% !important; overflow: hidden !important; }
+body#layout .layout-title, body#layout .layout-widget-description { white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+body#layout div.section .add_widget { text-align: center !important; border-radius: 8px !important; }
 ]]></b:template-skin>
 
 <b:skin version='1.0.0'><![CDATA[
@@ -1345,14 +1339,14 @@ body.dl-menu-open .dl-menu-in > a { transform: none; opacity: 1; }
           <article class='post-outer'>
             <nav aria-label='현재 위치' class='post-breadcrumb'>
               <a expr:href='data:blog.homepageUrl'>홈</a>
-              <b:if cond='data:post.labels'>
+              <b:if cond='data:view.isPost and data:post.labels'>
                 <span aria-hidden='true' class='sep'>/</span>
                 <a expr:href='data:post.labels.first.url'><data:post.labels.first.name/></a>
               </b:if>
               <span aria-hidden='true' class='sep'>/</span>
               <span aria-current='page'><data:post.title/></span>
             </nav>
-            <script type='application/ld+json'>{&quot;@context&quot;:&quot;https://schema.org&quot;,&quot;@type&quot;:&quot;BreadcrumbList&quot;,&quot;itemListElement&quot;:[{&quot;@type&quot;:&quot;ListItem&quot;,&quot;position&quot;:1,&quot;name&quot;:&quot;홈&quot;,&quot;item&quot;:&quot;<data:blog.homepageUrl.jsonEscaped/>&quot;}<b:if cond='data:post.labels'>,{&quot;@type&quot;:&quot;ListItem&quot;,&quot;position&quot;:2,&quot;name&quot;:&quot;<data:post.labels.first.name.jsonEscaped/>&quot;,&quot;item&quot;:&quot;<data:post.labels.first.url.jsonEscaped/>&quot;}</b:if>,{&quot;@type&quot;:&quot;ListItem&quot;,&quot;position&quot;:<b:if cond='data:post.labels'>3<b:else/>2</b:if>,&quot;name&quot;:&quot;<data:post.title.jsonEscaped/>&quot;,&quot;item&quot;:&quot;<data:post.url.canonical.jsonEscaped/>&quot;}]}</script>
+            <script type='application/ld+json'>{&quot;@context&quot;:&quot;https://schema.org&quot;,&quot;@type&quot;:&quot;BreadcrumbList&quot;,&quot;itemListElement&quot;:[{&quot;@type&quot;:&quot;ListItem&quot;,&quot;position&quot;:1,&quot;name&quot;:&quot;홈&quot;,&quot;item&quot;:&quot;<data:blog.homepageUrl.jsonEscaped/>&quot;}<b:if cond='data:view.isPost and data:post.labels'>,{&quot;@type&quot;:&quot;ListItem&quot;,&quot;position&quot;:2,&quot;name&quot;:&quot;<data:post.labels.first.name.jsonEscaped/>&quot;,&quot;item&quot;:&quot;<data:post.labels.first.url.jsonEscaped/>&quot;}</b:if>,{&quot;@type&quot;:&quot;ListItem&quot;,&quot;position&quot;:<b:if cond='data:view.isPost and data:post.labels'>3<b:else/>2</b:if>,&quot;name&quot;:&quot;<data:post.title.jsonEscaped/>&quot;,&quot;item&quot;:&quot;<data:post.url.canonical.jsonEscaped/>&quot;}]}</script>
             <header class='post-header'>
               <h1 class='post-title entry-title'><data:post.title/></h1>
               <b:if cond='data:view.isPost'>
@@ -2146,6 +2140,9 @@ body.dl-menu-open .dl-menu-in > a { transform: none; opacity: 1; }
       }
     });
   });
+
+  /* 10-1. 날짜 표시를 2026. 02. 17 꼴로 (블로그 날짜 형식 설정과 상관없이) */
+  $$('time[datetime]').forEach(function (t) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(t.getAttribute('datetime')); if (m) t.textContent = m[1] + '. ' + m[2] + '. ' + m[3]; });
 
   /* 11. 글 목차 (소제목이 3개 이상인 글) */
   if (body && D.body.classList.contains('dl-post')) {
