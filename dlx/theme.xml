@@ -605,6 +605,8 @@ body.dl-menu-open .dl-menu-in > a { transform: none; opacity: 1; }
 
 /* ===== [19] 글 묶음 (포트폴리오·인사이트) ===== */
 .dl-feed .dl-empty { grid-column: 1 / -1; }
+.dl-feed { min-height: 380px; }
+@media (min-width: 1024px) { #insights .dl-feed { min-height: 860px; } }
 
 /* ===== [20] 무료 도구 ===== */
 .dl-tool { padding: 26px 24px; border-radius: var(--dl-r); background: #fff; border: 1px solid var(--dl-line); }
@@ -2112,7 +2114,7 @@ html.dl-is-admin .dl-menu-in > a.dl-nav-admin { display: flex !important; }
     if (pick) { pick.checked = true; syncPicks(); }
     f.elements.plan.value = a.getAttribute('data-plan') || '';
     W.__dlPlan = a.getAttribute('data-plan') || '';
-    $('#contact').scrollIntoView({ behavior: 'smooth' });
+    goTo($('#contact'), true); settle($('#contact'));
   });
 
   /* 3-1. 상담 신청 STEP 1 → 접수 폼(단계별)으로 */
@@ -2158,10 +2160,11 @@ html.dl-is-admin .dl-menu-in > a.dl-nav-admin { display: flex !important; }
   }
 
   /* 5. 글 묶음 (포트폴리오·인사이트) — 블로그 글 목록에서 */
+  var feedJobs = [];
   $$('[data-dl-feed]').forEach(function (box) {
     var label = box.getAttribute('data-dl-feed'), max = +box.getAttribute('data-max') || 6, skip = box.getAttribute('data-skip') || '';
     var url = '/feeds/posts/default' + (label ? '/-/' + encodeURIComponent(label) : '') + '?alt=json&max-results=' + (max + (skip ? 12 : 0));
-    fetch(url).then(function (r) { return r.json(); }).then(function (j) {
+    feedJobs.push(fetch(url).then(function (r) { return r.json(); }).then(function (j) {
       var es = (j.feed && j.feed.entry) || [];
       es = es.filter(function (e) { return !skip || !(e.category || []).some(function (c) { return c.term === skip; }); }).slice(0, max);
       if (!es.length) { if (!box.querySelector('.post-card')) box.innerHTML = '<p class="dl-empty">아직 글이 없어요.</p>'; return; }
@@ -2174,8 +2177,40 @@ html.dl-is-admin .dl-menu-in > a.dl-nav-admin { display: flex !important; }
           '<div class="post-info">' + (lab ? '<small>' + esc(lab.term) + '</small>' : '') + '<h2>' + esc(e.title.$t) + '</h2>' + (sum ? '<p class="post-snippet">' + esc(sum) + '</p>' : '') + (d ? '<time>' + d + '</time>' : '') + '</div></a>';
       }).join('');
       reveal(box);
-    }).catch(function () {});
+    }).catch(function () {}));
   });
+
+  /* 5-1. 같은 화면 안 섹션 이동 (#contact 등) — 위쪽 글 묶음·상품 목록이 늦게 채워져 높이가 바뀌어도 정확히 그 섹션 머리에 멈춤 */
+  function hashTarget(h) { if (!h || h.length < 2 || /^#dcadmin/.test(h)) return null; try { return D.getElementById(decodeURIComponent(h.slice(1))); } catch (e) { return null; } }
+  function goTo(el, smooth) {
+    if (!el) return;
+    var off = (hd ? hd.offsetHeight : 64) + 8, y = el.getBoundingClientRect().top + W.pageYOffset - off;
+    W.scrollTo({ top: Math.max(0, y), behavior: smooth ? 'smooth' : 'auto' });
+  }
+  function settle(el) {   // 이동 뒤 높이가 바뀌면 다시 맞춤 (최대 3초)
+    var n = 0, t = setInterval(function () {
+      n++; var d = el.getBoundingClientRect().top - ((hd ? hd.offsetHeight : 64) + 8);
+      if (Math.abs(d) > 6 && n > 3) goTo(el, false);
+      if (n >= 12) clearInterval(t);
+    }, 250);
+  }
+  D.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href*="#"]');
+    if (!a || e.defaultPrevented || a.hasAttribute('data-dl-ask') || a.target === '_blank') return;
+    var u; try { u = new URL(a.href, location.href); } catch (er) { return; }
+    if (u.pathname !== location.pathname || u.host !== location.host) return;
+    var el = hashTarget(u.hash); if (!el) return;
+    e.preventDefault(); setMenu(false);
+    if (location.hash !== u.hash) history.pushState(null, '', u.hash);
+    goTo(el, true); settle(el);
+  });
+  var landEl = hashTarget(location.hash);
+  if (landEl) {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    var land = function () { goTo(landEl, false); settle(landEl); };
+    Promise.all(feedJobs).then(function () { setTimeout(land, 50); });
+    W.addEventListener('load', land);
+  }
 
   /* 6. 자주 묻는 질문 → 검색엔진·AI 답변용 FAQ 정보 (AEO) */
   var faq = $('[data-dl-faq]');
