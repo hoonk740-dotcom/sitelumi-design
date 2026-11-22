@@ -171,29 +171,28 @@
 <b:include data='blog' name='google-analytics'/>
 
 <b:template-skin><![CDATA[
-/* 「레이아웃」 편집 화면 전용 — 모든 영역·가젯을 같은 너비(640px)로 가운데 정렬 (실제 사이트에는 영향 없음) */
+/* 「레이아웃」 편집 화면 전용 — 모든 영역·가젯을 같은 너비(640px)로 가운데 정렬 (실제 사이트에는 영향 없음)
+   편집 화면은 box-sizing 을 무시하므로 너비를 직접 계산: 영역 614 + 안쪽 여백 12×2 + 테두리 1×2 = 640 */
 body#layout { overflow: visible !important; background: #f1f5f9 !important; min-height: 100vh !important; padding: 24px 0 60px !important; margin: 0 !important; font: normal normal 13px Pretendard, 'Noto Sans KR', sans-serif !important; }
 body#layout .dl-skip, body#layout #dlMenu { display: none !important; }
 body#layout #outer-wrapper, body#layout #dl-main, body#layout .ad-warehouse, body#layout .ad-warehouse-nav {
-  display: block !important; position: static !important; float: none !important; box-sizing: border-box !important;
-  width: 640px !important; max-width: calc(100% - 24px) !important; margin: 0 auto !important; padding: 0 !important; border: 0 !important; background: none !important; overflow: visible !important; height: auto !important; }
-body#layout #dl-main, body#layout #outer-wrapper #dl-main { width: 100% !important; max-width: 100% !important; }
-body#layout div.section, body#layout .section {
-  display: block !important; position: relative !important; float: none !important; clear: both !important; box-sizing: border-box !important;
-  width: 640px !important; max-width: calc(100% - 24px) !important; min-width: 0 !important; height: auto !important; min-height: 60px !important;
+  display: block !important; position: static !important; float: none !important;
+  width: 640px !important; max-width: none !important; margin: 0 auto !important; padding: 0 !important; border: 0 !important; background: none !important; overflow: visible !important; height: auto !important; }
+body#layout div.section {
+  display: block !important; position: relative !important; float: none !important; clear: both !important; left: auto !important; right: auto !important;
+  width: 614px !important; max-width: none !important; min-width: 0 !important; height: auto !important; min-height: 40px !important;
   margin: 0 auto 14px !important; padding: 12px !important;
   border: 1px dashed #cbd5e1 !important; border-radius: 10px !important; background: #f8fafc !important; overflow: visible !important; }
-body#layout #outer-wrapper div.section, body#layout .ad-warehouse div.section, body#layout .ad-warehouse-nav div.section { width: 100% !important; max-width: 100% !important; }
 body#layout div.section h4 { margin: 0 0 10px !important; padding: 0 2px !important; font-size: 13px !important; font-weight: 700 !important; color: #4f46e5 !important; }
 body#layout .ad-warehouse div.section h4, body#layout .ad-warehouse-nav div.section h4 { color: #64748b !important; }
 body#layout #Homepage-WebApp-Section { border-color: #a5b4fc !important; background: #eef2ff !important; }
-body#layout div.section .widget, body#layout div.section .add_widget, body#layout div.section .dropregion {
-  display: block !important; float: none !important; box-sizing: border-box !important; width: 100% !important; max-width: 100% !important; min-width: 0 !important; height: auto !important; margin: 0 0 8px !important; left: auto !important; right: auto !important; }
-body#layout div.section .widget-wrap1, body#layout div.section .widget-wrap2, body#layout div.section .widget-wrap3 { box-sizing: border-box !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; }
-body#layout div.section .widget:last-child { margin-bottom: 0 !important; }
-body#layout div.section .widget-content { box-sizing: border-box !important; width: 100% !important; overflow: hidden !important; }
+body#layout div.section .widget, body#layout div.section .dropregion {
+  display: block !important; float: none !important; position: relative !important; left: auto !important; right: auto !important;
+  width: 614px !important; max-width: none !important; min-width: 0 !important; height: auto !important; margin: 0 0 8px !important; padding: 0 !important; }
+body#layout div.section .widget-wrap1, body#layout div.section .widget-wrap2, body#layout div.section .widget-wrap3 { width: auto !important; max-width: none !important; margin: 0 !important; }
+body#layout div.section .widget .widget-content { width: auto !important; max-width: none !important; overflow: hidden !important; }
+body#layout div.section .add_widget { width: auto !important; margin: 0 0 8px !important; float: none !important; text-align: center !important; border-radius: 8px !important; }
 body#layout .layout-title, body#layout .layout-widget-description { white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
-body#layout div.section .add_widget { text-align: center !important; border-radius: 8px !important; }
 ]]></b:template-skin>
 
 <b:skin version='1.0.0'><![CDATA[
