@@ -210,9 +210,9 @@ body#layout .add_widget a { display: block !important; width: 100% !important; }
  첫 화면 섹션은 「레이아웃」의 HTML 가젯 하나씩 (가젯에서 문구·순서·켜기/끄기)
  여기에는 모든 화면이 함께 쓰는 디자인(토큰·버튼·섹션 틀·글 화면·광고 영역)만 둠
 -----------------------------------------------
-*/
 <Variable name="keycolor" description="포인트 색" type="color" default="#6366f1" value="#6366f1"/>
 <Variable name="inkcolor" description="진한 글자·네이비" type="color" default="#0f172a" value="#0f172a"/>
+*/
 
 /* [1] 토큰 · 기본 */
 :root {
