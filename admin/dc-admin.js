@@ -183,7 +183,7 @@
     mainBox.innerHTML = '<div class="ad-head"><h1>사이트 관리</h1><small>' + escH(cfg().email || '') + '</small></div>' +
       '<style>#dc-admin .st-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin:0 0 26px}#dc-admin .st-link{display:flex;flex-direction:column;gap:2px;padding:14px 16px;background:#fff;border:1px solid var(--line)}#dc-admin .st-link:hover{border-color:var(--ink)}#dc-admin .st-link b{font-size:15px}#dc-admin .st-link span{font-size:13px;color:var(--mute)}#dc-admin .st-h{margin:0 0 10px;font-size:15px;font-weight:900}#dc-admin .st-row{display:flex;justify-content:space-between;gap:12px;padding:11px 2px;border-bottom:1px solid var(--line);font-size:14.5px}#dc-admin .st-row small{color:var(--mute);white-space:nowrap}#dc-admin .st-row a.e{color:var(--key);font-weight:700;white-space:nowrap}</style>' +
       '<p class="st-h">블로그</p><div class="st-grid">' +
-        L(B + 'post/create/' + BLOG_ID, '새 글 쓰기', '블로거 편집기') + L(B + 'posts/' + BLOG_ID, '글 목록', '공개 글 · 임시글') + L(B + 'pages/' + BLOG_ID, '정적 페이지', '도구 · 안내 페이지') +
+        '<a class="st-link" href="#" id="st-new"><b>새 글 쓰기</b><span>빈 임시글을 만들고 편집기 열기</span></a>' + L(B + 'posts/' + BLOG_ID, '글 목록', '공개 글 · 임시글') + L(B + 'pages/' + BLOG_ID, '정적 페이지', '도구 · 안내 페이지') +
         L(B + 'layout/' + BLOG_ID, '레이아웃', '첫 화면 섹션 가젯') + L(B + 'themes/edit/' + BLOG_ID, '테마 HTML', '디자인 · 구조') + L(B + 'stats/week/' + BLOG_ID, '통계', '방문 · 인기 글') + L(B + 'settings/' + BLOG_ID, '설정', '검색 설명 · 도메인') + '</div>' +
       '<p class="st-h">검색 · 분석</p><div class="st-grid">' +
         L('https://searchadvisor.naver.com/console/board', '네이버 서치어드바이저', '수집 · 사이트맵 · 진단') + L('https://search.google.com/search-console?resource_id=sc-domain%3Adecisionlabx.com', '구글 서치 콘솔', '색인 · 검색 성과') +
@@ -191,6 +191,13 @@
       '<p class="st-h">바로 처리</p><div class="st-grid">' +
         '<a class="st-link" href="#dcadmin/t/%EC%83%88%20%EC%A0%91%EC%88%98"><b>새 접수</b><span>아직 안 본 접수</span></a><a class="st-link" href="#dcadmin/t/%EB%AC%B8%EC%9D%98"><b>간단 문의</b><span>홈 상담 신청 포함</span></a><a class="st-link" href="#dcadmin/stats"><b>랜딩 통계</b><span>방문 · 전환</span></a></div>' +
       '<p class="st-h">최근 공개 글</p><div id="st-posts"><p style="color:var(--mute)">불러오는 중…</p></div>';
+    mainBox.querySelector('#st-new').addEventListener('click', function (e) {
+      e.preventDefault(); var w = window.open('about:blank', '_blank'), sp = this.querySelector('span'); sp.textContent = '만드는 중…';
+      api({ a: 'newPost' }).then(function (r) {
+        if (r && r.ok && r.edit) { if (w) w.location.href = r.edit; else location.href = r.edit; sp.textContent = '편집기를 열었어요'; }
+        else { if (w) w.close(); sp.textContent = (r && r.msg) || '만들지 못했어요'; }
+      }).catch(function () { if (w) w.close(); sp.textContent = '만들지 못했어요'; });
+    });
     fetch('/feeds/posts/default?alt=json&max-results=12').then(function (r) { return r.json(); }).then(function (j) {
       var es = (j.feed && j.feed.entry) || [], box = mainBox.querySelector('#st-posts'); if (!box) return;
       box.innerHTML = es.map(function (e) {
