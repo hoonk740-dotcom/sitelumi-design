@@ -1,7 +1,7 @@
 /*! 디씨젼랩 관리 화면 (dc-admin.js) — decisionlabx.com 안에서 #dcadmin 으로 열림
  *  접수 글 = 디씨젼랩 블로그 임시글 (공개·검색 안 됨) · 읽기/처리는 접수 GAS 가 관리자 키로
  *  주소: #dcadmin · #dcadmin/t/라벨 · #dcadmin/q/검색어 · #dcadmin/p/글번호 · #dcadmin/stats(/접수번호)
- *  관리자 키는 이 브라우저에만 저장 (코드·테마에 없음) */
+ *  로그인: 구글 계정(관리자 이메일만) — dc-auth 웹앱(나만 열림)이 만든 구글 서명 토큰(1시간)을 이 브라우저에만 저장 */
 (function () {
   'use strict';
   if (window.__dcAdmin) { window.__dcAdmin(); return; }
@@ -9,12 +9,30 @@
   var CFG_KEY = 'dcAdminCfg';
   var DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbzcRM7Tpexe8vIsD-BTCnt72o-e69Cq4voBpXonPnlOytdi_noXjs1RqwghNKMhJSV8xA/exec';
   var TRACK_URL = 'https://script.google.com/macros/s/AKfycbyVFZA4O844YPZPU_nOrkjWm0pvPFCorJMESSWJf3SqrcADhvyLEQrtYnefWIWUOQWz3g/exec';
-  function cfg() { var c = {}; try { c = JSON.parse(localStorage.getItem(CFG_KEY) || '{}'); } catch (e) {} c.url = DEFAULT_URL; return c; }
+  var AUTH_URL = 'https://script.google.com/macros/s/AKfycbyqNC3X0G_e0zkc7nXTrVrPdU7474RR5FLs9emlU8fJDW81FkqYVT9gj2qUJk-swGEk/exec';
+  function cfg() { var c = {}; try { c = JSON.parse(localStorage.getItem(CFG_KEY) || '{}'); } catch (e) {} if (!c.exp || c.exp * 1000 < Date.now() + 30000) c = {}; c.url = DEFAULT_URL; return c; }
+  function forget() { try { localStorage.removeItem(CFG_KEY); } catch (e) {} }
+  function jwtBody(t) { try { var b = t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'); return JSON.parse(decodeURIComponent(escape(atob(b + '==='.slice((b.length + 3) % 4))))); } catch (e) { return null; } }
+  function login() {
+    var w = 460, h = 600, x = Math.max(0, (screen.width - w) / 2), y = Math.max(0, (screen.height - h) / 3);
+    var pop = window.open(AUTH_URL + '?o=' + encodeURIComponent(location.origin), 'dcauth', 'width=' + w + ',height=' + h + ',left=' + x + ',top=' + y);
+    if (!pop) location.href = AUTH_URL + '?o=' + encodeURIComponent(location.origin);
+  }
+  window.addEventListener('message', function (e) {
+    if (!/^https:\/\/([a-z0-9-]+\.)*(googleusercontent\.com|script\.google\.com)$/.test(e.origin)) return;
+    var d = e.data || {}; if (d.type !== 'dc-auth' || !d.token) return;
+    var b = jwtBody(d.token); if (!b || !b.exp) return;
+    try { localStorage.setItem(CFG_KEY, JSON.stringify({ key: d.token, exp: b.exp, email: b.email || '', via: 'google' })); } catch (er) {}
+    route();
+  });
+  function authA(r) { return r.json().then(function (j) { if (j && j.auth) { forget(); setTimeout(route, 0); } return j; }); }
   function escH(t) { return String(t == null ? '' : t).replace(/[&<>"']/g, function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]; }); }
   function labelsOf(el) { return Array.prototype.map.call(el.querySelectorAll('.chip, .ad-labels a'), function (x) { return x.textContent.trim(); }).filter(Boolean); }
   function statusOf(ls) { for (var i = 0; i < ls.length; i++) if (STATUS[ls[i]]) return ls[i]; return ''; }
-  function api(body) { body.key = cfg().key; return fetch(DEFAULT_URL, { method: 'POST', body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+  function api(body) { body.key = cfg().key; return fetch(DEFAULT_URL, { method: 'POST', body: JSON.stringify(body) }).then(authA); }
   var ICON = {
+    out: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>',
+    google: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5a5.6 5.6 0 0 1-2.4 3.6v3h3.9c2.3-2.1 3.5-5.2 3.5-8.8z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-2.9l-3.9-3c-1.1.7-2.5 1.2-4.1 1.2-3.1 0-5.8-2.1-6.7-5H1.3v3.1A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.3 14.3a7.2 7.2 0 0 1 0-4.6V6.6H1.3a12 12 0 0 0 0 10.8z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.3.6 4.6 1.8l3.4-3.4A12 12 0 0 0 1.3 6.6l4 3.1c.9-2.9 3.6-4.9 6.7-4.9z"/></svg>',
     key: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="M10.8 12.2L20 3M16 7l3 3M14 9l2 2"/></svg>',
     x: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
     search: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>'
@@ -79,11 +97,11 @@
     '#dc-admin .ad-gate{max-width:440px;margin:80px auto;padding:28px;background:#fff;border:1px solid var(--ink)}#dc-admin .ad-gate h1{margin:0 0 6px;font-size:22px;font-weight:900}',
     '@media (max-width:640px){#dc-admin .ad-bar{flex-wrap:wrap;row-gap:10px}#dc-admin .ad-top{position:static}#dc-admin .ad-tabs a{padding:5px 10px;font-size:13px}#dc-admin .ad-tabs .sep{display:none}#dc-admin .ad-tabs .grp{flex-basis:100%;padding:4px 0 0}#dc-admin main{padding:22px 16px 80px}#dc-admin .ad-search{order:3;max-width:none;flex-basis:100%}#dc-admin .ad-item{grid-template-columns:1fr auto}#dc-admin .ad-item .st{grid-column:1/-1;justify-self:start}#dc-admin .ad-post{padding:18px}}'
   ].join('\n');
-  var TABS = [['all', '전체'], ['새 접수', '새 접수'], ['진행 중', '진행 중'], ['보류', '보류'], ['완료', '완료'], '|', ['문의', '간단 문의'], '|', 'grp:상품', 'PROD', ['사이트루미', '사이트루미 세팅'], '|', 'grp:성과', ['@stats', '랜딩 통계'],
+  var TABS = [['@site', '사이트 관리'], '|', ['all', '전체'], ['새 접수', '새 접수'], ['진행 중', '진행 중'], ['보류', '보류'], ['완료', '완료'], '|', ['문의', '간단 문의'], '|', 'grp:상품', 'PROD', ['사이트루미', '사이트루미 세팅'], '|', 'grp:성과', ['@stats', '랜딩 통계'],
               '|', 'grp:운영', ['주문', '편집기 주문'], ['사이트 목록', '사이트 목록'], ['브랜드 자산', '브랜드 자산'], ['사진', '사진 글'], ['맞춤 코드', '맞춤 코드'], ['씬 등록부', '씬 등록부']];
   var PROD_DEFAULT = ['AI 영상', '상세페이지', '랜딩페이지', '광고 이미지', '썸네일'];
   var root, mainBox, cur = 'all', qWord = '', prevTitle = document.title, prevOverflow = '';
-  function tabHref(k) { return k === 'all' ? '#dcadmin' : k === '@stats' ? '#dcadmin/stats' : '#dcadmin/t/' + encodeURIComponent(k); }
+  function tabHref(k) { return k === 'all' ? '#dcadmin' : k === '@stats' ? '#dcadmin/stats' : k === '@site' ? '#dcadmin/site' : '#dcadmin/t/' + encodeURIComponent(k); }
   function prodNames() { var c = null; try { c = JSON.parse(localStorage.getItem('dcCatalog2') || 'null'); } catch (e) {} return c && c.c && c.c.products ? c.c.products.map(function (p) { return p.name; }).filter(function (n) { return n !== '홈페이지' && n !== '사이트루미'; }) : PROD_DEFAULT; }
   function drawTabs() {
     var nav = root.querySelector('#ad-tabs'), h = '';
@@ -99,7 +117,7 @@
   function refreshCatalog() {
     var cached = null; try { cached = JSON.parse(localStorage.getItem('dcCatalog2') || 'null'); } catch (e) {}
     if (cached && Date.now() - cached.t < 6 * 3600 * 1000) return;
-    fetch(DEFAULT_URL + '?a=catalog').then(function (r) { return r.json(); }).then(function (c) {
+    fetch(DEFAULT_URL + '?a=catalog').then(authA).then(function (c) {
       if (!c || !c.ok) return; try { localStorage.setItem('dcCatalog2', JSON.stringify({ t: Date.now(), c: c })); } catch (e) {} if (root) drawTabs();
     }).catch(function () {});
   }
@@ -108,26 +126,14 @@
     root = document.createElement('div'); root.id = 'dc-admin'; root.setAttribute('role', 'dialog'); root.setAttribute('aria-label', '디씨젼랩 관리');
     root.innerHTML = '<header class="ad-top"><div class="wrap"><div class="ad-bar"><a class="ad-logo" href="#dcadmin">DecisionLAB<small>관리</small></a>' +
       '<form class="ad-search" id="ad-search" role="search"><input aria-label="접수 검색" id="ad-q" placeholder="상호 · 이름 · 접수번호 · 라벨"/><button aria-label="검색" type="submit">' + ICON.search + '</button></form>' +
-      '<button class="ad-icon" id="ad-set" title="관리자 키" aria-label="관리자 키" type="button">' + ICON.key + '</button><button class="ad-icon" id="ad-close" title="사이트로 돌아가기" aria-label="닫기" type="button">' + ICON.x + '</button></div>' +
-      '<nav aria-label="보기" class="ad-tabs" id="ad-tabs"></nav></div></header><main class="wrap" id="ad-main"></main>' +
-      '<div class="ad-modal" id="ad-modal"><div><h3>관리자 키</h3><p>접수 GAS 의 관리자 키를 넣으면 이 브라우저에서만 기억해요. 공용 컴퓨터에서는 쓰지 마세요.</p><label for="ad-key">관리자 키</label><input autocomplete="off" id="ad-key" type="password"/>' +
-      '<div class="row"><button class="ad-btn" id="ad-forget" type="button">이 브라우저에서 지우기</button><button class="ad-btn" id="ad-cancel" type="button">닫기</button><button class="ad-btn" id="ad-save" style="background:#0f172a;color:#fff;border-color:#0f172a" type="button">저장</button></div></div></div>';
+      '<button class="ad-icon" id="ad-set" title="로그아웃" aria-label="로그아웃" type="button">' + ICON.out + '</button><button class="ad-icon" id="ad-close" title="사이트로 돌아가기" aria-label="닫기" type="button">' + ICON.x + '</button></div>' +
+      '<nav aria-label="보기" class="ad-tabs" id="ad-tabs"></nav></div></header><main class="wrap" id="ad-main"></main>';
     document.body.appendChild(root);
     mainBox = root.querySelector('#ad-main');
     root.querySelector('#ad-search').addEventListener('submit', function (e) { e.preventDefault(); var q = root.querySelector('#ad-q').value.trim(); location.hash = q ? '#dcadmin/q/' + encodeURIComponent(q) : '#dcadmin'; });
     root.querySelector('#ad-close').addEventListener('click', function () { history.pushState(null, '', location.pathname + location.search); route(); });
-    var modal = root.querySelector('#ad-modal');
-    root.querySelector('#ad-set').addEventListener('click', openSet);
-    root.querySelector('#ad-cancel').addEventListener('click', function () { modal.classList.remove('on'); });
-    root.querySelector('#ad-forget').addEventListener('click', function () { try { localStorage.removeItem(CFG_KEY); } catch (e) {} modal.classList.remove('on'); route(); });
-    modal.addEventListener('click', function (e) { if (e.target === modal) modal.classList.remove('on'); });
-    root.querySelector('#ad-save').addEventListener('click', function () {
-      var key = root.querySelector('#ad-key').value.trim(); if (key.length < 10) { alert('관리자 키를 확인해 주세요.'); return; }
-      try { localStorage.setItem(CFG_KEY, JSON.stringify({ key: key })); } catch (e) {}
-      modal.classList.remove('on'); route();
-    });
+    root.querySelector('#ad-set').addEventListener('click', function () { forget(); route(); });
   }
-  function openSet() { root.querySelector('#ad-key').value = cfg().key || ''; root.querySelector('#ad-modal').classList.add('on'); setTimeout(function () { root.querySelector('#ad-key').focus(); }, 50); }
   function open() {
     if (!root) build();
     root.style.display = '';
@@ -152,18 +158,46 @@
     if (kind === 'p') cur = '';
     else if (kind === 'q') qWord = arg;
     else if (kind === 'stats') cur = '@stats';
+    else if (kind === 'site') cur = '@site';
     else if (kind === 't') cur = arg;
     else cur = 'all';
     drawTabs();
     root.querySelector('#ad-q').value = qWord;
     root.scrollTop = 0;
     if (!cfg().key) {
-      mainBox.innerHTML = '<div class="ad-gate"><h1>관리자 키가 필요해요</h1><p style="color:#475569;font-size:14px">접수 GAS 의 관리자 키를 넣으면 이 브라우저에서만 기억해요.</p><button class="ad-btn" id="ad-gate-key" style="background:#0f172a;color:#fff;border-color:#0f172a" type="button">관리자 키 넣기</button></div>';
-      mainBox.querySelector('#ad-gate-key').addEventListener('click', openSet); return;
+      mainBox.innerHTML = '<div class="ad-gate"><h1>관리자 로그인</h1><p style="color:#475569;font-size:14px;margin:0 0 16px">디씨젼랩 관리자 구글 계정으로만 들어올 수 있어요. 로그인은 1시간 유지되고, 이 브라우저에만 남아요.</p>' +
+        '<button class="ad-btn" id="ad-gate-key" style="display:inline-flex;align-items:center;gap:10px;height:46px;padding:0 18px;background:#fff;border:1px solid #0f172a;font-weight:800" type="button">' + ICON.google + '구글 계정으로 로그인</button>' +
+        '<p id="ad-gate-msg" style="color:#94a3b8;font-size:13px;margin:12px 0 0">새 창이 열리지 않으면 팝업 차단을 풀어 주세요.</p></div>';
+      mainBox.querySelector('#ad-gate-key').addEventListener('click', login); return;
     }
     if (kind === 'p') return viewPost(arg);
     if (kind === 'stats') return renderStats(mainBox, arg);
+    if (kind === 'site') return siteView();
     listView();
+  }
+
+  /* ───── 사이트 관리 (디씨젼랩 블로그 바로가기 · 최근 글 · 새 문의) ───── */
+  var BLOG_ID = '8137647935632071500';
+  function siteView() {
+    var B = 'https://www.blogger.com/blog/', L = function (href, t, d) { return '<a class="st-link" href="' + href + '" target="_blank" rel="noopener"><b>' + t + '</b><span>' + d + '</span></a>'; };
+    mainBox.innerHTML = '<div class="ad-head"><h1>사이트 관리</h1><small>' + escH(cfg().email || '') + '</small></div>' +
+      '<style>#dc-admin .st-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin:0 0 26px}#dc-admin .st-link{display:flex;flex-direction:column;gap:2px;padding:14px 16px;background:#fff;border:1px solid var(--line)}#dc-admin .st-link:hover{border-color:var(--ink)}#dc-admin .st-link b{font-size:15px}#dc-admin .st-link span{font-size:13px;color:var(--mute)}#dc-admin .st-h{margin:0 0 10px;font-size:15px;font-weight:900}#dc-admin .st-row{display:flex;justify-content:space-between;gap:12px;padding:11px 2px;border-bottom:1px solid var(--line);font-size:14.5px}#dc-admin .st-row small{color:var(--mute);white-space:nowrap}#dc-admin .st-row a.e{color:var(--key);font-weight:700;white-space:nowrap}</style>' +
+      '<p class="st-h">블로그</p><div class="st-grid">' +
+        L(B + 'post/create/' + BLOG_ID, '새 글 쓰기', '블로거 편집기') + L(B + 'posts/' + BLOG_ID, '글 목록', '공개 글 · 임시글') + L(B + 'pages/' + BLOG_ID, '정적 페이지', '도구 · 안내 페이지') +
+        L(B + 'layout/' + BLOG_ID, '레이아웃', '첫 화면 섹션 가젯') + L(B + 'themes/edit/' + BLOG_ID, '테마 HTML', '디자인 · 구조') + L(B + 'stats/week/' + BLOG_ID, '통계', '방문 · 인기 글') + L(B + 'settings/' + BLOG_ID, '설정', '검색 설명 · 도메인') + '</div>' +
+      '<p class="st-h">검색 · 분석</p><div class="st-grid">' +
+        L('https://searchadvisor.naver.com/console/board', '네이버 서치어드바이저', '수집 · 사이트맵 · 진단') + L('https://search.google.com/search-console?resource_id=sc-domain%3Adecisionlabx.com', '구글 서치 콘솔', '색인 · 검색 성과') +
+        L('https://analytics.google.com/', '구글 애널리틱스', 'G-9P43SNBQ2D') + L('https://www.google.com/adsense/', '애드센스', '수익') + '</div>' +
+      '<p class="st-h">바로 처리</p><div class="st-grid">' +
+        '<a class="st-link" href="#dcadmin/t/%EC%83%88%20%EC%A0%91%EC%88%98"><b>새 접수</b><span>아직 안 본 접수</span></a><a class="st-link" href="#dcadmin/t/%EB%AC%B8%EC%9D%98"><b>간단 문의</b><span>홈 상담 신청 포함</span></a><a class="st-link" href="#dcadmin/stats"><b>랜딩 통계</b><span>방문 · 전환</span></a></div>' +
+      '<p class="st-h">최근 공개 글</p><div id="st-posts"><p style="color:var(--mute)">불러오는 중…</p></div>';
+    fetch('/feeds/posts/default?alt=json&max-results=12').then(function (r) { return r.json(); }).then(function (j) {
+      var es = (j.feed && j.feed.entry) || [], box = mainBox.querySelector('#st-posts'); if (!box) return;
+      box.innerHTML = es.map(function (e) {
+        var id = (e.id.$t.match(/post-(\d+)/) || [])[1], link = ((e.link || []).filter(function (l) { return l.rel === 'alternate'; })[0] || {}).href;
+        return '<div class="st-row"><a href="' + escH(link) + '" target="_blank" rel="noopener">' + escH(e.title.$t) + '</a><span style="display:flex;gap:12px"><small>' + escH((e.updated.$t || '').slice(0, 10)) + '</small><a class="e" href="' + B + 'post/edit/' + BLOG_ID + '/' + id + '" target="_blank" rel="noopener">고치기</a></span></div>';
+      }).join('') || '<p style="color:var(--mute)">글이 없어요.</p>';
+    }).catch(function () {});
   }
 
   /* ───── 목록 ───── */
@@ -178,7 +212,7 @@
     var want = cur, wantQ = qWord;
     api({ a: 'list', label: qWord || cur === 'all' ? '' : cur, q: qWord, pageToken: token || '' }).then(function (r) {
       if (want !== cur || wantQ !== qWord || !list.isConnected) return;
-      if (!r || !r.ok) { say((r && r.msg) || '목록을 못 읽었어요'); if (r && /키/.test(r.msg || '')) openSet(); return; }
+      if (!r || !r.ok) { say((r && r.msg) || '목록을 못 읽었어요'); if (r && r.auth) { forget(); route(); } return; }
       var html = (r.items || []).map(function (x) {
         return '<a class="ad-item" href="#dcadmin/p/' + escH(x.id) + '"><span class="st">…</span><div><h2>' + escH(x.title) + '</h2><div class="ad-meta">' +
           (x.labels || []).map(function (l) { return '<span class="chip">' + escH(l) + '</span>'; }).join('') + '</div></div><span class="ad-date">' + escH(String(x.published || '').slice(0, 10)) + '</span></a>';
@@ -268,11 +302,11 @@
         else cbtn.classList.remove('ad-hidden');
         cbtn.addEventListener('click', function () {
           var c = cfg();
-          if (!c.url || !c.key) { openSet(); return; }
+          if (!c.url || !c.key) { forget(); route(); return; }
           if (!confirm('통장에 입금이 들어온 것을 확인하셨나요?\n확인을 누르면 등급 증명을 발급해 구매자 사이트에 바로 적용합니다.')) return;
           cbtn.disabled = true; msg.textContent = '적용하는 중… (10~30초)';
           fetch(c.url, { method: 'POST', body: JSON.stringify({ a: 'confirm', key: c.key, postId: post.getAttribute('data-id') }) })
-            .then(function (r) { return r.json(); })
+            .then(authA)
             .then(function (r) { if (!r.ok) throw new Error(r.msg || '실패'); msg.textContent = r.msg; cbtn.classList.add('ad-hidden'); setTimeout(route, 2500); })
             .catch(function (e) { cbtn.disabled = false; msg.textContent = '적용하지 못했습니다: ' + e.message + ' (설정 확인)'; });
         });
@@ -291,14 +325,14 @@
           return b;
         };
         var sendC = function (publish) {
-          var c = cfg(); if (!c.url || !c.key) { openSet(); return; }
+          var c = cfg(); if (!c.url || !c.key) { forget(); route(); return; }
           if (!site) { msg.textContent = '라벨에 site:블로그ID 를 넣어 주세요 (사이트 목록 글에 블로그 ID 가 있어요).'; return; }
           var b = collect(), size = JSON.stringify(b).length;
           if (b.js) { try { new Function('page', 'HP', b.js); } catch (e) { msg.textContent = 'JS 문법 오류: ' + e.message; return; } }
           if (!confirm((publish ? '바로 공개합니다.' : '초안으로 보냅니다.') + '\n받는 사이트: ' + site.slice(5) + '\n크기: ' + Math.round(size / 100) / 10 + 'KB')) return;
           msg.textContent = '보내는 중… (10~30초)';
           fetch(c.url, { method: 'POST', body: JSON.stringify({ a: 'customSend', key: c.key, blogId: site.slice(5), postId: post.getAttribute('data-id'), publish: publish, bundle: b }) })
-            .then(function (r) { return r.json(); })
+            .then(authA)
             .then(function (r) { if (!r.ok) throw new Error(r.msg || '실패'); msg.textContent = r.msg; setTimeout(route, 2500); })
             .catch(function (e) { msg.textContent = '보내지 못했습니다: ' + e.message; });
         };
@@ -307,10 +341,10 @@
       }
       function setStatus(to) {
         var c = cfg();
-        if (!c.url || !c.key) { openSet(); return; }
+        if (!c.url || !c.key) { forget(); route(); return; }
         msg.textContent = '바꾸는 중…';
         fetch(c.url, { method: 'POST', body: JSON.stringify({ a: 'status', key: c.key, postId: post.getAttribute('data-id'), to: to }) })
-          .then(function (r) { return r.json(); })
+          .then(authA)
           .then(function (r) {
             if (!r.ok) throw new Error(r.msg || '실패');
             acts.querySelectorAll('[data-to]').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-to') === to); });
@@ -331,7 +365,7 @@
       function dpct(a, b) { if (!b) return a ? '신규' : '-'; var d = (a - b) / b * 100; return (d >= 0 ? '+' : '') + d.toFixed(0) + '%'; }
       function diff(a, b) { var t = dpct(a, b); return t === '-' ? '' : '<i style="font-style:normal;font-size:12px;margin-left:6px;color:' + (t.charAt(0) === '-' ? '#B42318' : '#067647') + '">' + t + '</i>'; }
       function secs(s, v) { if (!v) return '-'; var a = Math.round(s / v); return a >= 60 ? Math.floor(a / 60) + '분 ' + (a % 60) + '초' : a + '초'; }
-      function post(body) { body.key = c.key; return fetch(TRACK_URL, { method: 'POST', body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function post(body) { body.key = c.key; return fetch(TRACK_URL, { method: 'POST', body: JSON.stringify(body) }).then(authA); }
       function copy(t, btn) { var done = function () { var o = btn.textContent; btn.textContent = '복사했어요'; setTimeout(function () { btn.textContent = o; }, 1500); }; if (navigator.clipboard) navigator.clipboard.writeText(t).then(done, function () { prompt('복사하세요', t); }); else prompt('복사하세요', t); }
       var st = document.createElement('style');
       st.textContent = '.ts-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 14px}.ts-bar select,.ts-bar input{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;min-width:0}' +
@@ -350,7 +384,7 @@
         '<div><label for="ts-c">캠페인 (예: 2026_11_오픈)</label><input id="ts-c"/></div><div><label for="ts-t">소재 (예: 영상a, 포스터b)</label><input id="ts-t"/></div></div>' +
         '<div class="ts-acts" style="margin:10px 0 0"><button class="ad-btn" id="ts-mk" type="button">링크 만들기 · 복사</button></div><div class="ts-out" id="ts-link" hidden></div></div>';
       var msg = document.getElementById('ts-msg'), pick = document.getElementById('ts-id'), view = document.getElementById('ts-view');
-      if (!c.key) { msg.textContent = '오른쪽 위 열쇠 버튼에 관리자 키를 넣으면 통계가 보여요'; return; }
+      if (!c.key) { msg.textContent = '관리자 로그인 뒤에 통계가 보여요'; return; }
       function fill(ids) {
         var all = {}; Object.keys(names).forEach(function (k) { all[k] = { id: k, pv: 0, lead: 0 }; }); (ids || []).forEach(function (x) { all[x.id] = x; });
         var list = Object.keys(all).map(function (k) { return all[k]; }).sort(function (a, b) { return (b.last || '') < (a.last || '') ? -1 : 1; });
@@ -359,7 +393,7 @@
         if (sel) load();
       }
       Promise.all([
-        fetch(DEFAULT_URL, { method: 'POST', body: JSON.stringify({ a: 'list', key: c.key, label: '랜딩페이지', q: '', pageToken: '' }) }).then(function (r) { return r.json(); }).catch(function () { return null; }),
+        fetch(DEFAULT_URL, { method: 'POST', body: JSON.stringify({ a: 'list', key: c.key, label: '랜딩페이지', q: '', pageToken: '' }) }).then(authA).catch(function () { return null; }),
         post({ a: 'ids', days: 400 }).catch(function (e) { return { ok: false, msg: String(e && e.message || e) }; })
       ]).then(function (res) {
         ((res[0] && res[0].items) || []).forEach(function (x) { var no = (x.labels || []).filter(function (l) { return ID_RE.test(l); })[0]; if (no) names[no] = String(x.title || '').replace(/^\[[^\]]*\]\s*/, '').split(' · ')[0]; });
