@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html b:css='false' b:defaultwidgetversion='2' b:layoutsVersion='3' b:responsive='true' lang='ko' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+  <meta charset='UTF-8'/>
+  <meta content='width=device-width, initial-scale=1' name='viewport'/>
+  <meta content='noindex, nofollow' name='robots'/>
+  <title>디씨젼 관리자 모드 → 디씨젼랩 관리</title>
+  <link href='https://www.decisionlabx.com/' rel='canonical'/>
+  <noscript><meta content='0; url=https://www.decisionlabx.com/' http-equiv='refresh'/></noscript>
+  <script>//<![CDATA[
+  location.replace('https://www.decisionlabx.com/#dcadmin');
+  //]]></script>
+  <b:skin><![CDATA[ body { margin: 0; font: 16px/1.7 -apple-system, 'Apple SD Gothic Neo', sans-serif; background: #f8fafc; color: #0f172a; } .r { max-width: 520px; margin: 18vh auto 0; padding: 0 22px; text-align: center; } .r a { color: #6366f1; font-weight: 800; } ]]></b:skin>
+</head>
+<body>
+  <div class='r'><p>디씨젼랩으로 옮겼어요.</p><p><a href='https://www.decisionlabx.com/'>https://www.decisionlabx.com/</a></p></div>
+  <b:section id='main' showaddelement='false'>
+    <b:widget id='Blog1' locked='true' title='글' type='Blog' version='2' visible='true'>
+      <b:includable id='main'/>
+    </b:widget>
+  </b:section>
+</body>
+</html>
