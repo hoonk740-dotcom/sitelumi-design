@@ -97,7 +97,7 @@
     '#dc-admin .ad-gate{max-width:440px;margin:80px auto;padding:28px;background:#fff;border:1px solid var(--ink)}#dc-admin .ad-gate h1{margin:0 0 6px;font-size:22px;font-weight:900}',
     '@media (max-width:640px){#dc-admin .ad-bar{flex-wrap:wrap;row-gap:10px}#dc-admin .ad-top{position:static}#dc-admin .ad-tabs a{padding:5px 10px;font-size:13px}#dc-admin .ad-tabs .sep{display:none}#dc-admin .ad-tabs .grp{flex-basis:100%;padding:4px 0 0}#dc-admin main{padding:22px 16px 80px}#dc-admin .ad-search{order:3;max-width:none;flex-basis:100%}#dc-admin .ad-item{grid-template-columns:1fr auto}#dc-admin .ad-item .st{grid-column:1/-1;justify-self:start}#dc-admin .ad-post{padding:18px}}'
   ].join('\n');
-  var TABS = [['@site', '사이트 관리'], '|', ['all', '전체'], ['새 접수', '새 접수'], ['진행 중', '진행 중'], ['보류', '보류'], ['완료', '완료'], '|', ['문의', '간단 문의'], '|', 'grp:상품', 'PROD', ['사이트루미', '사이트루미 세팅'], '|', 'grp:성과', ['@stats', '랜딩 통계'],
+  var TABS = [['@site', '사이트 관리'], '|', ['all', '전체'], ['새 접수', '새 접수'], ['진행 중', '진행 중'], ['보류', '보류'], ['완료', '완료'], '|', ['문의', '간단 문의'], ['수정 요청', '광고 수정 요청'], '|', 'grp:상품', 'PROD', ['사이트루미', '사이트루미 세팅'], '|', 'grp:성과', ['@stats', '랜딩 통계'],
               '|', 'grp:운영', ['주문', '편집기 주문'], ['사이트 목록', '사이트 목록'], ['브랜드 자산', '브랜드 자산'], ['사진', '사진 글'], ['맞춤 코드', '맞춤 코드'], ['씬 등록부', '씬 등록부']];
   var PROD_DEFAULT = ['AI 영상', '상세페이지', '랜딩페이지', '광고 이미지', '썸네일'];
   var root, mainBox, cur = 'all', qWord = '', prevTitle = document.title, prevOverflow = '';
