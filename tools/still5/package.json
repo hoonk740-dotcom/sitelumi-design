@@ -1,0 +1,14 @@
+{
+  "name": "still5-ad",
+  "version": "1.0.0",
+  "description": "스틸 5컷 광고 엔진 — 광고주 사진 기반 세로·가로 5컷 이미지와 15초 영상",
+  "private": true,
+  "dependencies": {
+    "pretendard": "^1.3.9",
+    "@fontsource/noto-serif-kr": "^5.0.0",
+    "@fontsource/gowun-batang": "^5.0.0",
+    "@fontsource/black-han-sans": "^5.0.0",
+    "@fontsource/ibm-plex-sans-kr": "^5.0.0",
+    "@fontsource/nanum-myeongjo": "^5.0.0"
+  }
+}
