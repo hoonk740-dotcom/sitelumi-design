@@ -69,14 +69,17 @@ const LAYOUTS = {
   collage:   { need: 2, roles: ['point', 'proof', 'product', 'hook'] },
   board:     { need: 0, roles: ['product', 'offer'], items: true },
   pricehero: { need: 1, roles: ['product', 'offer'], price: true },
-  statement: { need: 0, roles: ['offer', 'proof', 'point'] }
+  statement: { need: 0, roles: ['offer', 'proof', 'point'] },
+  frame:     { need: 1, roles: [], manual: true },        // 광고주가 규격에 맞춰 준 완성 사진: 자르지 않고 그대로 + 글자만 얹음
+  asis:      { need: 1, roles: [], manual: true }         // 광고주 완성 이미지 그대로 (문구 추가 없음)
 };
 const PLACE = ['placeMap', 'placePhoto', 'placeType'];
-function photosOf(cut) { return (Array.isArray(cut.photo) ? cut.photo : (cut.photo ? [cut.photo] : [])).filter(f => P[f] || fs.existsSync(path.join(DIR, 'photos', f))); }
+let CUR_O = 'v';
+function photosOf(cut) { let ph = cut.photo; if (ph && typeof ph === 'object' && !Array.isArray(ph)) ph = ph[CUR_O] || ph.v || ph.h; return (Array.isArray(ph) ? ph : (ph ? [ph] : [])).filter(f => P[f] || fs.existsSync(path.join(DIR, 'photos', f))); }
 
 /* 마지막 컷은 반드시 위치 */
 const cuts = brief.cuts.slice(0, 5).map(c => ({ ...c }));
-if (!cuts.length || cuts[cuts.length - 1].role !== 'place') {
+if (!brief.keepLast && (!cuts.length || cuts[cuts.length - 1].role !== 'place')) {
   const placeCut = { role: 'place', ...(brief.place || {}) };
   if (cuts.length >= 5) cuts[4] = placeCut; else cuts.push(placeCut);
 }
@@ -88,10 +91,12 @@ function makePlan(seed) {
   const used = {}, L = [];
   cuts.forEach((cut, i) => {
     const ph = photosOf(cut);
+    if (cut.layout === 'asis' || cut.layout === 'frame') { L.push(cut.layout); return; }
     if (cut.role === 'place') { const c = PLACE.filter(k => k !== 'placePhoto' || ph.length); L.push(cut.layout && PLACE.includes(cut.layout) ? cut.layout : pick(c)); return; }
     if (cut.layout && LAYOUTS[cut.layout]) { L.push(cut.layout); used[cut.layout] = 1; return; }
     let c = Object.keys(LAYOUTS).filter(k => {
       const D = LAYOUTS[k];
+      if (D.manual) return false;
       if (ph.length < D.need || used[k] || L[i - 1] === k) return false;
       if (D.items && !(cut.items && cut.items.length)) return false;
       if (D.price && !cut.price) return false;
@@ -205,6 +210,12 @@ function placeInfo(cut) {
 async function cutHtml(cut, L, o) {
   const ph = photosOf(cut), p0 = ph[0], pi = P[p0] || {};
   switch (L) {
+    case 'frame': {
+      const st = cut.stat ? `<p class="stat">${/^[\d,]+$/.test(String(cut.stat.value)) ? `<b class="num" data-to="${String(cut.stat.value).replace(/,/g, '')}">${esc(cut.stat.value)}</b>` : `<b class="statv">${esc(cut.stat.value)}</b>`}${cut.stat.unit ? `<small>${esc(cut.stat.unit)}</small>` : ''}</p>` : '';
+      const pos = (cut.pos && (cut.pos[o] || cut.pos)) || 'bl', ink = (cut.ink && (cut.ink[o] || cut.ink)) || 'light';
+      return `<section class="L-frame pos-${typeof pos === 'string' ? pos : 'bl'} ink-${typeof ink === 'string' ? ink : 'light'}">${img(p0, 'full kb')}${ink === 'dark' ? '' : '<div class="fscrim"></div>'}<div class="ftx">${cut.kicker ? `<p class="kick a0">${esc(cut.kicker)}</p>` : ''}${st}${tx({ ...cut, kicker: null }, ink === 'dark' ? '' : 'on-photo')}${brief.locline && cut.loc !== false ? `<p class="locline a3">${esc(brief.locline)}</p>` : ''}</div></section>`;
+    }
+    case 'asis': return `<section class="L-asis">${img(p0, 'full kbs')}</section>`;
     case 'cover': return `<section class="L-cover">${img(p0, 'full kb')}<div class="scrim ${S.scrim}"></div>${tx(cut, 'on-photo')}${foot()}</section>`;
     case 'band': return `<section class="L-band">${img(p0, 'full kb')}<div class="bandbox wipe">${tx(cut, 'on-key')}</div>${foot()}</section>`;
     case 'split': { const side = o === 'h' ? ((pi.fx ?? .5) > .55 ? 'r' : 'l') : 't'; return `<section class="L-split s-${side}">${img(p0, 'half kb')}<div class="panel">${tx(cut)}${cut.items ? items(cut) : ''}</div>${foot()}</section>`; }
@@ -371,6 +382,36 @@ ${V ? '.L-statement:has(.thumb){justify-content:flex-start;padding-top:calc(var(
 .L-placeType .ptside{position:absolute;${V ? 'left:var(--px);right:var(--px);bottom:calc(var(--py) + 120px);display:flex;justify-content:space-between;align-items:flex-end' : 'right:var(--px);top:var(--py);bottom:calc(var(--py) + 110px);display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end'}}
 .L-placeType .pin{color:${C.onKey};width:${V ? 120 : 110}px;animation:drop .8s .25s cubic-bezier(.3,1.6,.5,1) both}
 .L-placeType .foot,.L-placeType .qr{color:${C.onKey}}
+/* 광고주 완성 사진 위 글자 */
+.L-frame .ftx{position:absolute;z-index:3;${V ? 'left:var(--px);right:var(--px)' : 'left:var(--px);width:52%'}}
+.L-frame.pos-bl .ftx{bottom:calc(var(--py) + ${V ? 150 : 40}px)}
+.L-frame.pos-tl .ftx{top:var(--py)}
+.L-frame.pos-tr .ftx{top:var(--py);${V ? '' : 'left:auto;right:var(--px)'};text-align:right}
+.L-frame.pos-tr .kick{justify-content:flex-end}
+.L-frame.pos-top .ftx{top:var(--py);left:var(--px);right:var(--px);width:auto}
+.L-frame.pos-mid .ftx{top:50%;transform:translateY(-50%)}
+.fscrim{position:absolute;inset:0;z-index:2}
+.pos-bl .fscrim{background:${V ? 'linear-gradient(to top,rgba(5,6,7,.88) 0%,rgba(5,6,7,.62) 34%,rgba(5,6,7,0) 62%)' : 'linear-gradient(to top right,rgba(5,6,7,.9) 0%,rgba(5,6,7,.55) 38%,rgba(5,6,7,0) 66%)'}}
+.pos-tl .fscrim,.pos-top .fscrim{background:${V ? 'linear-gradient(to bottom,rgba(5,6,7,.85) 0%,rgba(5,6,7,.55) 30%,rgba(5,6,7,0) 55%)' : 'linear-gradient(to bottom right,rgba(5,6,7,.88) 0%,rgba(5,6,7,.5) 38%,rgba(5,6,7,0) 64%)'}}
+.pos-tr .fscrim{background:${V ? 'linear-gradient(to bottom,rgba(5,6,7,.85) 0%,rgba(5,6,7,.55) 30%,rgba(5,6,7,0) 55%)' : 'linear-gradient(to bottom left,rgba(5,6,7,.88) 0%,rgba(5,6,7,.5) 38%,rgba(5,6,7,0) 64%)'}}
+.pos-mid .fscrim{background:${V ? 'linear-gradient(to bottom,rgba(5,6,7,0) 15%,rgba(5,6,7,.7) 42%,rgba(5,6,7,.7) 62%,rgba(5,6,7,0) 85%)' : 'linear-gradient(to right,rgba(5,6,7,.85) 0%,rgba(5,6,7,.6) 40%,rgba(5,6,7,0) 68%)'}}
+.L-frame h1{font-size:${Math.round(fH * .86)}px}
+.L-frame .sub{font-size:${Math.round(f2 * .95)}px}
+.stat{display:flex;align-items:baseline;gap:.08em;margin-bottom:.12em;font-family:'Pretendard Variable',sans-serif;font-weight:800;font-size:${V ? 300 : 250}px;line-height:.86;letter-spacing:-.055em;color:${C.acc};font-variant-numeric:tabular-nums;animation:up .7s .05s cubic-bezier(.16,1,.3,1) both}
+.pos-tr .stat{justify-content:flex-end}
+.pos-tr .tx,.pos-tr .ftx{text-align:right}
+.L-frame .kick{margin-bottom:.5em}
+.L-frame.ink-light .kick{color:${C.acc}}
+.stat small{font-size:.3em;font-weight:700;letter-spacing:-.02em;color:currentColor;margin-left:.06em}
+.ink-light .stat small{color:#fff}
+.statv{display:inline-block;animation:pop .7s .15s cubic-bezier(.3,1.5,.5,1) both}
+.locline{margin-top:${V ? 40 : 30}px;font-size:${Math.round(f1 * .82)}px;font-weight:600;letter-spacing:.01em;opacity:.78;padding-top:${V ? 22 : 18}px;border-top:1px solid currentColor;border-color:color-mix(in srgb,currentColor 35%,transparent);display:inline-block}
+.ink-light .ftx{color:#fff}
+.ink-dark .ftx{color:${C.ink}}
+.ink-dark .kick{color:${C.deep}}
+.L-asis .full img{object-fit:cover}
+.kbs img{animation:kbs 3.5s linear both}
+@keyframes kbs{from{transform:scale(1.03)}to{transform:scale(1)}}
 /* 움직임 */
 .kb img{animation:kb 3.5s linear both}
 @keyframes kb{from{transform:scale(1.08)}to{transform:scale(1.0)}}
@@ -441,7 +482,7 @@ function join(o, n) {
   for (const o of orients) {
     const [w, h] = o === 'v' ? [1080, 1920] : [1920, 1080], sx = Math.round(w * SAFE), sy = Math.round(h * SAFE);
     for (let i = 0; i < cuts.length; i++) {
-      const cut = cuts[i], L = PLAN.layouts[i];
+      const cut = cuts[i], L = PLAN.layouts[i]; CUR_O = o;
       const pg = await b.newPage({ viewport: { width: w, height: h } });
       const htmlFile = path.join(OUT, `.cut_${o}_${i + 1}.html`);
       fs.writeFileSync(htmlFile, await page(cut, L, o, true));
