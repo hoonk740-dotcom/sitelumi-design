@@ -823,7 +823,7 @@
       /* 아직 사이트루미 홈이 없는 새 블로그: 「설치 시작」 카드 (설치 안내 화면으로 블로그 주소·ID를 넘김) */
       function installCta() {
         if (document.getElementById('sl-install-cta')) return;
-        var GUIDE = 'https://sitelumi.blogspot.com/p/install.html';
+        var GUIDE = 'https://www.decisionlabx.com/p/install.html';
         var href = GUIDE + '?blog=' + encodeURIComponent(base + '/') + (HP.blogId ? '&id=' + HP.blogId : '');
         var box = document.createElement('section');
         box.id = 'sl-install-cta';
