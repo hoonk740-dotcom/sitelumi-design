@@ -24,7 +24,7 @@ const OUT = path.join(DIR, 'out'); fs.mkdirSync(OUT, { recursive: true });
 const HIST = path.resolve(opt('history') || path.join(DIR, '..', 'still5-history.json'));
 const FPS = 30, FR = 100, T = 0.4;
 /* 송출 규격: songhaeon = 송해온 매장 화면 가이드(4K·H.264 High·30fps·20~35Mbps·Rec.709·안전 영역 5%·글자 짧은 변 대비 5/6.5/9%) */
-const SPEC = brief.spec === 'songhaeon' ? { safe: 0.05, scale: 2, vb: '25M', max: '35M', ab: '256k', min: { small: 54, body: 70, head: 98 } } : { safe: 0.06, scale: 1, vb: null, ab: '128k', min: { small: 26, body: 30, head: 56 } };
+const SPEC = brief.spec === 'songhaeon' ? { safe: 0.05, scale: 2, vb: '28M', max: '35M', minr: '20M', ab: '256k', min: { small: 54, body: 70, head: 98 } } : { safe: 0.06, scale: 1, vb: null, ab: '128k', min: { small: 26, body: 30, head: 56 } };
 const SAFE = SPEC.safe;                              // 모니터 가장자리 잘림(오버스캔) 대비 안전 여백 비율
 
 function rngOf(s) { let h = 2166136261; for (const c of String(s)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 100000) / 100000; }; }
@@ -522,7 +522,7 @@ function join(o, n) {
     for (let i = 1; i < n; i++) { f += `${last}[${i}:v]xfade=transition=${tr}:duration=${T}:offset=${(i * (D - T)).toFixed(3)}[x${i}];`; last = `[x${i}]`; }
     const ov = path.join(OUT, `.overlay_${o}.png`); let extra = [];
     if (fs.existsSync(ov)) { extra = ['-i', ov]; f += `${last}[${n + 1}:v]overlay=0:0[xo];`; last = '[xo]'; }
-    const args = ['-y', '-loglevel', 'error', ...ins, '-f', 'lavfi', '-t', '15', '-i', 'anullsrc=r=48000:cl=stereo', ...extra, '-filter_complex', f.replace(/;$/, ''), '-map', last, '-map', `${n}:a`, '-c:v', 'libx264', '-profile:v', 'high', '-preset', 'medium', ...(SPEC.vb ? ['-b:v', SPEC.vb, '-maxrate', SPEC.max, '-bufsize', '50M'] : ['-crf', '18']), '-r', '30', '-pix_fmt', 'yuv420p', '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv', '-c:a', 'aac', '-ar', '48000', '-b:a', SPEC.ab, '-t', '15', '-movflags', '+faststart', path.join(OUT, `ad_${o}_15s.mp4`)];
+    const args = ['-y', '-loglevel', 'error', ...ins, '-f', 'lavfi', '-t', '15', '-i', 'anullsrc=r=48000:cl=stereo', ...extra, '-filter_complex', f.replace(/;$/, ''), '-map', last, '-map', `${n}:a`, '-c:v', 'libx264', '-profile:v', 'high', '-preset', 'medium', ...(SPEC.vb ? ['-b:v', SPEC.vb, '-minrate', SPEC.minr, '-maxrate', SPEC.max, '-bufsize', '50M'] : ['-crf', '18']), '-r', '30', '-pix_fmt', 'yuv420p', '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv', '-c:a', 'aac', '-ar', '48000', '-b:a', SPEC.ab, '-t', '15', '-movflags', '+faststart', path.join(OUT, `ad_${o}_15s.mp4`)];
     const ff = spawn('ffmpeg', args); let err = ''; ff.stderr.on('data', d => err += d);
     ff.on('close', c => c ? rej(new Error(err)) : res());
   });
