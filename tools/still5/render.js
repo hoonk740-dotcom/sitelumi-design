@@ -217,7 +217,7 @@ async function cutHtml(cut, L, o) {
     case 'frame': {
       const st = cut.stat ? `<p class="stat">${/^[\d,]+$/.test(String(cut.stat.value)) ? `<b class="num" data-to="${String(cut.stat.value).replace(/,/g, '')}">${esc(cut.stat.value)}</b>` : `<b class="statv">${esc(cut.stat.value)}</b>`}${cut.stat.unit ? `<small>${esc(cut.stat.unit)}</small>` : ''}</p>` : '';
       const pos = (cut.pos && (cut.pos[o] || cut.pos)) || 'bl', ink = (cut.ink && (cut.ink[o] || cut.ink)) || 'light';
-      return `<section class="L-frame pos-${typeof pos === 'string' ? pos : 'bl'} ink-${typeof ink === 'string' ? ink : 'light'}">${img(p0, 'full still')}${ink === 'dark' ? '' : '<div class="fscrim"></div>'}<div class="ftx ${brief.spec ? 'boxed' : ''}">${cut.kicker ? `<p class="kick a0">${esc(cut.kicker)}</p>` : ''}${cut.lead ? `<p class="lead a0">${rich(cut.lead)}</p>` : ''}${st}${tx({ ...cut, kicker: null }, ink === 'dark' ? '' : 'on-photo')}${cut.brandBig ? `<p class="brandbig a2">${br(cut.brandBig)}</p>` : ''}${brief.locline && cut.loc !== false ? `<p class="locline a3">${esc(brief.locline)}</p>` : ''}</div>${brief.searchbar ? '<div class="sbzone"></div>' : ''}</section>`;
+      return `<section class="L-frame pos-${typeof pos === 'string' ? pos : 'bl'} ink-${typeof ink === 'string' ? ink : 'light'}">${img(p0, 'full still')}${ink === 'dark' ? '' : '<div class="fscrim"></div>'}<div class="ftx ${(cut.box ?? brief.box) ? 'boxed' : ''}">${cut.kicker ? `<p class="kick a0">${esc(cut.kicker)}</p>` : ''}${cut.lead ? `<p class="lead a0">${rich(cut.lead)}</p>` : ''}${st}${tx({ ...cut, kicker: null }, ink === 'dark' ? '' : 'on-photo')}${cut.brandBig ? `<p class="brandbig a2">${br(cut.brandBig)}</p>` : ''}${brief.locline && cut.loc !== false ? `<p class="locline a3">${esc(brief.locline)}</p>` : ''}</div>${brief.searchbar ? '<div class="sbzone"></div>' : ''}</section>`;
     }
     case 'pros': {
       const pr = (cut.pros || []).slice(0, 4);
@@ -426,7 +426,7 @@ ${V ? '.L-statement:has(.thumb){justify-content:flex-start;padding-top:calc(var(
 .sbzone{position:absolute;z-index:0;pointer-events:none;${V ? `left:50%;transform:translateX(-50%);width:${Math.round(W * .8)}px` : `right:${sx}px;width:${Math.round(W * .44)}px`};bottom:${sy}px;height:${Math.max(SPEC.min.small + 4, V ? 58 : 56) * 2}px}
 .ftx.boxed{padding:${V ? 56 : 52}px ${V ? 60 : 64}px;background:rgba(10,12,14,.58);-webkit-backdrop-filter:blur(14px) saturate(1.1);backdrop-filter:blur(14px) saturate(1.1);border-radius:${Math.max(S.r, 18)}px;width:auto;${V ? '' : 'max-width:58%;right:auto'}}
 .pos-tr .ftx.boxed{${V ? '' : 'left:auto;right:var(--px)'}}
-.L-frame .fscrim{${brief.spec ? 'opacity:.45' : ''}}
+.L-frame:has(.boxed) .fscrim{opacity:.45}
 .L-frame.pos-bl .ftx.boxed{bottom:${V ? `calc(var(--py) + ${Math.max(SPEC.min.small + 4, 58) * 2 + 48}px)` : 'var(--py)'}}
 ${V ? '' : `.L-frame.pos-bl .ftx.boxed{max-width:44%}`}
 ${brief.spec ? `.L-frame h1{font-size:${Math.max(SPEC.min.head + 6, V ? 108 : 104)}px;line-height:1.12}
