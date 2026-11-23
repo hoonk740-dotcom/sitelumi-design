@@ -23,7 +23,9 @@ const P = Object.fromEntries(photos.map(p => [p.file, p]));
 const OUT = path.join(DIR, 'out'); fs.mkdirSync(OUT, { recursive: true });
 const HIST = path.resolve(opt('history') || path.join(DIR, '..', 'still5-history.json'));
 const FPS = 30, FR = 100, T = 0.4;
-const SAFE = 0.06;                                   // 모니터 가장자리 잘림(오버스캔) 대비 안전 여백 비율
+/* 송출 규격: songhaeon = 송해온 매장 화면 가이드(4K·H.264 High·30fps·20~35Mbps·Rec.709·안전 영역 5%·글자 짧은 변 대비 5/6.5/9%) */
+const SPEC = brief.spec === 'songhaeon' ? { safe: 0.05, scale: 2, vb: '25M', max: '35M', ab: '256k', min: { small: 54, body: 70, head: 98 } } : { safe: 0.06, scale: 1, vb: null, ab: '128k', min: { small: 26, body: 30, head: 56 } };
+const SAFE = SPEC.safe;                              // 모니터 가장자리 잘림(오버스캔) 대비 안전 여백 비율
 
 function rngOf(s) { let h = 2166136261; for (const c of String(s)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 100000) / 100000; }; }
 
@@ -49,11 +51,11 @@ const FONTS = {
 const KITS = {
   warm:    { head: ['sans', 'batang', 'serif', 'serifLight'], r: [20, 10, 2], align: ['left', 'center'], deco: ['rule', 'none', 'dot'], tr: ['slideleft', 'coverleft', 'smoothleft'], treat: ['natural', 'natural', 'warm'] },
   calm:    { head: ['serif', 'myeongjo', 'serifLight', 'sansThin'], r: [0, 2], align: ['left', 'center'], deco: ['rule', 'none'], tr: ['slideleft', 'revealleft', 'fadeblack'], treat: ['natural', 'mute'] },
-  premium: { head: ['myeongjo', 'serifLight', 'sansThin'], r: [0], align: ['left', 'center'], deco: ['rule', 'frame'], tr: ['fadeblack', 'revealleft', 'slideleft'], treat: ['natural', 'mute', 'grain'] },
+  premium: { head: ['myeongjo', 'serifLight', 'sansThin'], r: [0], align: ['left', 'center'], deco: ['rule', 'none'], tr: ['fadeblack', 'revealleft', 'slideleft'], treat: ['natural', 'mute', 'grain'] },
   bold:    { head: ['display', 'sans'], r: [0, 6], align: ['left'], deco: ['bar', 'none'], tr: ['coverleft', 'slideleft', 'wipeleft'], treat: ['natural', 'punch'] },
   playful: { head: ['sans', 'display', 'batang'], r: [32, 48, 20], align: ['left', 'center'], deco: ['dot', 'none'], tr: ['coverleft', 'slideleft', 'squeezeh'], treat: ['natural', 'warm'] },
   clean:   { head: ['sans', 'plex', 'sansThin'], r: [14, 6, 0], align: ['left'], deco: ['rule', 'none'], tr: ['slideleft', 'revealleft'], treat: ['natural'] },
-  night:   { head: ['display', 'myeongjo', 'sansThin'], r: [0, 4], align: ['left', 'center'], deco: ['rule', 'frame'], tr: ['fadeblack', 'slideleft'], treat: ['grain', 'punch'] }
+  night:   { head: ['display', 'myeongjo', 'sansThin'], r: [0, 4], align: ['left', 'center'], deco: ['rule', 'none'], tr: ['fadeblack', 'slideleft'], treat: ['grain', 'punch'] }
 };
 const kit = KITS[brief.tone] || KITS.clean;
 
@@ -71,7 +73,8 @@ const LAYOUTS = {
   pricehero: { need: 1, roles: ['product', 'offer'], price: true },
   statement: { need: 0, roles: ['offer', 'proof', 'point'] },
   frame:     { need: 1, roles: [], manual: true },        // 광고주가 규격에 맞춰 준 완성 사진: 자르지 않고 그대로 + 글자만 얹음
-  asis:      { need: 1, roles: [], manual: true }         // 광고주 완성 이미지 그대로 (문구 추가 없음)
+  asis:      { need: 1, roles: [], manual: true },        // 광고주 완성 이미지 그대로 (문구 추가 없음)
+  pros:      { need: 0, roles: [], manual: true }         // 사람 소개(강사·프로·의료진): 같은 크기 카드에 정리
 };
 const PLACE = ['placeMap', 'placePhoto', 'placeType'];
 let CUR_O = 'v';
@@ -91,7 +94,7 @@ function makePlan(seed) {
   const used = {}, L = [];
   cuts.forEach((cut, i) => {
     const ph = photosOf(cut);
-    if (cut.layout === 'asis' || cut.layout === 'frame') { L.push(cut.layout); return; }
+    if (cut.layout === 'asis' || cut.layout === 'frame' || cut.layout === 'pros') { L.push(cut.layout); return; }
     if (cut.role === 'place') { const c = PLACE.filter(k => k !== 'placePhoto' || ph.length); L.push(cut.layout && PLACE.includes(cut.layout) ? cut.layout : pick(c)); return; }
     if (cut.layout && LAYOUTS[cut.layout]) { L.push(cut.layout); used[cut.layout] = 1; return; }
     let c = Object.keys(LAYOUTS).filter(k => {
@@ -172,6 +175,7 @@ const S = PLAN.style, HF = FONTS[S.head];
 
 /* ── 문구 ── */
 const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const br = (s) => esc(s).replace(/\n/g, '<br>');
 const rich = (s) => esc(s).replace(/\[([^\]]+)\]/g, '<em class="hl">$1</em>');
 function headHtml(s) {
   const lines = String(s || '').split('\n');
@@ -213,9 +217,13 @@ async function cutHtml(cut, L, o) {
     case 'frame': {
       const st = cut.stat ? `<p class="stat">${/^[\d,]+$/.test(String(cut.stat.value)) ? `<b class="num" data-to="${String(cut.stat.value).replace(/,/g, '')}">${esc(cut.stat.value)}</b>` : `<b class="statv">${esc(cut.stat.value)}</b>`}${cut.stat.unit ? `<small>${esc(cut.stat.unit)}</small>` : ''}</p>` : '';
       const pos = (cut.pos && (cut.pos[o] || cut.pos)) || 'bl', ink = (cut.ink && (cut.ink[o] || cut.ink)) || 'light';
-      return `<section class="L-frame pos-${typeof pos === 'string' ? pos : 'bl'} ink-${typeof ink === 'string' ? ink : 'light'}">${img(p0, 'full kb')}${ink === 'dark' ? '' : '<div class="fscrim"></div>'}<div class="ftx">${cut.kicker ? `<p class="kick a0">${esc(cut.kicker)}</p>` : ''}${st}${tx({ ...cut, kicker: null }, ink === 'dark' ? '' : 'on-photo')}${brief.locline && cut.loc !== false ? `<p class="locline a3">${esc(brief.locline)}</p>` : ''}</div></section>`;
+      return `<section class="L-frame pos-${typeof pos === 'string' ? pos : 'bl'} ink-${typeof ink === 'string' ? ink : 'light'}">${img(p0, 'full still')}${ink === 'dark' ? '' : '<div class="fscrim"></div>'}<div class="ftx ${brief.spec ? 'boxed' : ''}">${cut.kicker ? `<p class="kick a0">${esc(cut.kicker)}</p>` : ''}${cut.lead ? `<p class="lead a0">${rich(cut.lead)}</p>` : ''}${st}${tx({ ...cut, kicker: null }, ink === 'dark' ? '' : 'on-photo')}${cut.brandBig ? `<p class="brandbig a2">${br(cut.brandBig)}</p>` : ''}${brief.locline && cut.loc !== false ? `<p class="locline a3">${esc(brief.locline)}</p>` : ''}</div>${brief.searchbar ? '<div class="sbzone"></div>' : ''}</section>`;
     }
-    case 'asis': return `<section class="L-asis">${img(p0, 'full kbs')}</section>`;
+    case 'pros': {
+      const pr = (cut.pros || []).slice(0, 4);
+      return `<section class="L-pros"><div class="glow"></div><div class="ptxt">${cut.brandBig ? `<p class="brandbig a0">${br(cut.brandBig)}</p>` : ''}${cut.price ? `<p class="offer a2"><span>${esc(cut.offerLabel || '')}</span> ${priceHtml(cut.price)}</p>` : ''}${cut.sub ? `<p class="sub a3">${rich(cut.sub).replace(/\n/g, "<br>")}</p>` : ''}</div><div class="cards n${pr.length}">${pr.map((x, j) => `<figure class="card rv r${Math.min(j, 2)}"><img src="${esc(x.img)}" alt=""><figcaption>${esc(x.name)}</figcaption></figure>`).join('')}</div><div class="sbzone"></div></section>`;
+    }
+    case 'asis': return `<section class="L-asis">${img(p0, 'full still')}</section>`;
     case 'cover': return `<section class="L-cover">${img(p0, 'full kb')}<div class="scrim ${S.scrim}"></div>${tx(cut, 'on-photo')}${foot()}</section>`;
     case 'band': return `<section class="L-band">${img(p0, 'full kb')}<div class="bandbox wipe">${tx(cut, 'on-key')}</div>${foot()}</section>`;
     case 'split': { const side = o === 'h' ? ((pi.fx ?? .5) > .55 ? 'r' : 'l') : 't'; return `<section class="L-split s-${side}">${img(p0, 'half kb')}<div class="panel">${tx(cut)}${cut.items ? items(cut) : ''}</div>${foot()}</section>`; }
@@ -405,13 +413,41 @@ ${V ? '.L-statement:has(.thumb){justify-content:flex-start;padding-top:calc(var(
 .stat small{font-size:.3em;font-weight:700;letter-spacing:-.02em;color:currentColor;margin-left:.06em}
 .ink-light .stat small{color:#fff}
 .statv{display:inline-block;animation:pop .7s .15s cubic-bezier(.3,1.5,.5,1) both}
-.locline{margin-top:${V ? 40 : 30}px;font-size:${Math.round(f1 * .82)}px;font-weight:600;letter-spacing:.01em;opacity:.78;padding-top:${V ? 22 : 18}px;border-top:1px solid currentColor;border-color:color-mix(in srgb,currentColor 35%,transparent);display:inline-block}
+.locline{margin-top:${V ? 40 : 30}px;font-size:${Math.round(f1 * .82)}px;font-weight:600;letter-spacing:.01em;opacity:.82;display:block}
 .ink-light .ftx{color:#fff}
 .ink-dark .ftx{color:${C.ink}}
 .ink-dark .kick{color:${C.deep}}
-.L-asis .full img{object-fit:cover}
+.L-frame .full img,.L-asis .full img{object-fit:contain;background:#000}
+.still img{animation:lightin .9s ease-out both}
+@keyframes lightin{from{filter:brightness(.55)}to{filter:brightness(1)}}
 .kbs img{animation:kbs 3.5s linear both}
 @keyframes kbs{from{transform:scale(1.03)}to{transform:scale(1)}}
+/* 규격 모드: 사진 위 글자는 반투명 상자 · 글자 크기 하한 */
+.sbzone{position:absolute;z-index:0;pointer-events:none;${V ? `left:50%;transform:translateX(-50%);width:${Math.round(W * .8)}px` : `right:${sx}px;width:${Math.round(W * .44)}px`};bottom:${sy}px;height:${Math.max(SPEC.min.small + 4, V ? 58 : 56) * 2}px}
+.ftx.boxed{padding:${V ? 56 : 52}px ${V ? 60 : 64}px;background:rgba(10,12,14,.58);-webkit-backdrop-filter:blur(14px) saturate(1.1);backdrop-filter:blur(14px) saturate(1.1);border-radius:${Math.max(S.r, 18)}px;width:auto;${V ? '' : 'max-width:58%;right:auto'}}
+.pos-tr .ftx.boxed{${V ? '' : 'left:auto;right:var(--px)'}}
+.L-frame .fscrim{${brief.spec ? 'opacity:.45' : ''}}
+.L-frame.pos-bl .ftx.boxed{bottom:${V ? `calc(var(--py) + ${Math.max(SPEC.min.small + 4, 58) * 2 + 48}px)` : 'var(--py)'}}
+${V ? '' : `.L-frame.pos-bl .ftx.boxed{max-width:44%}`}
+${brief.spec ? `.L-frame h1{font-size:${Math.max(SPEC.min.head + 6, V ? 108 : 104)}px;line-height:1.12}
+.stat small{font-size:${SPEC.min.head + 6}px}
+.lead{font-size:${SPEC.min.body + 4}px;font-weight:700;line-height:1.3;margin-bottom:.45em;letter-spacing:-.03em}
+.brandbig{font-size:${Math.max(SPEC.min.head + 14, V ? 116 : 120)}px;font-weight:900;line-height:1.08;letter-spacing:-.045em;margin-top:.15em}
+.L-frame .brandbig{color:#fff}` : ''}
+/* 사람 소개 카드 */
+.L-pros{background:radial-gradient(ellipse at ${V ? '50% 30%' : '28% 40%'},${C.deep} 0%,#0d1012 62%);color:#fff}
+.L-pros .glow{position:absolute;inset:0;background:radial-gradient(circle at ${V ? '50% 78%' : '72% 70%'},rgba(230,182,92,.18),rgba(0,0,0,0) 55%)}
+.L-pros .ptxt{position:absolute;z-index:3;${V ? 'left:var(--px);right:var(--px);top:var(--py)' : 'left:var(--px);width:38%;top:50%;transform:translateY(-58%)'}}
+.L-pros .brandbig{font-size:${Math.max(SPEC.min.head + 8, V ? 112 : 112)}px;font-weight:900;line-height:1.1;letter-spacing:-.045em}
+.L-pros .offer{margin-top:${V ? 40 : 44}px;font-weight:800;font-size:${Math.max(SPEC.min.head + 10, 110)}px;line-height:1;letter-spacing:-.04em;color:${C.acc};white-space:nowrap}
+.L-pros .offer span{color:#fff;font-size:${SPEC.min.body + 6}px;font-weight:800;display:block;margin-bottom:.35em;letter-spacing:-.03em}
+.L-pros .offer small{font-size:.5em;color:#fff;margin-left:.1em}
+.L-pros .sub{margin-top:${V ? 32 : 36}px;font-size:${SPEC.min.small + 2}px;font-weight:600;line-height:1.4;opacity:.92}
+.cards{position:absolute;z-index:3;display:grid;gap:${V ? 22 : 24}px;${V ? `left:var(--px);right:var(--px);bottom:calc(${sy}px + ${Math.max(SPEC.min.small + 4, 58) * 2 + 44}px);grid-template-columns:1fr 1fr;height:41%` : `right:var(--px);left:46%;top:var(--py);bottom:calc(${sy}px + ${Math.max(SPEC.min.small + 4, 56) * 2 + 36}px);grid-template-columns:1fr 1fr`}}
+.card{position:relative;margin:0;overflow:hidden;border-radius:${Math.max(S.r, 18)}px;background:linear-gradient(180deg,#2b3238 0%,#171b1f 100%);box-shadow:0 24px 48px -24px rgba(0,0,0,.6)}
+.card::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.12),rgba(255,255,255,0) 60%)}
+.card img{position:absolute;left:50%;bottom:0;transform:translateX(-50%);height:${V ? 92 : 88}%;width:auto;max-width:none}
+.card figcaption{position:absolute;left:0;right:0;bottom:0;padding:${V ? '70px 0 22px' : '80px 0 22px'};text-align:center;font-size:${SPEC.min.small + 2}px;font-weight:800;letter-spacing:-.02em;background:linear-gradient(to top,rgba(10,12,14,.92) 30%,rgba(10,12,14,0));color:#fff}
 /* 움직임 */
 .kb img{animation:kb 3.5s linear both}
 @keyframes kb{from{transform:scale(1.08)}to{transform:scale(1.0)}}
@@ -436,29 +472,44 @@ ${V ? '.L-statement:has(.thumb){justify-content:flex-start;padding-top:calc(var(
 `;
 }
 
+function overlayHtml(o) {
+  const V = o === 'v', W = V ? 1080 : 1920, H = V ? 1920 : 1080, sb = brief.searchbar;
+  const fsz = Math.max(SPEC.min.small + 4, V ? 58 : 56), hgt = Math.round(fsz * 2), mx = Math.round(W * SAFE), my = Math.round(H * SAFE);
+  const pos = V ? `left:50%;transform:translateX(-50%);bottom:${my}px` : `right:${mx}px;bottom:${my}px`;
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="file://${path.join(ENG, FONTS.sans.css)}"><style>
+html,body{margin:0;width:${W}px;height:${H}px;background:transparent;overflow:hidden}
+.sb{position:absolute;${pos};display:flex;align-items:stretch;height:${hgt}px;border:${Math.round(hgt * .07)}px solid #03C75A;background:#03C75A;border-radius:${Math.round(hgt * .1)}px;box-shadow:0 14px 34px rgba(0,0,0,.35);font-family:'Pretendard Variable',sans-serif}
+.n{width:${hgt}px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:${Math.round(hgt * .62)}px;letter-spacing:-.04em}
+.q{display:flex;align-items:center;gap:${Math.round(fsz * .7)}px;padding:0 ${Math.round(fsz * .6)}px;background:#fff;color:#111;font-weight:800;font-size:${fsz}px;letter-spacing:-.03em;white-space:nowrap}
+.q i{width:0;height:0;border-left:${Math.round(fsz * .28)}px solid transparent;border-right:${Math.round(fsz * .28)}px solid transparent;border-top:${Math.round(fsz * .32)}px solid #03C75A}
+.s{width:${hgt}px;display:flex;align-items:center;justify-content:center}
+.s svg{width:${Math.round(hgt * .5)}px;height:${Math.round(hgt * .5)}px}
+</style></head><body><div class="sb"><div class="n">N</div><div class="q">${esc(sb.query || brief.brand)}<i></i></div><div class="s"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L20 20"/></svg></div></div></body></html>`;
+}
+
 /* 페이지 안 스크립트: 시간 맞추기(숫자 올라감) + 안전 영역 자동 맞춤 */
 const PAGE_JS = `
 window.__seek=function(ms){document.querySelectorAll('.num').forEach(function(e){var to=+e.dataset.to,d=550,dur=900,t=Math.max(0,Math.min(1,(ms-d)/dur)),k=1-Math.pow(1-t,3);e.textContent=Math.round(to*k).toLocaleString('ko-KR')});};
-window.__fit=function(sx,sy){var W=innerWidth,H=innerHeight,log=[];
+window.__fit=function(sx,sy){var MINH=window.MINH||56,MINS=window.MINS||26;var W=innerWidth,H=innerHeight,log=[];
  function out(e){var r=e.getBoundingClientRect();if(!r.width)return false;return r.left<sx-1||r.right>W-sx+1||r.top<sy-1||r.bottom>H-sy+1||e.scrollWidth>e.clientWidth+2}
- function overlap(){var f=document.querySelector('.foot'),bad=[];if(!f)return bad;var fr=f.getBoundingClientRect();document.querySelectorAll('.tx,.pinfo,.items,.qr').forEach(function(e){var r=e.getBoundingClientRect();if(r.width&&r.bottom>fr.top-24&&r.top<fr.bottom&&r.right>fr.left&&r.left<fr.right)bad.push(e)});return bad}
- function bad(){var b=[];document.querySelectorAll('h1,.sub,.items,.addr,.dirs,.bigprice,.foot,.qr,.meta').forEach(function(e){if(out(e))b.push(e)});return b.concat(overlap())}
+ function overlap(){var bad=[];[].forEach.call(document.querySelectorAll('.foot,.sbzone'),function(f){var fr=f.getBoundingClientRect();document.querySelectorAll('.tx,.ftx,.ptxt,.cards,.pinfo,.items,.qr').forEach(function(e){var r=e.getBoundingClientRect();if(r.width&&r.bottom>fr.top-24&&r.top<fr.bottom&&r.right>fr.left&&r.left<fr.right)bad.push(e)})});return bad}
+ function bad(){var b=[];document.querySelectorAll('h1,.sub,.items,.addr,.dirs,.bigprice,.foot,.qr,.meta,.ftx,.ptxt,.cards,.brandbig,.offer').forEach(function(e){if(out(e))b.push(e)});return b.concat(overlap())}
  for(var n=0;n<16;n++){var b=bad();if(!b.length)break;log.push(b.length);
   b.forEach(function(e){var t=e.matches('h1,.sub,.items,.addr,.dirs,.bigprice,.meta')?[e]:[].slice.call(e.querySelectorAll('h1,.sub,.items,.addr,.dirs,.bigprice,span'));
    if(e.matches('.qr')||(e.matches('.tx,.pinfo')&&!t.length))t=[e];
-   t.forEach(function(x){var fs=parseFloat(getComputedStyle(x).fontSize),min=x.matches('h1')?56:(x.matches('.bigprice')?90:26);if(fs*0.93>=min)x.style.fontSize=(fs*0.93)+'px'})})}
+   t.forEach(function(x){var fs=parseFloat(getComputedStyle(x).fontSize),min=x.matches('h1,.brandbig,.offer')?MINH:(x.matches('.bigprice')?90:MINS);if(fs*0.93>=min)x.style.fontSize=(fs*0.93)+'px'})})}
  var sz=[].map.call(document.querySelectorAll('[style*="font-size"]'),function(e){return e.style.fontSize});
  return {rounds:log.length,left:bad().map(function(e){return e.tagName+'.'+e.className})};};`;
 
 async function page(cut, L, o, still) {
   const fontsCss = [FONTS.sans.css, HF.css].filter((v, k, a) => a.indexOf(v) === k).map(h => `<link rel="stylesheet" href="file://${path.join(ENG, h)}">`).join('');
-  const body = (await cutHtml(cut, L, o)).replace(/<\/section>$/, (S.deco === 'frame' ? '<div class="frameline"></div>' : '') + '</section>');
-  return `<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><base href="file://${DIR}/">${fontsCss}<style>${css(o)}${still ? '*,*::before,*::after{animation-delay:-10s!important;animation-duration:.001s!important;animation-iteration-count:1!important}.ring{display:none}' : ''}</style><script>${PAGE_JS}</script></head><body>${body}</body></html>`;
+  const body = (await cutHtml(cut, L, o)).replace(/<\/section>$/, '' + '</section>');
+  return `<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><base href="file://${DIR}/">${fontsCss}<style>${css(o)}${still ? '*,*::before,*::after{animation-delay:-10s!important;animation-duration:.001s!important;animation-iteration-count:1!important}.ring{display:none}' : ''}</style><script>window.MINH=${SPEC.min.head};window.MINS=${SPEC.min.small};${PAGE_JS}</script></head><body>${body}</body></html>`;
 }
 
 function encode(file, frames) {
   return new Promise((res, rej) => {
-    const ff = spawn('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-i', '-', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '16', '-pix_fmt', 'yuv420p', file]);
+    const ff = spawn('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-i', '-', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '12', '-pix_fmt', 'yuv420p', file]);
     ff.on('close', c => c ? rej(new Error('ffmpeg ' + c)) : res());
     (async () => { for await (const f of frames()) { if (!ff.stdin.write(f)) await new Promise(r => ff.stdin.once('drain', r)); } ff.stdin.end(); })().catch(rej);
   });
@@ -469,7 +520,9 @@ function join(o, n) {
     for (let i = 1; i <= n; i++) ins.push('-i', path.join(OUT, `.c_${o}_${i}.mp4`));
     const tr = o === 'v' ? S.tr.replace('left', 'up').replace('squeezeh', 'squeezev') : S.tr;
     for (let i = 1; i < n; i++) { f += `${last}[${i}:v]xfade=transition=${tr}:duration=${T}:offset=${(i * (D - T)).toFixed(3)}[x${i}];`; last = `[x${i}]`; }
-    const args = ['-y', '-loglevel', 'error', ...ins, '-f', 'lavfi', '-t', '15', '-i', 'anullsrc=r=48000:cl=stereo', '-filter_complex', f.replace(/;$/, ''), '-map', last, '-map', `${n}:a`, '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '128k', '-t', '15', '-movflags', '+faststart', path.join(OUT, `ad_${o}_15s.mp4`)];
+    const ov = path.join(OUT, `.overlay_${o}.png`); let extra = [];
+    if (fs.existsSync(ov)) { extra = ['-i', ov]; f += `${last}[${n + 1}:v]overlay=0:0[xo];`; last = '[xo]'; }
+    const args = ['-y', '-loglevel', 'error', ...ins, '-f', 'lavfi', '-t', '15', '-i', 'anullsrc=r=48000:cl=stereo', ...extra, '-filter_complex', f.replace(/;$/, ''), '-map', last, '-map', `${n}:a`, '-c:v', 'libx264', '-profile:v', 'high', '-preset', 'medium', ...(SPEC.vb ? ['-b:v', SPEC.vb, '-maxrate', SPEC.max, '-bufsize', '50M'] : ['-crf', '18']), '-r', '30', '-pix_fmt', 'yuv420p', '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv', '-c:a', 'aac', '-ar', '48000', '-b:a', SPEC.ab, '-t', '15', '-movflags', '+faststart', path.join(OUT, `ad_${o}_15s.mp4`)];
     const ff = spawn('ffmpeg', args); let err = ''; ff.stderr.on('data', d => err += d);
     ff.on('close', c => c ? rej(new Error(err)) : res());
   });
@@ -481,15 +534,21 @@ function join(o, n) {
   const check = {};
   for (const o of orients) {
     const [w, h] = o === 'v' ? [1080, 1920] : [1920, 1080], sx = Math.round(w * SAFE), sy = Math.round(h * SAFE);
+    if (brief.searchbar) {
+      const op = await b.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: SPEC.scale });
+      await op.setContent(overlayHtml(o)); await op.evaluate(() => document.fonts.ready); await op.waitForTimeout(100);
+      await op.screenshot({ path: path.join(OUT, `.overlay_${o}.png`), omitBackground: true }); await op.close();
+    }
     for (let i = 0; i < cuts.length; i++) {
       const cut = cuts[i], L = PLAN.layouts[i]; CUR_O = o;
-      const pg = await b.newPage({ viewport: { width: w, height: h } });
+      const pg = await b.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: SPEC.scale });
       const htmlFile = path.join(OUT, `.cut_${o}_${i + 1}.html`);
       fs.writeFileSync(htmlFile, await page(cut, L, o, true));
       await pg.goto('file://' + htmlFile); await pg.evaluate(() => document.fonts.ready); await pg.waitForTimeout(120);
       const fit = await pg.evaluate(([a, c]) => window.__fit(a, c), [sx, sy]);
       check[`${o}${i + 1}`] = { layout: L, ...fit };
       await pg.screenshot({ path: path.join(OUT, `${o}_${i + 1}.png`) });
+      if (brief.searchbar) await new Promise((res, rej) => { const ff = spawn('ffmpeg', ['-y', '-loglevel', 'error', '-i', path.join(OUT, `${o}_${i + 1}.png`), '-i', path.join(OUT, `.overlay_${o}.png`), '-filter_complex', 'overlay=0:0', path.join(OUT, `.t_${o}.png`)]); ff.on('close', c => { if (c) return rej(new Error('overlay')); fs.renameSync(path.join(OUT, `.t_${o}.png`), path.join(OUT, `${o}_${i + 1}.png`)); res(); }); });
       if (!opt('still')) {
         fs.writeFileSync(htmlFile, await page(cut, L, o, false));
         await pg.goto('file://' + htmlFile); await pg.evaluate(() => document.fonts.ready);
@@ -512,7 +571,7 @@ function join(o, n) {
   const rec = { brand: brief.brand, at: new Date().toISOString(), seed: PLAN.seed, layouts: PLAN.layouts, style: S, hue: C0.h, key: C.key };
   fs.writeFileSync(path.join(OUT, 'plan.json'), JSON.stringify({ ...rec, palette: C, font: HF.fam, safe: SAFE, check }, null, 1));
   if (!opt('dry')) { const hs = history.filter(x => x.brand !== brief.brand); hs.push(rec); fs.writeFileSync(HIST, JSON.stringify(hs, null, 1)); }
-  fs.readdirSync(OUT).filter(f => f.startsWith('.c_') || f.startsWith('.cut_')).forEach(f => fs.unlinkSync(path.join(OUT, f)));
+  fs.readdirSync(OUT).filter(f => f.startsWith('.c_') || f.startsWith('.cut_') || f.startsWith('.overlay_')).forEach(f => fs.unlinkSync(path.join(OUT, f)));
   const bad = Object.entries(check).filter(([, v]) => v.left.length);
   console.log('\n완료', JSON.stringify({ layouts: PLAN.layouts, font: S.head, tr: S.tr, treat: S.treat, hl: S.hl, key: C.key }), bad.length ? '\n안전 영역 넘침: ' + JSON.stringify(bad) : '\n안전 영역: 모두 통과');
 })().catch(e => { console.error(e); process.exit(1); });
