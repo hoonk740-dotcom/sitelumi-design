@@ -7,6 +7,8 @@
  *
  *   · 모니터 안전 영역: 가장자리 6% 안쪽에만 글자 — 넘치면 글자 크기를 자동으로 줄이고 검사 결과를 plan.json 에 남김
  *   · 글자 움직임: 제목 줄별로 가려졌다 올라옴, [대괄호] 단어 강조, 가격 숫자 올라감, 위치 핀 떨어짐
+ *   · 글자 효과(fx): rise·chars·blur·track·flip·pop·mask·scramble·type·outline — brief.fx 또는 cut.fx, 없으면 자동
+ *     숫자(numfx): count(올라감)·roll(자리별 굴러감) / shine: 제목에 포인트색 빛 한 번 스침
  *   · 다른 광고와 겹치지 않게: 기록(still5-history.json)과 비교해 가장 덜 닮은 조합을 고름
  */
 const fs = require('fs'), path = require('path'), { spawn } = require('child_process');
@@ -87,10 +89,16 @@ if (!brief.keepLast && (!cuts.length || cuts[cuts.length - 1].role !== 'place'))
   if (cuts.length >= 5) cuts[4] = placeCut; else cuts.push(placeCut);
 }
 
+/* 글자 효과 (프리미어 타이틀 프리셋처럼): 컷별 cut.fx 또는 전체 brief.fx, 없으면 기록과 덜 겹치게 자동 */
+const FX = ['rise', 'chars', 'blur', 'track', 'flip', 'pop', 'mask', 'scramble', 'type', 'outline'];
 function makePlan(seed) {
   const rand = rngOf((brief.brand || '') + '|' + (brief.industry || '') + '|' + seed);
   const pick = (a) => a[Math.floor(rand() * a.length)];
   const style = { head: brief.font && FONTS[brief.font] ? brief.font : pick(kit.head), r: pick(kit.r), align: pick(kit.align), deco: pick(kit.deco), tr: pick(kit.tr), treat: pick(kit.treat), scrim: pick(['grad', 'soft', 'deep']), hl: pick(['marker', 'color', 'under']) };
+  const rf = rngOf((brief.brand || '') + '|fx|' + seed), pf = (a) => a[Math.floor(rf() * a.length)];
+  style.fx = brief.fx && FX.includes(brief.fx) ? brief.fx : pf(FX.filter(k => k !== 'rise' && k !== 'type'));   // 제목 글자 효과(광고 하나에 대표 효과 하나)
+  style.nfx = brief.numfx || pf(['count', 'roll']);                                                              // 숫자 효과
+  style.shine = brief.shine ?? (rf() < .5);                                                                       // 마지막에 빛 한 번 스침
   const used = {}, L = [];
   cuts.forEach((cut, i) => {
     const ph = photosOf(cut);
@@ -156,6 +164,8 @@ function sim(a, b) {
   if (a.style.align === b.style.align) s += .5;
   if (a.style.deco === b.style.deco) s += .5;
   if (a.style.hl === b.style.hl) s += .4;
+  if (b.style && a.style.fx === b.style.fx) s += 1.2;
+  if (b.style && a.style.nfx === b.style.nfx) s += .3;
   if (b.hue != null && Math.abs(((C0.h - b.hue + 1.5) % 1) - .5) < .06) s += 1.5;
   return s;
 }
@@ -177,11 +187,35 @@ const S = PLAN.style, HF = FONTS[S.head];
 const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const br = (s) => esc(s).replace(/\n/g, '<br>');
 const rich = (s) => esc(s).replace(/\[([^\]]+)\]/g, '<em class="hl">$1</em>');
-function headHtml(s) {
-  const lines = String(s || '').split('\n');
-  return `<h1 class="fit">${lines.map((ln, i) => `<span class="ln"><span style="animation-delay:${(.12 + i * .11).toFixed(2)}s">${rich(ln)}</span></span>`).join('')}</h1>`;
+/* 글자를 낱자·단어로 나눔: 단어는 줄바꿈 안 되게 묶고([대괄호] 강조 유지), 각 조각에 순번 --i */
+function splitFx(s, unit, st) {
+  const parts = String(s || '').split(/(\[[^\]]+\])/).filter(Boolean);
+  return parts.map(seg => {
+    const hl = /^\[.*\]$/.test(seg), t = hl ? seg.slice(1, -1) : seg;
+    const html = t.split(/( +)/).map(w => {
+      if (!w) return ''; if (/^ +$/.test(w)) return ' ';
+      if (unit === 'word') return `<span class="w fx" style="--i:${st.n++}">${esc(w)}</span>`;
+      return `<span class="w">${[...w].map(ch => `<span class="c fx" style="--i:${st.n++}" data-c="${esc(ch)}">${esc(ch)}</span>`).join('')}</span>`;
+    }).join('');
+    return hl ? `<em class="hl">${html}</em>` : html;
+  }).join('');
 }
-const priceHtml = (v) => { const m = String(v).match(/^([^\d]*)([\d,]+)(.*)$/); if (!m) return esc(v); const n = +m[2].replace(/,/g, ''); return `${esc(m[1])}<b class="num" data-to="${n}">${m[2]}</b><small>${esc(m[3] || '원')}</small>`; };
+const FXUNIT = { chars: 'char', blur: 'word', track: 'line', flip: 'word', pop: 'word', mask: 'line', scramble: 'char', type: 'char', outline: 'line', rise: 'line' };
+function fxText(s, fx, base, lineStep, shine) {
+  const lines = String(s || '').split('\n'), unit = FXUNIT[fx] || 'line', st = { n: 0 };
+  return lines.map((ln, i) => {
+    const d = (base + i * (lineStep ?? .11)).toFixed(2);
+    const sh = shine ? `<span class="sh" aria-hidden="true" style="animation-delay:${(1.75 + i * .12).toFixed(2)}s">${esc(ln.replace(/[\[\]]/g, ''))}</span>` : '';
+    if (unit === 'line') return `<span class="ln${sh ? ' has-sh' : ''}"><span class="fx" style="--i:${i};animation-delay:${d}s">${rich(ln)}</span>${sh}</span>`;
+    return `<span class="ln open${sh ? ' has-sh' : ''}" style="--d:${d}s">${splitFx(ln, unit, st)}${sh}</span>`;
+  }).join('');
+}
+let CUR_FX = 'rise';
+function headHtml(s) {
+  return `<h1 class="fit fx-${CUR_FX}">${fxText(s, CUR_FX, .12, .11, S.shine && CUR_FX !== 'type' && CUR_FX !== 'scramble')}</h1>`;
+}
+const numHtml = (txt) => { const n = String(txt).replace(/,/g, ''); if (S.nfx !== 'roll') return `<b class="num" data-to="${n}">${esc(txt)}</b>`; let j = 0; return `<b class="roll" aria-label="${esc(txt)}">${[...String(txt)].map(ch => /\d/.test(ch) ? `<span class="dg" data-d="${ch}" data-j="${j++}"><span class="col" style="transform:translateY(-${((10 + +ch) * .82).toFixed(2)}em)">${'01234567890123456789'.split('').map(x => `<i>${x}</i>`).join('')}</span><span class="ghost">${ch}</span></span>` : `<span class="sep">${esc(ch)}</span>`).join('')}</b>`; };
+const priceHtml = (v) => { const m = String(v).match(/^([^\d]*)([\d,]+)(.*)$/); if (!m) return esc(v); return `${esc(m[1])}${numHtml(m[2])}<small>${esc(m[3] || '원')}</small>`; };
 function tx(cut, cls) {
   return `<div class="tx ${cls || ''}">${cut.kicker ? `<p class="kick a0">${esc(cut.kicker)}</p>` : ''}${headHtml(cut.head)}${cut.sub ? `<p class="sub fit a2">${rich(cut.sub)}</p>` : ''}${cut.badge ? `<p class="badge pop">${esc(cut.badge)}</p>` : ''}${cut.note ? `<p class="note a3">${esc(cut.note)}</p>` : ''}</div>`;
 }
@@ -212,16 +246,17 @@ function placeInfo(cut) {
 }
 
 async function cutHtml(cut, L, o) {
+  CUR_FX = cut.fx && FX.includes(cut.fx) ? cut.fx : S.fx;
   const ph = photosOf(cut), p0 = ph[0], pi = P[p0] || {};
   switch (L) {
     case 'frame': {
-      const st = cut.stat ? `<p class="stat">${/^[\d,]+$/.test(String(cut.stat.value)) ? `<b class="num" data-to="${String(cut.stat.value).replace(/,/g, '')}">${esc(cut.stat.value)}</b>` : `<b class="statv">${esc(cut.stat.value)}</b>`}${cut.stat.unit ? `<small>${esc(cut.stat.unit)}</small>` : ''}</p>` : '';
+      const st = cut.stat ? `<p class="stat">${/^[\d,]+$/.test(String(cut.stat.value)) ? numHtml(String(cut.stat.value)) : `<b class="statv">${esc(cut.stat.value)}</b>`}${cut.stat.unit ? `<small>${esc(cut.stat.unit)}</small>` : ''}</p>` : '';
       const pos = (cut.pos && (cut.pos[o] || cut.pos)) || 'bl', ink = (cut.ink && (cut.ink[o] || cut.ink)) || 'light';
-      return `<section class="L-frame pos-${typeof pos === 'string' ? pos : 'bl'} ink-${typeof ink === 'string' ? ink : 'light'}">${img(p0, 'full still')}${ink === 'dark' ? '' : '<div class="fscrim"></div>'}<div class="ftx ${(cut.box ?? brief.box) ? 'boxed' : ''}">${cut.kicker ? `<p class="kick a0">${esc(cut.kicker)}</p>` : ''}${cut.lead ? `<p class="lead a0">${rich(cut.lead)}</p>` : ''}${st}${tx({ ...cut, kicker: null }, ink === 'dark' ? '' : 'on-photo')}${cut.brandBig ? `<p class="brandbig a2">${br(cut.brandBig)}</p>` : ''}${brief.locline && cut.loc !== false ? `<p class="locline a3">${esc(brief.locline)}</p>` : ''}</div>${brief.searchbar ? '<div class="sbzone"></div>' : ''}</section>`;
+      return `<section class="L-frame pos-${typeof pos === 'string' ? pos : 'bl'} ink-${typeof ink === 'string' ? ink : 'light'}">${img(p0, 'full still')}${ink === 'dark' ? '' : '<div class="fscrim"></div>'}<div class="ftx ${(cut.box ?? brief.box) ? 'boxed' : ''}">${cut.kicker ? `<p class="kick a0">${esc(cut.kicker)}</p>` : ''}${cut.lead ? `<p class="lead a0">${rich(cut.lead)}</p>` : ''}${st}${tx({ ...cut, kicker: null }, ink === 'dark' ? '' : 'on-photo')}${cut.brandBig ? `<p class="brandbig fx-${CUR_FX}">${fxText(cut.brandBig, CUR_FX, .5, .1)}</p>` : ''}${brief.locline && cut.loc !== false ? `<p class="locline a3">${esc(brief.locline)}</p>` : ''}</div>${brief.searchbar ? '<div class="sbzone"></div>' : ''}</section>`;
     }
     case 'pros': {
       const pr = (cut.pros || []).slice(0, 4);
-      return `<section class="L-pros"><div class="glow"></div><div class="ptxt">${cut.brandBig ? `<p class="brandbig a0">${br(cut.brandBig)}</p>` : ''}${cut.price ? `<p class="offer a2"><span>${esc(cut.offerLabel || '')}</span> ${priceHtml(cut.price)}</p>` : ''}${cut.sub ? `<p class="sub a3">${rich(cut.sub).replace(/\n/g, "<br>")}</p>` : ''}</div><div class="cards n${pr.length}">${pr.map((x, j) => `<figure class="card rv r${Math.min(j, 2)}"><img src="${esc(x.img)}" alt=""><figcaption>${esc(x.name)}</figcaption></figure>`).join('')}</div><div class="sbzone"></div></section>`;
+      return `<section class="L-pros"><div class="glow"></div><div class="ptxt">${cut.brandBig ? `<p class="brandbig fx-${CUR_FX}">${fxText(cut.brandBig, CUR_FX, .05, .1)}</p>` : ''}${cut.price ? `<p class="offer a2"><span>${esc(cut.offerLabel || '')}</span> ${priceHtml(cut.price)}</p>` : ''}${cut.sub ? `<p class="sub a3">${rich(cut.sub).replace(/\n/g, "<br>")}</p>` : ''}</div><div class="cards n${pr.length}">${pr.map((x, j) => `<figure class="card rv r${Math.min(j, 2)}"><img src="${esc(x.img)}" alt=""><figcaption>${esc(x.name)}</figcaption></figure>`).join('')}</div><div class="sbzone"></div></section>`;
     }
     case 'asis': return `<section class="L-asis">${img(p0, 'full still')}</section>`;
     case 'cover': return `<section class="L-cover">${img(p0, 'full kb')}<div class="scrim ${S.scrim}"></div>${tx(cut, 'on-photo')}${foot()}</section>`;
@@ -255,8 +290,41 @@ html,body{width:${W}px;height:${H}px;overflow:hidden;background:${C.bg};color:${
 section{position:relative;width:${W}px;height:${H}px;overflow:hidden;--px:${px}px;--py:${py}px}
 ${S.treat === 'grain' ? `section::after{content:"";position:absolute;inset:0;z-index:9;background:${grain};opacity:.08;mix-blend-mode:overlay;pointer-events:none}` : ''}
 h1{font-family:${HF.fam},'Pretendard Variable',sans-serif;font-weight:${HF.w};font-size:${fH}px;line-height:${HF.lh};letter-spacing:${HF.track}}
-h1 .ln{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
-h1 .ln>span{display:inline-block;animation:lineup .9s cubic-bezier(.16,1,.3,1) both}
+:is(h1,.brandbig) .ln{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
+:is(h1,.brandbig) .ln>span{display:inline-block;animation:lineup .9s cubic-bezier(.16,1,.3,1) both}
+.brandbig .ln{padding-bottom:0;margin-bottom:0;line-height:inherit}
+.brandbig .ln>span{vertical-align:top}
+/* ── 글자 효과 ── */
+.ln.open{overflow:visible}
+.w{display:inline-block;white-space:nowrap}
+.c{display:inline-block}
+.fx-chars .c{animation:fxChar .75s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--d) + var(--i) * .035s)}
+@keyframes fxChar{from{opacity:0;transform:translateY(.45em) rotate(4deg);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+.fx-blur .w{animation:fxBlur 1s cubic-bezier(.22,1,.36,1) both;animation-delay:calc(var(--d) + var(--i) * .09s)}
+@keyframes fxBlur{from{opacity:0;filter:blur(18px);transform:scale(1.12);letter-spacing:.12em}to{opacity:1;filter:none;transform:none}}
+.fx-track .ln>span{animation:fxTrack 1.2s cubic-bezier(.22,1,.36,1) both}
+@keyframes fxTrack{from{opacity:0;letter-spacing:.42em;filter:blur(8px)}to{opacity:1;filter:none}}
+.fx-flip .ln.open{perspective:900px}
+.fx-flip .w{transform-origin:50% 100%;animation:fxFlip .85s cubic-bezier(.2,1.2,.4,1) both;animation-delay:calc(var(--d) + var(--i) * .08s);backface-visibility:hidden}
+@keyframes fxFlip{from{opacity:0;transform:rotateX(-92deg) translateY(.2em)}to{opacity:1;transform:none}}
+.fx-pop .w{animation:fxPop .7s cubic-bezier(.3,1.7,.5,1) both;animation-delay:calc(var(--d) + var(--i) * .08s)}
+@keyframes fxPop{from{opacity:0;transform:scale(.3) translateY(.3em)}60%{opacity:1}to{opacity:1;transform:none}}
+.fx-mask .ln>span{-webkit-mask:linear-gradient(90deg,#000 45%,transparent 55%) 0 0/220% 100% no-repeat;animation:fxMask 1.1s cubic-bezier(.6,0,.2,1) both}
+@keyframes fxMask{from{-webkit-mask-position:100% 0}to{-webkit-mask-position:0 0}}
+.fx-outline .ln>span{-webkit-text-stroke:.025em currentColor;animation:fxOutline 1.6s ease-out both}
+@keyframes fxOutline{0%{opacity:0;-webkit-text-fill-color:transparent;transform:translateY(.15em)}25%{opacity:1;-webkit-text-fill-color:transparent;transform:none}100%{opacity:1;-webkit-text-fill-color:currentColor;-webkit-text-stroke-width:0}}
+.fx-scramble .c,.fx-type .c{text-align:center}
+.fx-type .c.cur::after{content:"";position:absolute;width:.07em;height:.95em;margin:.08em 0 0 .04em;background:${C.acc}}
+.fx-type .c{position:relative}
+.ln.has-sh{position:relative}
+:is(h1,.brandbig) .ln>.sh{position:absolute;inset:0 0 auto 0;pointer-events:none;color:transparent;-webkit-text-fill-color:transparent;background:linear-gradient(105deg,transparent 36%,${C.acc} 47%,#fff8e6 50%,${C.acc} 53%,transparent 64%) 170% 0/260% 100% no-repeat;-webkit-background-clip:text;background-clip:text;animation:fxShine 1.2s 1.75s cubic-bezier(.5,0,.3,1) both}
+@keyframes fxShine{from{background-position:160% 0}to{background-position:-60% 0}}
+.roll{display:inline-flex;align-items:baseline}
+.roll .dg{position:relative;display:inline-block;overflow:hidden;clip-path:inset(0);height:.82em;line-height:.82;vertical-align:baseline;-webkit-mask:linear-gradient(transparent 0,#000 13%,#000 87%,transparent 100%)}
+.roll .dg .ghost{visibility:hidden}
+.roll .dg .col{position:absolute;left:0;top:0;display:flex;flex-direction:column;width:100%;text-align:center}
+.roll .dg .col i{font-style:normal;height:.82em;line-height:.82}
+.roll .sep{line-height:.82}
 em.hl{font-style:normal}
 ${S.hl === 'color' ? `em.hl{color:${C.acc}}.on-photo em.hl,.on-key em.hl{color:inherit;border-bottom:.06em solid ${C.acc}}` : ''}
 ${S.hl === 'marker' ? `em.hl{background:${hlBg('55')} 0 90%/0 .34em no-repeat;animation:markM .7s .8s cubic-bezier(.6,0,.2,1) both}.on-photo em.hl,.on-key em.hl,.L-statement em.hl,.L-placeType em.hl{background-image:${hlBg('cc')}}` : ''}
@@ -489,13 +557,27 @@ html,body{margin:0;width:${W}px;height:${H}px;background:transparent;overflow:hi
 
 /* 페이지 안 스크립트: 시간 맞추기(숫자 올라감) + 안전 영역 자동 맞춤 */
 const PAGE_JS = `
-window.__seek=function(ms){document.querySelectorAll('.num').forEach(function(e){var to=+e.dataset.to,d=550,dur=900,t=Math.max(0,Math.min(1,(ms-d)/dur)),k=1-Math.pow(1-t,3);e.textContent=Math.round(to*k).toLocaleString('ko-KR')});};
+window.__FXI=null;
+window.__fxInit=function(){if(window.__FXI)return;window.__FXI=1;
+ document.querySelectorAll('.fx-scramble .c,.fx-type .c').forEach(function(c){var w=c.getBoundingClientRect().width;c.style.width=w+'px'});};
+var GL='가나다라마바사아자차카타파하거너더러머버서어저처커터퍼허고노도로모보소오조초코토포호';
+window.__fxSeek=function(ms){window.__fxInit();
+ [].forEach.call(document.querySelectorAll('.fx-scramble,.fx-type'),function(box){var sc=box.classList.contains('fx-scramble');
+  [].forEach.call(box.querySelectorAll('.ln'),function(ln){var d=parseFloat(ln.style.getPropertyValue('--d'))*1000||0;var cs=ln.querySelectorAll('.c');
+   [].forEach.call(cs,function(c,k){var i=+c.style.getPropertyValue('--i'),ch=c.dataset.c;
+    if(sc){var t0=d+i*45,t1=t0+420;if(ms<t0){c.style.opacity=0}else if(ms<t1){c.style.opacity=1;var h=(Math.floor(ms/66)*31+i*17)%GL.length;c.textContent=/[가-힣]/.test(ch)?GL[h]:(/\\d/.test(ch)?String(h%10):(/[A-Za-z]/.test(ch)?String.fromCharCode(65+h%26):ch));c.style.color='${C.acc}'}else{c.style.opacity=1;c.textContent=ch;c.style.color=''}}
+    else{var tt=d+i*70;c.style.opacity=ms>=tt?1:0;c.classList.remove('cur')}});
+   if(!sc){var vis=[].filter.call(cs,function(c){return c.style.opacity==='1'});var all=vis.length===cs.length;var last=vis[vis.length-1];var allLn=box.querySelectorAll('.ln');var isLastLine=ln===allLn[allLn.length-1];
+    var typing=vis.length&&!all;var blinkOn=Math.floor(ms/450)%2===0;if(last&&(typing||(all&&isLastLine&&blinkOn&&ms<4000)))last.classList.add('cur')}});});
+ document.querySelectorAll('.roll .dg').forEach(function(g){var dd=+g.dataset.d,j=+g.dataset.j,t0=450+j*90,dur=1100,t=Math.max(0,Math.min(1,(ms-t0)/dur)),k=1-Math.pow(1-t,4);var target=10+dd;g.firstChild.style.transform='translateY('+(-target*k*.82)+'em)'});};
+window.__seek=function(ms){window.__fxSeek(ms);document.querySelectorAll('.num').forEach(function(e){var to=+e.dataset.to,d=550,dur=900,t=Math.max(0,Math.min(1,(ms-d)/dur)),k=1-Math.pow(1-t,3);e.textContent=Math.round(to*k).toLocaleString('ko-KR')});};
 window.__fit=function(sx,sy){var MINH=window.MINH||56,MINS=window.MINS||26;var W=innerWidth,H=innerHeight,log=[];
  function out(e){var r=e.getBoundingClientRect();if(!r.width)return false;return r.left<sx-1||r.right>W-sx+1||r.top<sy-1||r.bottom>H-sy+1||e.scrollWidth>e.clientWidth+2}
  function overlap(){var bad=[];[].forEach.call(document.querySelectorAll('.foot,.sbzone'),function(f){var fr=f.getBoundingClientRect();document.querySelectorAll('.tx,.ftx,.ptxt,.cards,.pinfo,.items,.qr').forEach(function(e){var r=e.getBoundingClientRect();if(r.width&&r.bottom>fr.top-24&&r.top<fr.bottom&&r.right>fr.left&&r.left<fr.right)bad.push(e)})});return bad}
  function bad(){var b=[];document.querySelectorAll('h1,.sub,.items,.addr,.dirs,.bigprice,.foot,.qr,.meta,.ftx,.ptxt,.cards,.brandbig,.offer').forEach(function(e){if(out(e))b.push(e)});return b.concat(overlap())}
  for(var n=0;n<16;n++){var b=bad();if(!b.length)break;log.push(b.length);
   b.forEach(function(e){var t=e.matches('h1,.sub,.items,.addr,.dirs,.bigprice,.meta')?[e]:[].slice.call(e.querySelectorAll('h1,.sub,.items,.addr,.dirs,.bigprice,span'));
+   t=t.filter(function(x){return !(x.matches('span')&&(x.closest('.brandbig')||x.matches('.w,.c,.sh,.dg,.dg *,.sep,.roll *')))});
    if(e.matches('.qr')||(e.matches('.tx,.pinfo')&&!t.length))t=[e];
    t.forEach(function(x){var fs=parseFloat(getComputedStyle(x).fontSize),min=x.matches('h1,.brandbig,.offer')?MINH:(x.matches('.bigprice')?90:MINS);if(fs*0.93>=min)x.style.fontSize=(fs*0.93)+'px'})})}
  var sz=[].map.call(document.querySelectorAll('[style*="font-size"]'),function(e){return e.style.fontSize});
@@ -571,7 +653,7 @@ function join(o, n) {
   const rec = { brand: brief.brand, at: new Date().toISOString(), seed: PLAN.seed, layouts: PLAN.layouts, style: S, hue: C0.h, key: C.key };
   fs.writeFileSync(path.join(OUT, 'plan.json'), JSON.stringify({ ...rec, palette: C, font: HF.fam, safe: SAFE, check }, null, 1));
   if (!opt('dry')) { const hs = history.filter(x => x.brand !== brief.brand); hs.push(rec); fs.writeFileSync(HIST, JSON.stringify(hs, null, 1)); }
-  fs.readdirSync(OUT).filter(f => f.startsWith('.c_') || f.startsWith('.cut_') || f.startsWith('.overlay_')).forEach(f => fs.unlinkSync(path.join(OUT, f)));
+  if (!process.env.KEEP) fs.readdirSync(OUT).filter(f => f.startsWith('.c_') || f.startsWith('.cut_') || f.startsWith('.overlay_')).forEach(f => fs.unlinkSync(path.join(OUT, f)));
   const bad = Object.entries(check).filter(([, v]) => v.left.length);
   console.log('\n완료', JSON.stringify({ layouts: PLAN.layouts, font: S.head, tr: S.tr, treat: S.treat, hl: S.hl, key: C.key }), bad.length ? '\n안전 영역 넘침: ' + JSON.stringify(bad) : '\n안전 영역: 모두 통과');
 })().catch(e => { console.error(e); process.exit(1); });
