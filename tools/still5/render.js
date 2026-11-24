@@ -216,8 +216,9 @@ function headHtml(s) {
 }
 const numHtml = (txt) => { const n = String(txt).replace(/,/g, ''); if (S.nfx !== 'roll') return `<b class="num" data-to="${n}">${esc(txt)}</b>`; let j = 0; return `<b class="roll" aria-label="${esc(txt)}">${[...String(txt)].map(ch => /\d/.test(ch) ? `<span class="dg" data-d="${ch}" data-j="${j++}"><span class="col" style="transform:translateY(-${((10 + +ch) * .82).toFixed(2)}em)">${'01234567890123456789'.split('').map(x => `<i>${x}</i>`).join('')}</span><span class="ghost">${ch}</span></span>` : `<span class="sep">${esc(ch)}</span>`).join('')}</b>`; };
 const priceHtml = (v) => { const m = String(v).match(/^([^\d]*)([\d,]+)(.*)$/); if (!m) return esc(v); return `${esc(m[1])}${numHtml(m[2])}<small>${esc(m[3] || '원')}</small>`; };
-function tx(cut, cls) {
-  return `<div class="tx ${cls || ''}">${cut.kicker ? `<p class="kick a0">${esc(cut.kicker)}</p>` : ''}${headHtml(cut.head)}${cut.sub ? `<p class="sub fit a2">${rich(cut.sub)}</p>` : ''}${cut.badge ? `<p class="badge pop">${esc(cut.badge)}</p>` : ''}${cut.note ? `<p class="note a3">${esc(cut.note)}</p>` : ''}</div>`;
+const statHtml = (cut) => cut.stat ? `<p class="stat">${/^[\d,]+$/.test(String(cut.stat.value)) ? numHtml(String(cut.stat.value)) : `<b class="statv">${esc(cut.stat.value)}</b>`}${cut.stat.unit ? `<small>${esc(cut.stat.unit)}</small>` : ''}</p>` : '';
+function tx(cut, cls) {   // 모든 배치 공통: 머리말·큰 숫자·제목·설명·큰 상호 (frame은 숫자·상호를 따로 그리므로 null로 넘김)
+  return `<div class="tx ${cls || ''}">${cut.kicker ? `<p class="kick a0">${esc(cut.kicker)}</p>` : ''}${cut.lead ? `<p class="lead a0">${rich(cut.lead)}</p>` : ''}${statHtml(cut)}${headHtml(cut.head)}${cut.sub ? `<p class="sub fit a2">${rich(cut.sub)}</p>` : ''}${cut.badge ? `<p class="badge pop">${esc(cut.badge)}</p>` : ''}${cut.note ? `<p class="note a3">${esc(cut.note)}</p>` : ''}${cut.brandBig ? `<p class="brandbig fx-${CUR_FX}">${fxText(cut.brandBig, CUR_FX, .5, .1)}</p>` : ''}</div>`;
 }
 const items = (cut) => `<ul class="items fit">${(cut.items || []).slice(0, 4).map((x, j) => `<li class="a2" style="animation-delay:${(.45 + j * .1).toFixed(2)}s"><b>${esc(x.name)}</b><i></i><span>${priceHtml(x.price || '')}</span></li>`).join('')}</ul>`;
 function img(f, cls) { const p = P[f] || {}; return `<div class="ph ${cls || ''}"><img src="photos/${esc(f)}" style="object-position:${Math.round((p.fx ?? .5) * 100)}% ${Math.round((p.fy ?? .5) * 100)}%" alt=""></div>`; }
@@ -252,7 +253,7 @@ async function cutHtml(cut, L, o) {
     case 'frame': {
       const st = cut.stat ? `<p class="stat">${/^[\d,]+$/.test(String(cut.stat.value)) ? numHtml(String(cut.stat.value)) : `<b class="statv">${esc(cut.stat.value)}</b>`}${cut.stat.unit ? `<small>${esc(cut.stat.unit)}</small>` : ''}</p>` : '';
       const pos = (cut.pos && (cut.pos[o] || cut.pos)) || 'bl', ink = (cut.ink && (cut.ink[o] || cut.ink)) || 'light';
-      return `<section class="L-frame pos-${typeof pos === 'string' ? pos : 'bl'} ink-${typeof ink === 'string' ? ink : 'light'}">${img(p0, 'full still')}${ink === 'dark' ? '' : '<div class="fscrim"></div>'}<div class="ftx ${(cut.box ?? brief.box) ? 'boxed' : ''}">${cut.kicker ? `<p class="kick a0">${esc(cut.kicker)}</p>` : ''}${cut.lead ? `<p class="lead a0">${rich(cut.lead)}</p>` : ''}${st}${tx({ ...cut, kicker: null }, ink === 'dark' ? '' : 'on-photo')}${cut.brandBig ? `<p class="brandbig fx-${CUR_FX}">${fxText(cut.brandBig, CUR_FX, .5, .1)}</p>` : ''}${brief.locline && cut.loc !== false ? `<p class="locline a3">${esc(brief.locline)}</p>` : ''}</div>${brief.searchbar ? '<div class="sbzone"></div>' : ''}</section>`;
+      return `<section class="L-frame pos-${typeof pos === 'string' ? pos : 'bl'} ink-${typeof ink === 'string' ? ink : 'light'}">${img(p0, 'full still')}${ink === 'dark' ? '' : '<div class="fscrim"></div>'}<div class="ftx ${(cut.box ?? brief.box) ? 'boxed' : ''}">${cut.kicker ? `<p class="kick a0">${esc(cut.kicker)}</p>` : ''}${cut.lead ? `<p class="lead a0">${rich(cut.lead)}</p>` : ''}${st}${tx({ ...cut, kicker: null, lead: null, stat: null, brandBig: null }, ink === 'dark' ? '' : 'on-photo')}${cut.brandBig ? `<p class="brandbig fx-${CUR_FX}">${fxText(cut.brandBig, CUR_FX, .5, .1)}</p>` : ''}${brief.locline && cut.loc !== false ? `<p class="locline a3">${esc(brief.locline)}</p>` : ''}</div>${brief.searchbar ? '<div class="sbzone"></div>' : ''}</section>`;
     }
     case 'pros': {
       const pr = (cut.pros || []).slice(0, 4);
@@ -364,6 +365,7 @@ section:has(.scrim) .foot,.L-spotlight .foot{color:#fff}
 .L-band h1{font-size:${Math.round(fH * .8)}px}
 .L-band .kick{color:${C.onKey};opacity:.85}
 .L-band .foot{color:${C.onKey};${V ? '' : `left:calc(58% + ${Math.round(px * .7)}px)`}}
+${brief.searchbar ? '.L-split .foot{display:none}' : ''}
 .L-band .tx{${V ? '' : 'margin-bottom:90px'}}
 /* 반반 */
 .L-split{display:grid;${V ? 'grid-template-rows:56% 44%' : 'grid-template-columns:52% 48%'}}
@@ -475,6 +477,9 @@ ${V ? '.L-statement:has(.thumb){justify-content:flex-start;padding-top:calc(var(
 .L-frame .sub{font-size:${Math.round(f2 * .95)}px}
 .stat{display:flex;align-items:baseline;gap:.08em;margin-bottom:.12em;font-family:'Pretendard Variable',sans-serif;font-weight:800;font-size:${V ? 300 : 250}px;line-height:.86;letter-spacing:-.055em;color:${C.acc};font-variant-numeric:tabular-nums;animation:up .7s .05s cubic-bezier(.16,1,.3,1) both}
 .pos-tr .stat{justify-content:flex-end}
+.tx .stat{font-size:${V ? 230 : 200}px}
+${S.align === 'center' ? '.tx .stat{justify-content:center}' : ''}
+.tx.center .stat{justify-content:center}
 .pos-tr .tx,.pos-tr .ftx{text-align:right}
 .L-frame .kick{margin-bottom:.5em}
 .L-frame.ink-light .kick{color:${C.acc}}
