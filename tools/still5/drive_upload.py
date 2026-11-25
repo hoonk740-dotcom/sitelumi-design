@@ -8,7 +8,7 @@ def call(d):
     d['a'] = 'driveChunk'; d['key'] = key
     req = urllib.request.Request(URL, data=json.dumps(d).encode(), headers={'Content-Type': 'text/plain'})
     return json.load(urllib.request.urlopen(req, timeout=300))
-size = os.path.getsize(path); mime = 'video/mp4' if path.endswith('.mp4') else 'application/octet-stream'
+size = os.path.getsize(path); mime = 'video/mp4' if path.endswith('.mp4') else 'image/jpeg' if path.lower().endswith(('.jpg', '.jpeg')) else 'image/png' if path.lower().endswith('.png') else 'application/octet-stream'
 r = call({'op': 'start', 'name': name, 'mime': mime, 'size': size, 'parent': parent}); assert r.get('ok'), r
 sess, off, CH = r['session'], 0, 8 * 1024 * 1024
 with open(path, 'rb') as f:

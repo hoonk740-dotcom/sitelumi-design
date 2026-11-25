@@ -20,6 +20,7 @@ const ARG = process.argv.slice(3);
 const opt = (k) => { const i = ARG.indexOf('--' + k); return i < 0 ? null : (ARG[i + 1] && !ARG[i + 1].startsWith('--') ? ARG[i + 1] : true); };
 const ENG = __dirname;
 const brief = JSON.parse(fs.readFileSync(path.join(DIR, 'brief.json'), 'utf8'));
+const SBTOP = !!(brief.searchbar && brief.searchbar.pos === 'top');
 const photos = fs.existsSync(path.join(DIR, 'photos.json')) ? JSON.parse(fs.readFileSync(path.join(DIR, 'photos.json'), 'utf8')) : [];
 const P = Object.fromEntries(photos.map(p => [p.file, p]));
 const OUT = path.join(DIR, 'out'); fs.mkdirSync(OUT, { recursive: true });
@@ -90,13 +91,13 @@ if (!brief.keepLast && (!cuts.length || cuts[cuts.length - 1].role !== 'place'))
 }
 
 /* 글자 효과 (프리미어 타이틀 프리셋처럼): 컷별 cut.fx 또는 전체 brief.fx, 없으면 기록과 덜 겹치게 자동 */
-const FX = ['rise', 'chars', 'blur', 'track', 'flip', 'pop', 'mask', 'scramble', 'type', 'outline'];
+const FX = ['rise', 'chars', 'blur', 'track', 'flip', 'pop', 'mask', 'scramble', 'type', 'outline', 'pro'];
 function makePlan(seed) {
   const rand = rngOf((brief.brand || '') + '|' + (brief.industry || '') + '|' + seed);
   const pick = (a) => a[Math.floor(rand() * a.length)];
   const style = { head: brief.font && FONTS[brief.font] ? brief.font : pick(kit.head), r: pick(kit.r), align: pick(kit.align), deco: pick(kit.deco), tr: pick(kit.tr), treat: pick(kit.treat), scrim: pick(['grad', 'soft', 'deep']), hl: pick(['marker', 'color', 'under']) };
   const rf = rngOf((brief.brand || '') + '|fx|' + seed), pf = (a) => a[Math.floor(rf() * a.length)];
-  style.fx = brief.fx && FX.includes(brief.fx) ? brief.fx : pf(FX.filter(k => k !== 'rise' && k !== 'type'));   // 제목 글자 효과(광고 하나에 대표 효과 하나)
+  style.fx = brief.fx && FX.includes(brief.fx) ? brief.fx : pf(FX.filter(k => k !== 'rise' && k !== 'type' && k !== 'pro'));   // 제목 글자 효과(광고 하나에 대표 효과 하나)
   style.nfx = brief.numfx || pf(['count', 'roll']);                                                              // 숫자 효과
   style.shine = brief.shine ?? (rf() < .5);                                                                       // 마지막에 빛 한 번 스침
   const used = {}, L = [];
@@ -200,7 +201,7 @@ function splitFx(s, unit, st) {
     return hl ? `<em class="hl">${html}</em>` : html;
   }).join('');
 }
-const FXUNIT = { chars: 'char', blur: 'word', track: 'line', flip: 'word', pop: 'word', mask: 'line', scramble: 'char', type: 'char', outline: 'line', rise: 'line' };
+const FXUNIT = { chars: 'char', blur: 'word', track: 'line', flip: 'word', pop: 'word', mask: 'line', scramble: 'char', type: 'char', outline: 'line', rise: 'line', pro: 'char' };
 function fxText(s, fx, base, lineStep, shine) {
   const lines = String(s || '').split('\n'), unit = FXUNIT[fx] || 'line', st = { n: 0 };
   return lines.map((ln, i) => {
@@ -253,7 +254,7 @@ async function cutHtml(cut, L, o) {
     case 'frame': {
       const st = cut.stat ? `<p class="stat">${/^[\d,]+$/.test(String(cut.stat.value)) ? numHtml(String(cut.stat.value)) : `<b class="statv">${esc(cut.stat.value)}</b>`}${cut.stat.unit ? `<small>${esc(cut.stat.unit)}</small>` : ''}</p>` : '';
       const pos = (cut.pos && (cut.pos[o] || cut.pos)) || 'bl', ink = (cut.ink && (cut.ink[o] || cut.ink)) || 'light';
-      return `<section class="L-frame pos-${typeof pos === 'string' ? pos : 'bl'} ink-${typeof ink === 'string' ? ink : 'light'}">${img(p0, 'full still')}${ink === 'dark' ? '' : '<div class="fscrim"></div>'}<div class="ftx ${(cut.box ?? brief.box) ? 'boxed' : ''}">${cut.kicker ? `<p class="kick a0">${esc(cut.kicker)}</p>` : ''}${cut.lead ? `<p class="lead a0">${rich(cut.lead)}</p>` : ''}${st}${tx({ ...cut, kicker: null, lead: null, stat: null, brandBig: null }, ink === 'dark' ? '' : 'on-photo')}${cut.brandBig ? `<p class="brandbig fx-${CUR_FX}">${fxText(cut.brandBig, CUR_FX, .5, .1)}</p>` : ''}${brief.locline && cut.loc !== false ? `<p class="locline a3">${esc(brief.locline)}</p>` : ''}</div>${brief.searchbar ? '<div class="sbzone"></div>' : ''}</section>`;
+      return `<section class="L-frame pos-${typeof pos === 'string' ? pos : 'bl'} ink-${typeof ink === 'string' ? ink : 'light'}">${img(p0, 'full still')}${ink === 'dark' ? '' : '<div class="fscrim"></div>'}<div class="ftx ${(cut.box ?? brief.box) ? 'boxed' : ''}${(cut.box ?? brief.box) === 'glass' ? ' glass' : ''}${cut.compact ? ' compact' : ''}">${cut.kicker ? `<p class="kick a0">${esc(cut.kicker)}</p>` : ''}${cut.brandFirst && cut.brandBig ? `<p class="brandbig fx-${CUR_FX}">${fxText(cut.brandBig, CUR_FX, .05, .1)}</p>` : ''}${cut.lead ? `<p class="lead a0"${cut.brandFirst ? ' style="animation-delay:.55s;margin:.5em 0 0"' : ''}>${rich(cut.lead)}</p>` : ''}${st}${tx({ ...cut, kicker: null, lead: null, stat: null, brandBig: null }, ink === 'dark' ? '' : 'on-photo')}${cut.brandBig && !cut.brandFirst ? `<p class="brandbig fx-${CUR_FX}">${fxText(cut.brandBig, CUR_FX, .5, .1)}</p>` : ''}${brief.locline && cut.loc !== false ? `<p class="locline a3">${esc(brief.locline)}</p>` : ''}</div>${brief.searchbar ? '<div class="sbzone"></div>' : ''}</section>`;
     }
     case 'pros': {
       const pr = (cut.pros || []).slice(0, 4);
@@ -300,6 +301,14 @@ h1{font-family:${HF.fam},'Pretendard Variable',sans-serif;font-weight:${HF.w};fo
 .w{display:inline-block;white-space:nowrap}
 .c{display:inline-block}
 .fx-chars .c{animation:fxChar .75s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--d) + var(--i) * .035s)}
+/* pro: 모션그래픽 스튜디오식 — 글자마다 아래에서 떠오르며 세로 잔상(모션 블러)이 걷힘, 이어서 설명이 순서대로 */
+.fx-pro .c{animation:fxPro .95s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--d) + var(--i) * .026s);transform-origin:50% 100%}
+@keyframes fxPro{0%{opacity:0;transform:translateY(.6em) scaleY(1.22);filter:blur(8px)}55%{opacity:1;filter:blur(1px)}100%{opacity:1;transform:none;filter:none}}
+.ftx:has(.fx-pro) .sub,.ftx:has(.fx-pro) .lead{animation:fxSub .85s cubic-bezier(.16,1,.3,1) both;animation-delay:.85s}
+.ftx:has(.fx-pro) .lead{animation-delay:.6s}
+.ftx:has(.fx-pro) .stat{animation:fxSub .8s cubic-bezier(.16,1,.3,1) both;animation-delay:0s}
+@keyframes fxSub{from{opacity:0;transform:translateY(22px);filter:blur(7px);letter-spacing:.03em}to{opacity:1;transform:none;filter:none}}
+@keyframes fxOut{to{opacity:0;transform:translateY(-14px);filter:blur(8px)}}
 @keyframes fxChar{from{opacity:0;transform:translateY(.45em) rotate(4deg);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
 .fx-blur .w{animation:fxBlur 1s cubic-bezier(.22,1,.36,1) both;animation-delay:calc(var(--d) + var(--i) * .09s)}
 @keyframes fxBlur{from{opacity:0;filter:blur(18px);transform:scale(1.12);letter-spacing:.12em}to{opacity:1;filter:none;transform:none}}
@@ -318,7 +327,7 @@ h1{font-family:${HF.fam},'Pretendard Variable',sans-serif;font-weight:${HF.w};fo
 .fx-type .c.cur::after{content:"";position:absolute;width:.07em;height:.95em;margin:.08em 0 0 .04em;background:${C.acc}}
 .fx-type .c{position:relative}
 .ln.has-sh{position:relative}
-:is(h1,.brandbig) .ln>.sh{position:absolute;inset:0 0 auto 0;pointer-events:none;color:transparent;-webkit-text-fill-color:transparent;background:linear-gradient(105deg,transparent 36%,${C.acc} 47%,#fff8e6 50%,${C.acc} 53%,transparent 64%) 170% 0/260% 100% no-repeat;-webkit-background-clip:text;background-clip:text;animation:fxShine 1.2s 1.75s cubic-bezier(.5,0,.3,1) both}
+:is(h1,.brandbig) .ln>.sh{text-shadow:none;position:absolute;inset:0 0 auto 0;pointer-events:none;color:transparent;-webkit-text-fill-color:transparent;background:linear-gradient(105deg,transparent 36%,${C.acc} 47%,#fff8e6 50%,${C.acc} 53%,transparent 64%) 170% 0/260% 100% no-repeat;-webkit-background-clip:text;background-clip:text;animation:fxShine 1.2s 1.75s cubic-bezier(.5,0,.3,1) both}
 @keyframes fxShine{from{background-position:160% 0}to{background-position:-60% 0}}
 .roll{display:inline-flex;align-items:baseline}
 .roll .dg{position:relative;display:inline-block;overflow:hidden;clip-path:inset(0);height:.82em;line-height:.82;vertical-align:baseline;-webkit-mask:linear-gradient(transparent 0,#000 13%,#000 87%,transparent 100%)}
@@ -488,6 +497,8 @@ ${S.align === 'center' ? '.tx .stat{justify-content:center}' : ''}
 .statv{display:inline-block;animation:pop .7s .15s cubic-bezier(.3,1.5,.5,1) both}
 .locline{margin-top:${V ? 40 : 30}px;font-size:${Math.round(f1 * .82)}px;font-weight:600;letter-spacing:.01em;opacity:.82;display:block}
 .ink-light .ftx{color:#fff}
+.L-frame .ftx:not(.boxed){text-shadow:0 1px 3px rgba(0,0,0,.6),0 3px 14px rgba(0,0,0,.5),0 8px 40px rgba(0,0,0,.35)}
+${brief.scrim != null ? `.L-frame .fscrim{opacity:${+brief.scrim}}` : ''}
 .ink-dark .ftx{color:${C.ink}}
 .ink-dark .kick{color:${C.deep}}
 .L-frame .full img,.L-asis .full img{object-fit:contain;background:#000}
@@ -496,7 +507,17 @@ ${S.align === 'center' ? '.tx .stat{justify-content:center}' : ''}
 .kbs img{animation:kbs 3.5s linear both}
 @keyframes kbs{from{transform:scale(1.03)}to{transform:scale(1)}}
 /* 규격 모드: 사진 위 글자는 반투명 상자 · 글자 크기 하한 */
-.sbzone{position:absolute;z-index:0;pointer-events:none;${V ? `left:50%;transform:translateX(-50%);width:${Math.round(W * .8)}px` : `right:${sx}px;width:${Math.round(W * .44)}px`};bottom:${sy}px;height:${Math.max(SPEC.min.small + 4, V ? 58 : 56) * 2}px}
+.sbzone{position:absolute;z-index:0;pointer-events:none;${V ? `left:50%;transform:translateX(-50%);width:${Math.round(W * .8)}px` : `right:${sx}px;width:${Math.round(W * .44)}px`};${SBTOP ? 'top' : 'bottom'}:${sy}px;height:${Math.max(SPEC.min.small + 4, V ? 58 : 56) * 2}px}
+${SBTOP ? `.L-frame.pos-tl .ftx,.L-frame.pos-tr .ftx,.L-frame.pos-top .ftx{top:calc(var(--py) + ${Math.max(SPEC.min.small + 4, V ? 58 : 56) * 2 + 36}px)}
+.L-frame.pos-bl .ftx,.L-frame.pos-bl .ftx.boxed{bottom:var(--py)}` : ''}
+.ftx.boxed.glass{background:rgba(18,20,22,.22);-webkit-backdrop-filter:blur(28px) saturate(1.4);backdrop-filter:blur(28px) saturate(1.4);box-shadow:0 24px 64px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.18);border-radius:${V ? 34 : 30}px;text-shadow:0 1px 8px rgba(0,0,0,.22)}
+.L-frame:has(.glass) .fscrim{opacity:.18}
+.L-frame .ftx.boxed.glass.glass{max-width:${V ? 'none' : '58%'}}
+.L-frame .ftx .sub{white-space:pre-line}
+.ftx.boxed.compact{padding:${V ? 40 : 36}px ${V ? 44 : 46}px}
+.ftx.compact h1,.ftx.compact .brandbig{font-size:${SPEC.min.head + 2}px}
+.ftx.compact .lead,.ftx.compact .sub{font-size:${SPEC.min.body + 2}px}
+.ftx.compact .stat{font-size:${V ? 190 : 170}px}
 .ftx.boxed{padding:${V ? 56 : 52}px ${V ? 60 : 64}px;background:rgba(10,12,14,.58);-webkit-backdrop-filter:blur(14px) saturate(1.1);backdrop-filter:blur(14px) saturate(1.1);border-radius:${Math.max(S.r, 18)}px;width:auto;${V ? '' : 'max-width:58%;right:auto'}}
 .pos-tr .ftx.boxed{${V ? '' : 'left:auto;right:var(--px)'}}
 .L-frame:has(.boxed) .fscrim{opacity:.45}
@@ -511,6 +532,8 @@ ${brief.spec ? `.L-frame h1{font-size:${Math.max(SPEC.min.head + 6, V ? 108 : 10
 .L-pros{background:radial-gradient(ellipse at ${V ? '50% 30%' : '28% 40%'},${C.deep} 0%,#0d1012 62%);color:#fff}
 .L-pros .glow{position:absolute;inset:0;background:radial-gradient(circle at ${V ? '50% 78%' : '72% 70%'},rgba(230,182,92,.18),rgba(0,0,0,0) 55%)}
 .L-pros .ptxt{position:absolute;z-index:3;${V ? 'left:var(--px);right:var(--px);top:var(--py)' : 'left:var(--px);width:38%;top:50%;transform:translateY(-58%)'}}
+${SBTOP ? `.L-pros .ptxt{margin-top:${Math.max(SPEC.min.small + 4, V ? 58 : 56) * 2 + 40}px}
+.L-pros .cards{bottom:${sy}px${V ? '' : `;top:calc(var(--py) + ${Math.max(SPEC.min.small + 4, 56) * 2 + 40}px)`}}` : ''}
 .L-pros .brandbig{font-size:${Math.max(SPEC.min.head + 8, V ? 112 : 112)}px;font-weight:900;line-height:1.1;letter-spacing:-.045em}
 .L-pros .offer{margin-top:${V ? 40 : 44}px;font-weight:800;font-size:${Math.max(SPEC.min.head + 10, 110)}px;line-height:1;letter-spacing:-.04em;color:${C.acc};white-space:nowrap}
 .L-pros .offer span{color:#fff;font-size:${SPEC.min.body + 6}px;font-weight:800;display:block;margin-bottom:.35em;letter-spacing:-.03em}
@@ -548,7 +571,8 @@ ${brief.spec ? `.L-frame h1{font-size:${Math.max(SPEC.min.head + 6, V ? 108 : 10
 function overlayHtml(o) {
   const V = o === 'v', W = V ? 1080 : 1920, H = V ? 1920 : 1080, sb = brief.searchbar;
   const fsz = Math.max(SPEC.min.small + 4, V ? 58 : 56), hgt = Math.round(fsz * 2), mx = Math.round(W * SAFE), my = Math.round(H * SAFE);
-  const pos = V ? `left:50%;transform:translateX(-50%);bottom:${my}px` : `right:${mx}px;bottom:${my}px`;
+  const top = sb.pos === 'top', yy = top ? `top:${my}px` : `bottom:${my}px`;
+  const pos = V ? `left:50%;transform:translateX(-50%);${yy}` : `right:${mx}px;${yy}`;
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="file://${path.join(ENG, FONTS.sans.css)}"><style>
 html,body{margin:0;width:${W}px;height:${H}px;background:transparent;overflow:hidden}
 .sb{position:absolute;${pos};display:flex;align-items:stretch;height:${hgt}px;border:${Math.round(hgt * .07)}px solid #03C75A;background:#03C75A;border-radius:${Math.round(hgt * .1)}px;box-shadow:0 14px 34px rgba(0,0,0,.35);font-family:'Pretendard Variable',sans-serif}
@@ -591,7 +615,7 @@ window.__fit=function(sx,sy){var MINH=window.MINH||56,MINS=window.MINS||26;var W
 async function page(cut, L, o, still) {
   const fontsCss = [FONTS.sans.css, HF.css].filter((v, k, a) => a.indexOf(v) === k).map(h => `<link rel="stylesheet" href="file://${path.join(ENG, h)}">`).join('');
   const body = (await cutHtml(cut, L, o)).replace(/<\/section>$/, '' + '</section>');
-  return `<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><base href="file://${DIR}/">${fontsCss}<style>${css(o)}${still ? '*,*::before,*::after{animation-delay:-10s!important;animation-duration:.001s!important;animation-iteration-count:1!important}.ring{display:none}' : ''}</style><script>window.MINH=${SPEC.min.head};window.MINS=${SPEC.min.small};${PAGE_JS}</script></head><body>${body}</body></html>`;
+  return `<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><base href="file://${DIR}/">${fontsCss}<style>${css(o)}${still ? '*,*::before,*::after{animation-delay:-10s!important;animation-duration:.001s!important;animation-iteration-count:1!important}.ring{display:none}' : ''}${!still && CUR_FX === 'pro' && cut !== (brief.cuts || [])[(brief.cuts || []).length - 1] ? `.L-frame .ftx{animation:fxOut .36s ${(FR / FPS - T - .36).toFixed(2)}s cubic-bezier(.7,0,.84,0) forwards}` : ''}</style><script>window.MINH=${SPEC.min.head};window.MINS=${SPEC.min.small};${PAGE_JS}</script></head><body>${body}</body></html>`;
 }
 
 function encode(file, frames) {
