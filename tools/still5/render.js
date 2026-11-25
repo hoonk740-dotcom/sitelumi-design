@@ -25,7 +25,7 @@ const photos = fs.existsSync(path.join(DIR, 'photos.json')) ? JSON.parse(fs.read
 const P = Object.fromEntries(photos.map(p => [p.file, p]));
 const OUT = path.join(DIR, 'out'); fs.mkdirSync(OUT, { recursive: true });
 const HIST = path.resolve(opt('history') || path.join(DIR, '..', 'still5-history.json'));
-const FPS = 30, FR = 100, T = 0.4;
+const FPS = 30, T = +(JSON.parse(fs.readFileSync(path.join(DIR, 'brief.json'), 'utf8')).trDur || 0.4), FR = Math.round((15 + 4 * T) / 5 * FPS);
 /* 송출 규격: songhaeon = 송해온 매장 화면 가이드(4K·H.264 High·30fps·20~35Mbps·Rec.709·안전 영역 5%·글자 짧은 변 대비 5/6.5/9%) */
 const SPEC = brief.spec === 'songhaeon' ? { safe: 0.05, scale: 2, vb: '28M', max: '35M', minr: '20M', ab: '256k', min: { small: 54, body: 70, head: 98 } } : { safe: 0.06, scale: 1, vb: null, ab: '128k', min: { small: 26, body: 30, head: 56 } };
 const SAFE = SPEC.safe;                              // 모니터 가장자리 잘림(오버스캔) 대비 안전 여백 비율
@@ -95,7 +95,8 @@ const FX = ['rise', 'chars', 'blur', 'track', 'flip', 'pop', 'mask', 'scramble',
 function makePlan(seed) {
   const rand = rngOf((brief.brand || '') + '|' + (brief.industry || '') + '|' + seed);
   const pick = (a) => a[Math.floor(rand() * a.length)];
-  const style = { head: brief.font && FONTS[brief.font] ? brief.font : pick(kit.head), r: pick(kit.r), align: pick(kit.align), deco: pick(kit.deco), tr: pick(kit.tr), treat: pick(kit.treat), scrim: pick(['grad', 'soft', 'deep']), hl: pick(['marker', 'color', 'under']) };
+  const style = { head: brief.font && FONTS[brief.font] ? brief.font : pick(kit.head), r: pick(kit.r), align: pick(kit.align), deco: pick(kit.deco), tr: ((t) => brief.tr || t)(pick(kit.tr)), treat: pick(kit.treat), scrim: pick(['grad', 'soft', 'deep']), hl: pick(['marker', 'color', 'under']) };
+  if (brief.style && typeof brief.style === 'object') Object.assign(style, brief.style);   // 확정 시안의 스타일 고정
   const rf = rngOf((brief.brand || '') + '|fx|' + seed), pf = (a) => a[Math.floor(rf() * a.length)];
   style.fx = brief.fx && FX.includes(brief.fx) ? brief.fx : pf(FX.filter(k => k !== 'rise' && k !== 'type' && k !== 'pro'));   // 제목 글자 효과(광고 하나에 대표 효과 하나)
   style.nfx = brief.numfx || pf(['count', 'roll']);                                                              // 숫자 효과
@@ -629,7 +630,7 @@ function join(o, n) {
   return new Promise((res, rej) => {
     const ins = [], D = FR / FPS; let f = '', last = '[0:v]';
     for (let i = 1; i <= n; i++) ins.push('-i', path.join(OUT, `.c_${o}_${i}.mp4`));
-    const tr = o === 'v' ? S.tr.replace('left', 'up').replace('squeezeh', 'squeezev') : S.tr;
+    const tr = (o === 'v' && !brief.tr) ? S.tr.replace('left', 'up').replace('squeezeh', 'squeezev') : S.tr;
     for (let i = 1; i < n; i++) { f += `${last}[${i}:v]xfade=transition=${tr}:duration=${T}:offset=${(i * (D - T)).toFixed(3)}[x${i}];`; last = `[x${i}]`; }
     const ov = path.join(OUT, `.overlay_${o}.png`); let extra = [];
     if (fs.existsSync(ov)) { extra = ['-i', ov]; f += `${last}[${n + 1}:v]overlay=0:0[xo];`; last = '[xo]'; }
