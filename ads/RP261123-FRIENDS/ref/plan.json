@@ -1,0 +1,91 @@
+{
+ "brand": "프렌즈아카데미 송도점",
+ "at": "2026-11-25T02:10:45.483Z",
+ "seed": 0,
+ "layouts": [
+  "frame",
+  "frame",
+  "frame",
+  "frame",
+  "pros"
+ ],
+ "style": {
+  "head": "sans",
+  "r": 0,
+  "align": "left",
+  "deco": "none",
+  "tr": "fade",
+  "treat": "natural",
+  "scrim": "deep",
+  "hl": "marker",
+  "fx": "pro",
+  "nfx": "roll",
+  "shine": true
+ },
+ "hue": 0.41269841269841273,
+ "key": "#2F4B3D",
+ "palette": {
+  "key": "#2F4B3D",
+  "deep": "#141F19",
+  "bg": "#101713",
+  "bg2": "#18251E",
+  "ink": "#F3EFE7",
+  "acc": "#E6B65C",
+  "onKey": "#FFFFFF",
+  "dark": true
+ },
+ "font": "'Pretendard Variable'",
+ "safe": 0.05,
+ "check": {
+  "v1": {
+   "layout": "frame",
+   "rounds": 0,
+   "left": []
+  },
+  "v2": {
+   "layout": "frame",
+   "rounds": 0,
+   "left": []
+  },
+  "v3": {
+   "layout": "frame",
+   "rounds": 0,
+   "left": []
+  },
+  "v4": {
+   "layout": "frame",
+   "rounds": 0,
+   "left": []
+  },
+  "v5": {
+   "layout": "pros",
+   "rounds": 0,
+   "left": []
+  },
+  "h1": {
+   "layout": "frame",
+   "rounds": 0,
+   "left": []
+  },
+  "h2": {
+   "layout": "frame",
+   "rounds": 0,
+   "left": []
+  },
+  "h3": {
+   "layout": "frame",
+   "rounds": 0,
+   "left": []
+  },
+  "h4": {
+   "layout": "frame",
+   "rounds": 0,
+   "left": []
+  },
+  "h5": {
+   "layout": "pros",
+   "rounds": 0,
+   "left": []
+  }
+ }
+}

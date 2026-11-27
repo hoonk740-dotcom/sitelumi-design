@@ -1,0 +1,608 @@
+{
+ "schema": "dlx-ref/1",
+ "code": "RP261123-FRIENDS",
+ "kind": "report",
+ "brand": "프렌즈아카데미 송도점",
+ "updated": "2026-11-27T13:10:37+09:00",
+ "repo": {
+  "url": "https://github.com/hoonk740-dotcom/sitelumi-design",
+  "dir": "ads/RP261123-FRIENDS/ref/"
+ },
+ "title": "프렌즈아카데미 송도점 매장 화면 광고 제작 보고서 — 조사·기획·콘티·시안",
+ "post": {
+  "url": "https://www.decisionlabx.com/2026/11/friends-academy-songdo-screen-ad-report.html",
+  "site": "디씨젼랩(decisionlabx.com)",
+  "labels": [
+   "광고 제작 보고서",
+   "송해온 광고",
+   "실내골프연습장"
+  ]
+ },
+ "version": "v2",
+ "status": "시안 v2 · 수정 요청 반영 · 광고주 확인 요청",
+ "advertiser": {
+  "name": "프렌즈아카데미 송도점",
+  "industry": "실내골프연습장",
+  "address": "인천 연수구 신송로170번길 10 3층",
+  "note": "광고주 휴대폰 번호는 보관하지 않음(수정 요청 본인 확인은 GAS에 해시로만 저장)"
+ },
+ "media": {
+  "name": "송해온(songhaeon.co.kr) 매장 모니터·키오스크",
+  "spec": "songhaeon",
+  "formats": [
+   "3840x2160 가로 15초",
+   "2160x3840 세로 15초"
+  ],
+  "codec": "H.264 High 30fps Rec.709 약 21Mbps"
+ },
+ "copy": {
+  "searchbar": "프렌즈아카데미 송도점",
+  "cuts": [
+   {
+    "cut": 1,
+    "text": [
+     "프렌즈아카데미 송도점",
+     "송도 최초 24시간 골프연습장"
+    ]
+   },
+   {
+    "cut": 2,
+    "text": [
+     "36 타석",
+     "넓은 타석 간격",
+     "프리미엄 연습 공간"
+    ]
+   },
+   {
+    "cut": 3,
+    "text": [
+     "100평 규모 숏게임장",
+     "퍼팅 · 어프로치 · 벙커 / 숏게임장 레슨 및 연습 가능"
+    ]
+   },
+   {
+    "cut": 4,
+    "text": [
+     "1:1 프라이빗 레슨룸",
+     "나에게 집중하는 1:1 레슨"
+    ]
+   },
+   {
+    "cut": 5,
+    "text": [
+     "프렌즈아카데미 투어프로 레슨",
+     "체험레슨 25,000원",
+     "숏게임장 or 레슨룸 20분 수업 + 연습장 60분",
+     "김동윤 · 송혜빈 · 이채윤 · 김율 프로"
+    ]
+   }
+  ],
+  "pending": [
+   "「송도 최초」 표시광고 근거 확인 필요"
+  ]
+ },
+ "design": {
+  "palette": {
+   "key": "#24392E",
+   "accent": "#E6B65C"
+  },
+  "font": "sans (굵은 고딕)",
+  "textFx": "pro (글자별 흐림→선명 상승, 설명 순차, 전환 전 퇴장)",
+  "numberFx": "roll",
+  "shine": true,
+  "transition": "fade 0.5s (겹침 전환, 컷 길이 3.4s, 총 15.000s)",
+  "styleLock": {
+   "treat": "natural",
+   "hl": "marker"
+  },
+  "scrim": 0.3,
+  "box": false,
+  "searchbarPos": "top"
+ },
+ "sourcePhotos": {
+  "origin": "광고주 제공 원본 (사용자 PC 다운로드\\프렌즈 광고이미지\\프렌즈 광고이미지, 같은 원본을 대화에 첨부한 *_1.jpg), 15361x8641·8641x15361, 네이버 검색 배지가 박혀 있음",
+  "rule": "배지는 지우지 않고 화면 밖으로 잘라냄(인페인팅 금지 — 번짐 발생 이력)",
+  "transforms": [
+   {
+    "files": "TV_광고형_01~04 → tv1~4.jpg",
+    "crop": "가로·세로 87.5% · 위쪽 맞춤 · 가로 가운데 (x0=0.0625, y0=0, w=0.875, h=0.875)",
+    "resize": "3840x2160 LANCZOS, JPEG q95 4:4:4"
+   },
+   {
+    "files": "키오스크_광고형_02~04 → kiosk2~4.jpg",
+    "crop": "89.5% · 위쪽 맞춤 · 가로 가운데 (x0=0.0525, y0=0, w=0.895, h=0.895)",
+    "resize": "2160x3840 LANCZOS"
+   },
+   {
+    "files": "키오스크_광고형_01 → kiosk1.jpg",
+    "crop": "위아래 베이지 띠 안쪽 사진 영역(왼쪽 15% 열의 배경색 차이로 띠 경계 검출, 안쪽으로 0.3% 여유) · 9:16 · 가로 가운데",
+    "resize": "2160x3840 LANCZOS"
+   },
+   {
+    "files": "TV_광고형_05(프로 4명) → photos/*_cut.png",
+    "crop": "인물별 rembg(u2net_human_seg) 누끼, 이름표 제거",
+    "resize": "pros 카드"
+   }
+  ]
+ },
+ "history": [
+  [
+   "2026-11-23",
+   "시안 v1 · 4K 영상 v1 제작, 보고서 발행"
+  ],
+  [
+   "2026-11-25",
+   "수정 요청 반영(v2) — 검색창 위로, 문구·배치 수정, 글자 움직임(pro), 원본 사진 교체(배지 잘라냄), 4K v2"
+  ],
+  [
+   "2026-11-25",
+   "화면 전환을 겹침 전환(fade 0.5s)으로 변경"
+  ],
+  [
+   "2026-11-26",
+   "FHD 송출본(16Mbps) 추가 — 대형 화면 전환 구간 화질 개선"
+  ],
+  [
+   "2026-11-27",
+   "제작 레퍼런스(dlx-ref/1) 추가"
+  ]
+ ],
+ "howToEdit": "문구만 바꿀 때: ref.py restore 로 폴더 복원 → brief.json 문구 수정 → 같은 엔진 커밋의 render.js로 렌더(--still --dry 시안 확인 후 영상). styleLock·transition·fx 값은 그대로 두면 사진·움직임이 동일하게 유지됨.",
+ "brief": {
+  "brand": "프렌즈아카데미 송도점",
+  "industry": "golf",
+  "tone": "premium",
+  "font": "sans",
+  "keepLast": true,
+  "spec": "songhaeon",
+  "palette": {
+   "key": "#24392E",
+   "accent": "#E6B65C"
+  },
+  "searchbar": {
+   "query": "프렌즈아카데미 송도점",
+   "pos": "top"
+  },
+  "cuts": [
+   {
+    "layout": "frame",
+    "role": "hook",
+    "photo": {
+     "h": "tv1.jpg",
+     "v": "kiosk1.jpg"
+    },
+    "pos": {
+     "h": "bl",
+     "v": "bl"
+    },
+    "lead": "송도 최초 [24시간] 골프연습장",
+    "brandBig": "프렌즈아카데미 송도점",
+    "head": "",
+    "loc": false,
+    "brandFirst": true,
+    "compact": true
+   },
+   {
+    "layout": "frame",
+    "role": "point",
+    "photo": {
+     "h": "tv2.jpg",
+     "v": "kiosk2.jpg"
+    },
+    "pos": {
+     "h": "bl",
+     "v": "bl"
+    },
+    "stat": {
+     "value": "36",
+     "unit": "타석"
+    },
+    "head": "넓은 타석 간격\n[프리미엄] 연습 공간",
+    "loc": false
+   },
+   {
+    "layout": "frame",
+    "role": "point",
+    "photo": {
+     "h": "tv3.jpg",
+     "v": "kiosk3.jpg"
+    },
+    "pos": {
+     "h": "bl",
+     "v": "bl"
+    },
+    "head": "100평 규모 [숏게임장]",
+    "loc": false,
+    "compact": true,
+    "sub": "퍼팅 · 어프로치 · 벙커\n숏게임장 레슨 및 연습 가능"
+   },
+   {
+    "layout": "frame",
+    "role": "point",
+    "photo": {
+     "h": "tv4.jpg",
+     "v": "kiosk4.jpg"
+    },
+    "pos": {
+     "h": "bl",
+     "v": "bl"
+    },
+    "head": "1:1 프라이빗 레슨룸",
+    "loc": false,
+    "compact": true,
+    "sub": "나에게 [집중]하는 1:1 레슨"
+   },
+   {
+    "layout": "pros",
+    "role": "offer",
+    "brandBig": "프렌즈아카데미\n투어프로 레슨",
+    "offerLabel": "체험레슨",
+    "price": "25,000원",
+    "sub": "숏게임장 or 레슨룸 20분 수업\n+ 연습장 60분",
+    "pros": [
+     {
+      "name": "김동윤 프로",
+      "img": "photos/kimdongyun_cut.png"
+     },
+     {
+      "name": "송혜빈 프로",
+      "img": "photos/songhyebin_cut.png"
+     },
+     {
+      "name": "이채윤 프로",
+      "img": "photos/leechaeyun_cut.png"
+     },
+     {
+      "name": "김율 프로",
+      "img": "photos/kimyul_cut.png"
+     }
+    ]
+   }
+  ],
+  "fx": "pro",
+  "numfx": "roll",
+  "shine": true,
+  "box": false,
+  "scrim": 0.3,
+  "tr": "fade",
+  "trDur": 0.5,
+  "style": {
+   "treat": "natural",
+   "hl": "marker"
+  }
+ },
+ "plan": {
+  "layouts": [
+   "frame",
+   "frame",
+   "frame",
+   "frame",
+   "pros"
+  ],
+  "style": {
+   "head": "sans",
+   "r": 0,
+   "align": "left",
+   "deco": "none",
+   "tr": "fade",
+   "treat": "natural",
+   "scrim": "deep",
+   "hl": "marker",
+   "fx": "pro",
+   "nfx": "roll",
+   "shine": true
+  },
+  "seed": 0,
+  "key": "#2F4B3D",
+  "hue": 0.41269841269841273
+ },
+ "engine": {
+  "name": "still5",
+  "path": "tools/still5/render.js",
+  "sha256": "e194bfa13da28a4b1831f7127c4241566e6a9a3c1bc5d37bcd3c216249e8293c",
+  "commit": "29275772d81d4150f93c5d66c29529b1c8b3a936",
+  "matchesWorking": true,
+  "render": "node render.js <광고폴더> --history <기록파일>  (시안: --still --dry)"
+ },
+ "outputs": [
+  {
+   "role": "draft",
+   "name": "가로 1번 컷 시안 v2",
+   "version": "v2",
+   "orientation": "h",
+   "cut": 1,
+   "driveId": "1_1wpIbvdVJGMOGKSuDJo91-ygtOtdtCw",
+   "sha256": "723dc7052c2b504cfc842c9fcd371d77fd563971363283ca4b6f80ed06d13fad",
+   "bytes": 348530
+  },
+  {
+   "role": "draft",
+   "name": "가로 2번 컷 시안 v2",
+   "version": "v2",
+   "orientation": "h",
+   "cut": 2,
+   "driveId": "1jRqBPvvmM6r62Ct5DpV1nXaStMA4CH-2",
+   "sha256": "792850c74e8004365918b5edeaa5f87dc9e83b6b19b4dcb0f845ffaf92f47301",
+   "bytes": 370330
+  },
+  {
+   "role": "draft",
+   "name": "가로 3번 컷 시안 v2",
+   "version": "v2",
+   "orientation": "h",
+   "cut": 3,
+   "driveId": "1QwrXp1l-G05ZxFS5AVArpLvmOLk6cb7X",
+   "sha256": "3e3f7e67f4d4df21ffabb273800dc8824b14c1942d928b9d97137893f201a99f",
+   "bytes": 411494
+  },
+  {
+   "role": "draft",
+   "name": "가로 4번 컷 시안 v2",
+   "version": "v2",
+   "orientation": "h",
+   "cut": 4,
+   "driveId": "181mIegBBmu6dX_c48Muc6FqdJzHV_49r",
+   "sha256": "153414bb95e6d779b7755eaa9a550b571d49ae967ae454ec1fc0a84296ec1d46",
+   "bytes": 362015
+  },
+  {
+   "role": "draft",
+   "name": "가로 5번 컷 시안 v2",
+   "version": "v2",
+   "orientation": "h",
+   "cut": 5,
+   "driveId": "1bJ8-wPy8f3eXYkInJXvdvY3rXeKwLBqb",
+   "sha256": "0830f274e22b910dded24c15a521cb1db364147bdd0ed1b95fb00eebf1f8d010",
+   "bytes": 185248
+  },
+  {
+   "role": "draft",
+   "name": "세로 1번 컷 시안 v2",
+   "version": "v2",
+   "orientation": "v",
+   "cut": 1,
+   "driveId": "1umKs7hybKv1REWRu5axgYyVC5TfUxkls",
+   "sha256": "bf11040efac8fedd8075713fb6c6e3b0caa5113e5d91a798ef60ab70f65ebe3f",
+   "bytes": 376137
+  },
+  {
+   "role": "draft",
+   "name": "세로 2번 컷 시안 v2",
+   "version": "v2",
+   "orientation": "v",
+   "cut": 2,
+   "driveId": "14kjjEeBlmiAfEtJWHai9Qk9E-86oUHws",
+   "sha256": "ffba539ec328b487d63c4d56c1c506c7c1bec8ab58026ca2ced1f31175ceaa0c",
+   "bytes": 356319
+  },
+  {
+   "role": "draft",
+   "name": "세로 3번 컷 시안 v2",
+   "version": "v2",
+   "orientation": "v",
+   "cut": 3,
+   "driveId": "1eMvWgwTrWCoxrOhWnOpLQhq1j-IYu6pJ",
+   "sha256": "d284d19e9848e3477ca0c52baa6f742994753ee13578dc156c99bea23a02862a",
+   "bytes": 458378
+  },
+  {
+   "role": "draft",
+   "name": "세로 4번 컷 시안 v2",
+   "version": "v2",
+   "orientation": "v",
+   "cut": 4,
+   "driveId": "1ujgn4mdMRZZWlQucnGu-i8Tlko0nI19z",
+   "sha256": "0dd1e8418cafb18145e76fa6a7a2c0c662175c78fde3c5ed1ae0bfb74745b2f3",
+   "bytes": 342102
+  },
+  {
+   "role": "draft",
+   "name": "세로 5번 컷 시안 v2",
+   "version": "v2",
+   "orientation": "v",
+   "cut": 5,
+   "driveId": "1bFsxCjzbchJtUvqWVIiYxR_Zaci9AVoz",
+   "sha256": "7dd0bb61078d35c8dff924cca7dcf7f4f70cf77c50f45ad326ad69246cd3c591",
+   "bytes": 188401
+  },
+  {
+   "role": "draft-zip",
+   "name": "시안v2_전체.zip",
+   "version": "v2",
+   "driveId": "1k60xYt6K4-uxdNMkGS8vAWdRTsy1RfR3",
+   "sha256": "6fe53e3189fd2663043a062e92f8775ddbd7eb7bfeed15770af9a70b7f480dc9",
+   "bytes": 3311764
+  },
+  {
+   "role": "video-4k",
+   "name": "프렌즈아카데미송도점_가로_15초_4K_v2.mp4",
+   "version": "v2",
+   "orientation": "h",
+   "driveId": "1HnHfeWQ062Si9aq7XvNi0tgPal6hH7xi",
+   "sha256": "559eba1bd791d934ffd8e6371bdbdb2b9bd5ea282117261d114bcbf746a4ab6e",
+   "bytes": 40848280,
+   "spec": {
+    "codec_name": "h264",
+    "profile": "High",
+    "width": 3840,
+    "height": 2160,
+    "r_frame_rate": "30/1",
+    "color_primaries": "bt709",
+    "duration": 15.0,
+    "bitrate": 21785749
+   }
+  },
+  {
+   "role": "video-4k",
+   "name": "프렌즈아카데미송도점_세로_키오스크_15초_4K_v2.mp4",
+   "version": "v2",
+   "orientation": "v",
+   "driveId": "108V-oU_XXNp4npqDpWGM7F9qwbdlW9MO",
+   "sha256": "7de01270f473e0df3a79bd5720c702d099d0e68ba5832ef48eee097dba1e5652",
+   "bytes": 40480976,
+   "spec": {
+    "codec_name": "h264",
+    "profile": "High",
+    "width": 2160,
+    "height": 3840,
+    "r_frame_rate": "30/1",
+    "color_primaries": "bt709",
+    "duration": 15.0,
+    "bitrate": 21589853
+   }
+  },
+  {
+   "role": "video-fhd-broadcast",
+   "name": "프렌즈아카데미송도점_가로_15초_FHD_송출용_v2.mp4",
+   "version": "v2",
+   "orientation": "h",
+   "driveId": "1BzJCezsoms_6kh_eBLZXZYB6c0QuJwF0",
+   "sha256": "13019be1935f76756ce904c486552402d39f431cf9a85d63dca4052b4d619fec",
+   "bytes": 25678397,
+   "spec": {
+    "codec_name": "h264",
+    "profile": "High",
+    "width": 1920,
+    "height": 1080,
+    "r_frame_rate": "30/1",
+    "color_primaries": "bt709",
+    "duration": 15.018,
+    "bitrate": 13678730
+   }
+  },
+  {
+   "role": "video-fhd-broadcast",
+   "name": "프렌즈아카데미송도점_세로_키오스크_15초_FHD_송출용_v2.mp4",
+   "version": "v2",
+   "orientation": "v",
+   "driveId": "1I57VoqaVg1DFKVfjQht62hkTCIJuKXKI",
+   "sha256": "1506af1e5cd3a9e6d064dd48a727f06c344e07480fef6d7d4ebd73c9fe2e64bd",
+   "bytes": 25195245,
+   "spec": {
+    "codec_name": "h264",
+    "profile": "High",
+    "width": 1080,
+    "height": 1920,
+    "r_frame_rate": "30/1",
+    "color_primaries": "bt709",
+    "duration": 15.018,
+    "bitrate": 13421358
+   }
+  },
+  {
+   "role": "video-web-preview",
+   "name": "friends-academy-songdo-h-v2b.mp4",
+   "version": "v2",
+   "orientation": "h",
+   "repoPath": "ads/RP261123-FRIENDS/friends-academy-songdo-h-v2b.mp4",
+   "commit": "29275772d81d4150f93c5d66c29529b1c8b3a936"
+  },
+  {
+   "role": "video-web-preview",
+   "name": "friends-academy-songdo-v-v2b.mp4",
+   "version": "v2",
+   "orientation": "v",
+   "repoPath": "ads/RP261123-FRIENDS/friends-academy-songdo-v-v2b.mp4",
+   "commit": "29275772d81d4150f93c5d66c29529b1c8b3a936"
+  }
+ ],
+ "files": [
+  {
+   "path": "brief.json",
+   "role": "brief",
+   "sha256": "f9a15009822d64ef8f1cb44202199acb1dd161ef27b20f664c7b023d3ce2e011",
+   "bytes": 2306
+  },
+  {
+   "path": "plan.json",
+   "role": "plan",
+   "sha256": "5230a8dff04b13bb8528f8f7a56e93aacf9a8e0329688612b6c812cd996ee2f8",
+   "bytes": 1324
+  },
+  {
+   "path": "photos/kiosk1.jpg",
+   "role": "input-photo",
+   "sha256": "b306ab2e45ea960b5126784639c9c0f10c5cc236bb2b3826f91e00bac274f6fa",
+   "bytes": 1793311,
+   "briefPath": "kiosk1.jpg"
+  },
+  {
+   "path": "photos/kiosk2.jpg",
+   "role": "input-photo",
+   "sha256": "6ff6f79ffe0c7a3f3fec012abed773d1a3710c334a344091eabcad80777126ad",
+   "bytes": 1938557,
+   "briefPath": "kiosk2.jpg"
+  },
+  {
+   "path": "photos/kiosk3.jpg",
+   "role": "input-photo",
+   "sha256": "befd212e20b2f8ed2f166735d229252d02a1bfb3fcf191e2b90c26ab159b1998",
+   "bytes": 2787651,
+   "briefPath": "kiosk3.jpg"
+  },
+  {
+   "path": "photos/kiosk4.jpg",
+   "role": "input-photo",
+   "sha256": "6d76f75cd1ee6cdc60d4e1af1cf198c8038c31b968f53a5e5fe7046558f0cb08",
+   "bytes": 2022698,
+   "briefPath": "kiosk4.jpg"
+  },
+  {
+   "path": "photos/kimdongyun_cut.png",
+   "role": "input-photo",
+   "sha256": "d32d9f49f882af9b0376abe957093d884f805ce3d0165690d234cabe842980a8",
+   "bytes": 1467945,
+   "briefPath": "photos/kimdongyun_cut.png"
+  },
+  {
+   "path": "photos/kimyul_cut.png",
+   "role": "input-photo",
+   "sha256": "08639f354b189230bbbafaac4200a23f0e2afcc34c66201e09e23e2303ca288f",
+   "bytes": 1214045,
+   "briefPath": "photos/kimyul_cut.png"
+  },
+  {
+   "path": "photos/leechaeyun_cut.png",
+   "role": "input-photo",
+   "sha256": "acf2f8520c12900aaf64f017f281b32d9456a8e3fea391b5b7c9c6302611d926",
+   "bytes": 1311820,
+   "briefPath": "photos/leechaeyun_cut.png"
+  },
+  {
+   "path": "photos/songhyebin_cut.png",
+   "role": "input-photo",
+   "sha256": "8f53703e9ab899735ce9f3b446405c5a699578bceb23dcfb5db06089a4c07ee9",
+   "bytes": 1071176,
+   "briefPath": "photos/songhyebin_cut.png"
+  },
+  {
+   "path": "photos/tv1.jpg",
+   "role": "input-photo",
+   "sha256": "ccbef1290e70a08fcc6587d5a1cccbcdde3bb428c3c4cfb0a0af2022bd851054",
+   "bytes": 2268368,
+   "briefPath": "tv1.jpg"
+  },
+  {
+   "path": "photos/tv2.jpg",
+   "role": "input-photo",
+   "sha256": "390002c7c607ce0e26974cb732708937982afb6c08aaf4e2b657e262e2251d63",
+   "bytes": 2561232,
+   "briefPath": "tv2.jpg"
+  },
+  {
+   "path": "photos/tv3.jpg",
+   "role": "input-photo",
+   "sha256": "bef1abcf6dd9f1087e4c29eede305667d01fc414ec4d25135fe94e0b7d4a8f60",
+   "bytes": 2263249,
+   "briefPath": "tv3.jpg"
+  },
+  {
+   "path": "photos/tv4.jpg",
+   "role": "input-photo",
+   "sha256": "1d5b087150beadeeaae10bbcfc8e269c8cbeccda0ebc0b0575ce51cab5e619e3",
+   "bytes": 2067296,
+   "briefPath": "tv4.jpg"
+  }
+ ],
+ "integrity": "sha256-02d30697f83f616604e85a7d9d673be2e2ff748e232d06b115460380a18e9d2a"
+}

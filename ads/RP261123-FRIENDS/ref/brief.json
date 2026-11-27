@@ -1,0 +1,123 @@
+{
+ "brand": "프렌즈아카데미 송도점",
+ "industry": "golf",
+ "tone": "premium",
+ "font": "sans",
+ "keepLast": true,
+ "spec": "songhaeon",
+ "palette": {
+  "key": "#24392E",
+  "accent": "#E6B65C"
+ },
+ "searchbar": {
+  "query": "프렌즈아카데미 송도점",
+  "pos": "top"
+ },
+ "cuts": [
+  {
+   "layout": "frame",
+   "role": "hook",
+   "photo": {
+    "h": "tv1.jpg",
+    "v": "kiosk1.jpg"
+   },
+   "pos": {
+    "h": "bl",
+    "v": "bl"
+   },
+   "lead": "송도 최초 [24시간] 골프연습장",
+   "brandBig": "프렌즈아카데미 송도점",
+   "head": "",
+   "loc": false,
+   "brandFirst": true,
+   "compact": true
+  },
+  {
+   "layout": "frame",
+   "role": "point",
+   "photo": {
+    "h": "tv2.jpg",
+    "v": "kiosk2.jpg"
+   },
+   "pos": {
+    "h": "bl",
+    "v": "bl"
+   },
+   "stat": {
+    "value": "36",
+    "unit": "타석"
+   },
+   "head": "넓은 타석 간격\n[프리미엄] 연습 공간",
+   "loc": false
+  },
+  {
+   "layout": "frame",
+   "role": "point",
+   "photo": {
+    "h": "tv3.jpg",
+    "v": "kiosk3.jpg"
+   },
+   "pos": {
+    "h": "bl",
+    "v": "bl"
+   },
+   "head": "100평 규모 [숏게임장]",
+   "loc": false,
+   "compact": true,
+   "sub": "퍼팅 · 어프로치 · 벙커\n숏게임장 레슨 및 연습 가능"
+  },
+  {
+   "layout": "frame",
+   "role": "point",
+   "photo": {
+    "h": "tv4.jpg",
+    "v": "kiosk4.jpg"
+   },
+   "pos": {
+    "h": "bl",
+    "v": "bl"
+   },
+   "head": "1:1 프라이빗 레슨룸",
+   "loc": false,
+   "compact": true,
+   "sub": "나에게 [집중]하는 1:1 레슨"
+  },
+  {
+   "layout": "pros",
+   "role": "offer",
+   "brandBig": "프렌즈아카데미\n투어프로 레슨",
+   "offerLabel": "체험레슨",
+   "price": "25,000원",
+   "sub": "숏게임장 or 레슨룸 20분 수업\n+ 연습장 60분",
+   "pros": [
+    {
+     "name": "김동윤 프로",
+     "img": "photos/kimdongyun_cut.png"
+    },
+    {
+     "name": "송혜빈 프로",
+     "img": "photos/songhyebin_cut.png"
+    },
+    {
+     "name": "이채윤 프로",
+     "img": "photos/leechaeyun_cut.png"
+    },
+    {
+     "name": "김율 프로",
+     "img": "photos/kimyul_cut.png"
+    }
+   ]
+  }
+ ],
+ "fx": "pro",
+ "numfx": "roll",
+ "shine": true,
+ "box": false,
+ "scrim": 0.3,
+ "tr": "fade",
+ "trDur": 0.5,
+ "style": {
+  "treat": "natural",
+  "hl": "marker"
+ }
+}

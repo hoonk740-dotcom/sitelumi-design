@@ -1,0 +1,334 @@
+{
+ "schema": "dlx-ref/1",
+ "code": "RP261125-NOTICE",
+ "kind": "report",
+ "brand": "송해온",
+ "updated": "2026-11-27T13:12:32+09:00",
+ "repo": {
+  "url": "https://github.com/hoonk740-dotcom/sitelumi-design",
+  "dir": "ads/RP261125-NOTICE/ref/"
+ },
+ "title": "송해온 매장 모니터 공지 영상 제작 보고서 — 주차 등록 · 온천 소개 · 쿠폰 안내",
+ "post": {
+  "url": "https://www.decisionlabx.com/2026/11/songhaeon-monitor-notice-video-report.html",
+  "site": "디씨젼랩(decisionlabx.com)",
+  "labels": [
+   "광고제작보고서",
+   "송해온"
+  ]
+ },
+ "version": "v1",
+ "status": "시안 v1 · 확인 요청",
+ "advertiser": {
+  "name": "송해온",
+  "kind": "자체 공지",
+  "note": "수정 요청 본인 확인 번호 미등록(2026-11-27 기준)"
+ },
+ "media": {
+  "name": "송해온(songhaeon.co.kr) 매장 모니터 가로",
+  "formats": [
+   "3840x2160 30fps"
+  ],
+  "durations": {
+   "parking": 10,
+   "onsen": 15,
+   "coupon": 15
+  }
+ },
+ "copy": {
+  "parking": [
+   "잠깐!",
+   "[P 아이콘] 주차등록은 하셨나요?  (주차등록=라이트 골드)",
+   "주차 등록을 안 하셨다면 카운터로 돌아가셔서",
+   "주차 등록 후 4시간 무료로 주차하세요  (4시간 무료=라이트 골드+골드 밑줄)",
+   "송해온 · SONGHAEON"
+  ],
+  "onsen": [
+   "HEALING",
+   "온천은 전 세계적으로 많은 사람들이 사랑하는 / 힐링 활동 중 하나로, 단순한 휴식 공간을 넘어 / 건강에도 긍정적인 효과를 가져다줍니다.",
+   "MINERAL",
+   "송해온 온천수에는 다양한 미네랄 성분이 / 풍부하게 함유되어 있으며, 이는 몸과 마음을 / 치유하는데 크게 기여합니다.",
+   "송해온에서 피로도 풀고 / 건강과 미용을 담아가세요.  (송해온=골드)",
+   "OPEN 06:00 · CLOSE 22:00",
+   "송해온 · SONGHAEON"
+  ],
+  "coupon": [
+   "매일 오고 싶은 송해온,  쿠폰 안내",
+   "20매 240,000원 → 216,000원 · 10% 할인",
+   "50매 600,000원 → 510,000원 · 15% 할인",
+   "· 쿠폰 구매 후에는 취소 및 환불이 불가합니다.  (취소 및 환불이 불가=코랄)",
+   "· 쿠폰 구매 시 발행일로부터 1년간 사용 가능합니다.  (1년간 사용 가능=라이트 골드)",
+   "송해온 · SONGHAEON"
+  ]
+ },
+ "design": {
+  "palette": {
+   "bgDeep": "#110E0B",
+   "bgWarm": "#2E2418",
+   "gold": "#C9A96E",
+   "goldHi": "#E8D0A0",
+   "ivory": "#F6F0E5",
+   "coral": "#E88E78"
+  },
+  "fonts": "한글 본고딕(Noto Sans KR) Bold·Black, 영문 상호·영업시간 세리프. 손글씨체 사용 안 함",
+  "sizes4k": "작은 글자 108px 이상, 본문 약 118~140px, 제목 240~300px",
+  "motion": "배경 정지(소개 영상은 은은한 파문·김), 글자 rise(아래→위 떠오름), 밑줄·취소선 wipe, 가격 숫자 내려가며 변경, 마지막 화면은 전체 내용 유지(반복 재생 끊김 없음)",
+  "grain": "필름 그레인 약하게"
+ },
+ "timings": {
+  "parking": [
+   [
+    "0:00–0:01",
+    "잠깐!"
+   ],
+   [
+    "0:01–0:03",
+    "P 아이콘·질문"
+   ],
+   [
+    "0:03–0:06",
+    "안내 상자 문장"
+   ],
+   [
+    "0:06–0:10",
+    "4시간 무료 밑줄, 유지"
+   ]
+  ],
+  "onsen": [
+   [
+    "0:00–0:05",
+    "HEALING 문단"
+   ],
+   [
+    "0:05–0:10",
+    "MINERAL 문단"
+   ],
+   [
+    "0:10–0:15",
+    "마무리 문장"
+   ],
+   [
+    "계속",
+    "영업시간·상호"
+   ]
+  ],
+  "coupon": [
+   [
+    "0:00–0:02",
+    "제목"
+   ],
+   [
+    "0:02–0:05",
+    "가격 카드"
+   ],
+   [
+    "0:05–0:08",
+    "취소선·할인가·배지"
+   ],
+   [
+    "0:08–0:15",
+    "안내 문구"
+   ]
+  ]
+ },
+ "generator": {
+  "archived": false,
+  "note": "생성 스크립트(notice.py, Python+Pillow+ffmpeg 직접 합성)는 2026-11-25 다른 대화의 작업 공간에만 있었고 보관되지 않음. 텍스트 수정 시 frames/ 의 4K 완성 화면과 위 문구·색·크기·타이밍을 기준으로 같은 레이아웃을 다시 만들고, 이번에는 생성 스크립트를 ref/gen/ 에 함께 커밋할 것.",
+  "encode": "libx264 High 5.1, 24M/34M, yuv420p, bt709, 30fps, 무음 AAC"
+ },
+ "history": [
+  [
+   "2026-11-25",
+   "공지 영상 3종 시안 v1 (4K) 제작"
+  ],
+  [
+   "2026-11-27",
+   "디씨젼랩 보고서 발행, FHD 송출본(16Mbps) 추가, 제작 레퍼런스(dlx-ref/1) 추가"
+  ]
+ ],
+ "pending": [
+  "주차 영상 10초 — 15초 칸에 넣을지 확인",
+  "주차·쿠폰 4K 평균 비트레이트 15~17Mbps(가이드 20Mbps 미만)",
+  "수정 요청 본인 확인 번호 등록 필요"
+ ],
+ "howToEdit": "문구만 바꿀 때: frames/의 완성 화면을 기준으로 같은 좌표·크기·색으로 다시 합성하고, 생성 스크립트를 ref/gen/에 커밋한 뒤 같은 번호로 레퍼런스를 다시 만든다.",
+ "outputs": [
+  {
+   "role": "video-4k",
+   "name": "송해온_공지_주차등록_가로_10초_4K_v1.mp4",
+   "version": "v1",
+   "video": "parking",
+   "driveId": "1lTUHXVjS8cNSjJLUgvfbjHMA8nDEhPj9",
+   "master": true,
+   "originalName": "songhaeon_notice_parking_3840x2160.mp4",
+   "sha256": "d259e8bb38bc14470a0b30b73c37a8656ab8c93915046173345fe0a8b8cc4c42",
+   "bytes": 21883439,
+   "spec": {
+    "codec_name": "h264",
+    "profile": "High",
+    "width": 3840,
+    "height": 2160,
+    "r_frame_rate": "30/1",
+    "color_primaries": "bt709",
+    "duration": 10.0,
+    "bitrate": 17506751
+   }
+  },
+  {
+   "role": "video-fhd-broadcast",
+   "name": "송해온_공지_주차등록_가로_10초_FHD_송출용_v1.mp4",
+   "version": "v1",
+   "video": "parking",
+   "driveId": "1qv2JrWCIW8hrJD6EOCk06DNJEOlUFBKz",
+   "sha256": "862718609392baa18b65cd15ec8476c06016aa65ec83c9a9c805de4561a7f4f0",
+   "bytes": 16015181,
+   "spec": {
+    "codec_name": "h264",
+    "profile": "High",
+    "width": 1920,
+    "height": 1080,
+    "r_frame_rate": "30/1",
+    "color_primaries": "bt709",
+    "duration": 10.0,
+    "bitrate": 12812144
+   }
+  },
+  {
+   "role": "video-web-preview",
+   "name": "notice-parking-v1.mp4",
+   "version": "v1",
+   "video": "parking",
+   "repoPath": "ads/RP261125-NOTICE/notice-parking-v1.mp4",
+   "commit": "8dcf6134f3022b354d34d087156d6b64e282366d"
+  },
+  {
+   "role": "video-4k",
+   "name": "송해온_공지_송해온소개_가로_15초_4K_v1.mp4",
+   "version": "v1",
+   "video": "onsen",
+   "driveId": "1X-xayF8joQvxUjJoXdsngP3J2UJPcjf9",
+   "master": true,
+   "originalName": "songhaeon_notice_onsen_3840x2160.mp4",
+   "sha256": "9326bcdc7b8e2d63ce5d6eb1a76d1741f135f1ec6d1d5cca38ade030cecce561",
+   "bytes": 44028069,
+   "spec": {
+    "codec_name": "h264",
+    "profile": "High",
+    "width": 3840,
+    "height": 2160,
+    "r_frame_rate": "30/1",
+    "color_primaries": "bt709",
+    "duration": 15.0,
+    "bitrate": 23481636
+   }
+  },
+  {
+   "role": "video-fhd-broadcast",
+   "name": "송해온_공지_송해온소개_가로_15초_FHD_송출용_v1.mp4",
+   "version": "v1",
+   "video": "onsen",
+   "driveId": "1XNpqUeMvL-PpFV82exEwueZX-BoCyApD",
+   "sha256": "b4b3cd6375d8db89608210a208c56d25f3b2068b8a21df75889d813f89d6e0e9",
+   "bytes": 29896610,
+   "spec": {
+    "codec_name": "h264",
+    "profile": "High",
+    "width": 1920,
+    "height": 1080,
+    "r_frame_rate": "30/1",
+    "color_primaries": "bt709",
+    "duration": 15.0,
+    "bitrate": 15944858
+   }
+  },
+  {
+   "role": "video-web-preview",
+   "name": "notice-onsen-v1.mp4",
+   "version": "v1",
+   "video": "onsen",
+   "repoPath": "ads/RP261125-NOTICE/notice-onsen-v1.mp4",
+   "commit": "8dcf6134f3022b354d34d087156d6b64e282366d"
+  },
+  {
+   "role": "video-4k",
+   "name": "송해온_공지_쿠폰안내_가로_15초_4K_v1.mp4",
+   "version": "v1",
+   "video": "coupon",
+   "driveId": "19peJWV-L_sfjyanN1IisN1kCwWPPibwo",
+   "master": true,
+   "originalName": "songhaeon_notice_coupon_3840x2160.mp4",
+   "sha256": "c363ad6bdbc884707e6f26077d75d295dfda731b3e18c28b0b7ab106139582e3",
+   "bytes": 28363559,
+   "spec": {
+    "codec_name": "h264",
+    "profile": "High",
+    "width": 3840,
+    "height": 2160,
+    "r_frame_rate": "30/1",
+    "color_primaries": "bt709",
+    "duration": 15.0,
+    "bitrate": 15127231
+   }
+  },
+  {
+   "role": "video-fhd-broadcast",
+   "name": "송해온_공지_쿠폰안내_가로_15초_FHD_송출용_v1.mp4",
+   "version": "v1",
+   "video": "coupon",
+   "driveId": "1H06YWwtZbimWv_EZ25UM_Hu3sP-r2zfx",
+   "sha256": "caefef94240344d5923ea5ed019600733f49f1c07ddcea161d8d1237bc4d6f06",
+   "bytes": 23785839,
+   "spec": {
+    "codec_name": "h264",
+    "profile": "High",
+    "width": 1920,
+    "height": 1080,
+    "r_frame_rate": "30/1",
+    "color_primaries": "bt709",
+    "duration": 15.0,
+    "bitrate": 12685780
+   }
+  },
+  {
+   "role": "video-web-preview",
+   "name": "notice-coupon-v1.mp4",
+   "version": "v1",
+   "video": "coupon",
+   "repoPath": "ads/RP261125-NOTICE/notice-coupon-v1.mp4",
+   "commit": "8dcf6134f3022b354d34d087156d6b64e282366d"
+  }
+ ],
+ "files": [
+  {
+   "path": "frames/notice-coupon-final-4k.png",
+   "role": "reference-frame",
+   "sha256": "10b54d0ddb7a75fc5b27dbff33cf25a4aa1a599123a7744bb7c68941931d2ee3",
+   "bytes": 3864768
+  },
+  {
+   "path": "frames/notice-onsen-final-4k.png",
+   "role": "reference-frame",
+   "sha256": "7bbbd5be1b73d54afac8831156dd48639e8c3f466fca80d4aa52013fec5e158a",
+   "bytes": 4639027
+  },
+  {
+   "path": "frames/notice-onsen-healing-4k.png",
+   "role": "reference-frame",
+   "sha256": "f9abb9c6293c7f05f974bc604b71cf1189d248b9c972ce4416c385e5399a02b1",
+   "bytes": 5277820
+  },
+  {
+   "path": "frames/notice-onsen-mineral-4k.png",
+   "role": "reference-frame",
+   "sha256": "b38444c182d708f7473fd3900aa1e40bb6bd77242babdca0a3657ef708098c65",
+   "bytes": 5221389
+  },
+  {
+   "path": "frames/notice-parking-final-4k.png",
+   "role": "reference-frame",
+   "sha256": "248cda25d81353762d23ae18ea257b6dbb255c4ec8e0c7a29539ca40deb568f4",
+   "bytes": 3582004
+  }
+ ],
+ "integrity": "sha256-fd49089bb8c62fb3e4c4d35c10331bcca9af9db737667ec3d6b27e979754e27c"
+}
